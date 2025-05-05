@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- TITRE POUR LE SEO -->
-    <title>Laundgram - Service de lavage professionnel par Ray Ague</title>
+    <title>Cica - Service de lavage professionnel par Ray Ague</title>
 
     <!-- DESCRIPTION LONGUE POUR GOOGLE -->
     <meta name="description"
-        content="Laundgram est un service de lavage professionnel, rapide et efficace, conçu pour faciliter l'entretien de vos vêtements. Développé par Ray Ague, Laundgram garantit une propreté impeccable avec un service fiable et accessible en ligne. Essayez notre service dès aujourd'hui !">
+        content="Cica est un service de lavage professionnel, rapide et efficace, conçu pour faciliter l'entretien de vos vêtements. Développé par Ray Ague, Cica garantit une propreté impeccable avec un service fiable et accessible en ligne. Essayez notre service dès aujourd'hui !">
 
     <!-- MOTS-CLÉS POUR GOOGLE -->
     <meta name="keywords"
-        content="Lavage, pressing, blanchisserie, nettoyage, vêtements, service de lavage, lavage professionnel, Ray Ague, Laundgram, lessive écologique">
+        content="Lavage, pressing, blanchisserie, nettoyage, vêtements, service de lavage, lavage professionnel, Ray Ague, Cica, lessive écologique">
 
     <!-- NOM DE L'AUTEUR -->
     <meta name="author" content="Ray Ague">
@@ -23,22 +23,22 @@
     <meta name="robots" content="index, follow"> <!-- Autorise Google à explorer et référencer le site -->
 
     <!-- OPEN GRAPH POUR FACEBOOK ET WHATSAPP -->
-    <meta property="og:title" content="Laundgram - Service de lavage par Ray Ague">
+    <meta property="og:title" content="Cica - Service de lavage par Ray Ague">
     <meta property="og:description"
-        content="Besoin d'un service de lavage rapide et efficace ? Laundgram, développé par Ray Ague, est la solution parfaite !">
-    <meta property="og:image" content="{{ asset('images/laundgram.png') }}">
+        content="Besoin d'un service de lavage rapide et efficace ? Cica, développé par Ray Ague, est la solution parfaite !">
+    <meta property="og:image" content="{{ asset('images/Cica.png') }}">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:type" content="website">
 
     <!-- TWITTER CARD POUR LE PARTAGE SUR TWITTER -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Laundgram - Lavage Professionnel">
+    <meta name="twitter:title" content="Cica - Lavage Professionnel">
     <meta name="twitter:description"
-        content="Ray Ague présente Laundgram : un service de lavage rapide et fiable pour tous vos vêtements.">
-    <meta name="twitter:image" content="{{ asset('images/laundgram.png') }}">
+        content="Ray Ague présente Cica : un service de lavage rapide et fiable pour tous vos vêtements.">
+    <meta name="twitter:image" content="{{ asset('images/Cica.png') }}">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('images/laundgram.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('images/Cica.png') }}" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -67,9 +67,9 @@
 
     <header
         class="flex flex-row justify-between w-11/12 p-2 mx-auto mt-4 mb-10 font-extrabold rounded-md shadow-lg bg-white/10">
-        {{-- <img src="{{ asset('images/laundgram.png') }}" class="w-8" alt=""> --}}
+        {{-- <img src="{{ asset('images/Cica.png') }}" class="w-8" alt=""> --}}
         <span class="text-2xl italic font-black text-yellow-300 "
-            style="font-family: 'Dancing Script', cursive;">Laundgram</span>
+            style="font-family: 'Dancing Script', cursive;">Cica</span>
         @if (Route::has('login'))
             <nav class="flex justify-end space-x-4">
                 @auth
@@ -116,7 +116,7 @@
 
 
     <p class="my-8 text-5xl font-black text-center text-white">Découvrez les fonctionnalités de <span
-            class="text-yellow-500">Laundgram</span></p>
+            class="text-yellow-500">Cica</span></p>
     <div
         class="container grid flex-wrap items-center gap-2 px-2 pt-6 mx-auto mb-24 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 
@@ -183,7 +183,7 @@
 
     <footer
         class="fixed bottom-0 flex justify-center w-full p-4 mx-auto mt-8 text-sm font-black text-center text-white bg-yellow-500 backdrop-blur-md brightness-90 ">
-        Copyright ©&nbsp;<a class="italic text-white" href="/">Laundgram&nbsp;</a> <a
+        Copyright ©&nbsp;<a class="italic text-white" href="/">Cica&nbsp;</a> <a
             href="https://portfolio-cnkp.vercel.app" target="_blank"> Ray
             Ague&nbsp;.&nbsp;</a> 2025
 

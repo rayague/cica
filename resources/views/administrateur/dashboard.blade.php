@@ -9,8 +9,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Laundgram</title>
-    <link rel="shortcut icon" href="{{ asset('images/laundgram.png') }}" type="image/x-icon">
+    <title>Cica</title>
+    <link rel="shortcut icon" href="{{ asset('images/Cica.png') }}" type="image/x-icon">
 
 
     <!-- Custom fonts for this template-->
@@ -43,7 +43,7 @@
                 {{ route('administration') }}
                 ">
 
-                <div class="mx-3 sidebar-brand-text">Laundgram</div>
+                <div class="mx-3 sidebar-brand-text">Cica</div>
             </a>
 
             <!-- Divider -->
@@ -311,7 +311,7 @@
                 <div class="container my-auto">
                     <div class="my-auto text-center copyright">
                         Copyrignt © <span class="text-yellow-500"
-                            style="font-family: 'Dancing Script', cursive;">Laundgram</span> Ray
+                            style="font-family: 'Dancing Script', cursive;">Cica</span> Ray
                         Ague.
                     </div>
                 </div>

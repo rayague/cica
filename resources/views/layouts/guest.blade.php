@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laundgram') }}</title>
-    <link rel="shortcut icon" href="{{ asset('images/laundgram.png') }}" type="image/x-icon">
+    <title>{{ config('app.name', 'Cica') }}</title>
+    <link rel="shortcut icon" href="{{ asset('images/Cica.png') }}" type="image/x-icon">
 
 
     <!-- Fonts -->
