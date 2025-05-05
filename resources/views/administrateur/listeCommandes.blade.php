@@ -306,7 +306,7 @@
                                         </td>
                                         <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>
                                         <td class="px-4 py-3 text-center border border-blue-300">
-                                            <a href="{{ route('commandes.show', $commande->id) }}"
+                                            <a href="{{ route('commandesAdmin.show', $commande->id) }}"
                                                 class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
                                                 Voir
                                             </a>

@@ -561,7 +561,7 @@ class AdminController extends Controller
         ]);
 
         // Redirection vers la page de détail de la commande en passant les données de réduction
-        return redirect()->route('listeCommandes', $commande->id)
+        return redirect()->route('commandesAdmin.show', $commande->id)
             ->with('success', 'Commande validée avec succès!')
             ->with([
                 'originalTotal' => $originalTotal,
@@ -951,7 +951,7 @@ class AdminController extends Controller
             ? "Aucun résultat pour « {$search} »."
             : null;
 
-        return view('utilisateurs.listeCommandes', compact('commandes', 'objets', 'message', 'search'));
+        return view('administrateur.listeCommandes', compact('commandes', 'objets', 'message', 'search'));
     }
 
     public function rechercheRetrait(Request $request)
@@ -980,7 +980,7 @@ class AdminController extends Controller
             ? "Aucun résultat pour « {$search} »."
             : null;
 
-        return view('utilisateurs.rappelsRecherche', compact('commandes', 'objets', 'message', 'search'));
+        return view('administrateur.rappelsRecherche', compact('commandes', 'objets', 'message', 'search'));
     }
 
 

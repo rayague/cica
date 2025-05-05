@@ -187,7 +187,9 @@ Route::middleware('auth')->group(function () {
 
     // Users routes
     Route::get('/commandes/recherche', [CommandeController::class, 'recherche'])->name('commandes.recherche');
+    Route::get('/commandes/recherche_administration', [AdminController::class, 'recherche'])->name('commandesAdmin.recherche');
     Route::get('/commandes_retirees/recherche', [CommandeController::class, 'rechercheRetrait'])->name('commandesRetrait.recherche');
+    Route::get('/commandes_retirees/recherche_administration', [AdminController::class, 'rechercheRetrait'])->name('commandesRetraitAdmin.recherche');
 
 
     route::get('/commandes', [ViewsController::class, 'commandes'])->name('commandes');
@@ -209,6 +211,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/commandes_en_attente/filtrer', [CommandeController::class, 'filtrerPending'])->name('commandes.filtrerPending');
     Route::get('/retrait/commandes/filtrer', [CommandeController::class, 'RetraitsFiltrer'])->name('commandes.filtrerRetrait');
+    Route::get('/retrait/commandes/filtrer_administration', [AdminController::class, 'RetraitsFiltrer'])->name('commandesAdmin.filtrerRetrait');
     Route::get('/Comptabilite/commandes/filtrer', [CommandeController::class, 'ComptabiliteFiltrer'])->name('commandes.filtrerComptabilite');
     Route::get('/commandes/retrait', [CommandeController::class, 'retraitPending'])->name('commandes.retraitPending');
     Route::get('/impression_liste_commandes_retiree', [AdminController::class, 'printListeCommandesRetraits'])->name('listeCommandesRetraits.print');

@@ -37,7 +37,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="font-bold sidebar-brand d-flex align-items-center justify-content-center"
-                href="{{ route('administration') }}">
+                href="{{ route('acceuil') }}">
 
                 <div class="mx-3 sidebar-brand-text">Laundgram</div>
             </a>
@@ -48,7 +48,9 @@
             <nav class="text-white bg-gray-800 sidebar">
                 <!-- Nav Item - Tableau de Bord -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('administration') }}">
+                    <a class="nav-link" href="
+                    {{ route('administration') }}
+                    ">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span class="font-weight-bold">TABLEAU DE BORD</span>
                     </a>
@@ -59,23 +61,39 @@
 
                 <!-- Nav Item - Accueil -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('administration') }}">
-                        <i class="text-white fas fa-fw fa-home"></i>
+                    <a class="nav-link"
+                        href="
+
+                    {{ route('administration') }}
+
+                    ">
+                        <i class="fas fa-fw fa-home"></i>
                         <span class="font-weight-bold">ACCUEIL</span>
                     </a>
                 </li>
 
                 <!-- Nav Item - Création d'Objets -->
-                <li class=" nav-item">
-                    <a class="nav-link" href="{{ route('creationObjets') }}">
+                <li class="nav-item ">
+                    <a class="nav-link"
+                        href="
+
+                    {{ route('creationObjets') }}
+
+                    ">
                         <i class="fas fa-fw fa-plus-square"></i>
                         <span class="font-weight-bold">CRÉER OBJETS & PRIX</span>
                     </a>
                 </li>
 
+
                 <!-- Nav Item - Commandes -->
                 <li class="bg-yellow-500 nav-item">
-                    <a class="nav-link" href="{{ route('commandesAdmin') }}">
+                    <a class="nav-link"
+                        href="
+
+                    {{ route('commandesAdmin') }}
+
+                    ">
                         <i class="fas fa-fw fa-shopping-cart"></i>
                         <span class="font-weight-bold">COMMANDES</span>
                     </a>
@@ -100,29 +118,32 @@
 
 
                 <!-- Nav Item - Profil -->
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('comptabiliteAdmin') }}">
                         <i class="fas fa-fw fa-coins"></i>
                         <span class="font-weight-bold">COMPTABILITE</span>
                     </a>
                 </li>
-
                 <!-- Nav Item - Rappels -->
                 <li class="nav-item ">
-                    <a class="nav-link" href="{{ route('rappelsAdmin') }}">
+                    <a class="nav-link" href="
+
+                    {{ route('rappelsAdmin') }}
+
+                    ">
                         <i class="fas fa-fw fa-bell"></i>
                         <span class="font-weight-bold">RETRAITS</span>
                     </a>
                 </li>
 
                 <!-- Nav Item - Utilisateurs -->
-                <li class=" nav-item">
+                <li class=" nav-item ">
                     <a class="nav-link"
                         href="
 
-                                    {{ route('utilisateursAdmin') }}
+                    {{ route('utilisateursAdmin') }}
 
-                                    ">
+                    ">
                         <i class="fas fa-fw fa-users"></i>
                         <span class="font-weight-bold">UTILISATEURS</span>
                     </a>
@@ -130,7 +151,9 @@
 
                 <!-- Nav Item - Profil -->
                 {{-- <li class="nav-item ">
-                    <a class="nav-link" href="{{ route('profil') }}">
+                    <a class="nav-link" href="
+                    {{ route('profilAdmin') }}
+                    ">
                         <i class="fas fa-fw fa-user"></i>
                         <span class="font-weight-bold">PROFIL</span>
                     </a>
@@ -222,7 +245,7 @@
                 <!-- Bouton pour voir la liste des commandes -->
                 <div class="mt-4 ml-3">
                     <a href="
-                    {{ route('listeCommandesAdmin') }}
+                    {{ route('listeCommandes') }}
                     "
                         class="px-6 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
                         Voir la liste des commandes
@@ -377,6 +400,8 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        <input type="hidden" name="objets[0][prix]" value="0">
+                                        <!-- Champ manquant -->
 
                                         <input type="number" name="objets[0][quantite]"
                                             class="w-20 px-3 py-2.5 border border-gray-300 rounded-lg text-center"
@@ -385,16 +410,6 @@
                                         <input type="text" name="objets[0][description]"
                                             class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg"
                                             placeholder="Description détaillée">
-
-                                        <button type="button"
-                                            class="p-2 text-red-500 transition-colors rounded-lg hover:bg-red-50"
-                                            onclick="removeObjectField(this)">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
                                     </div>
                                 </div>
 
@@ -423,15 +438,21 @@
                                     <h3 class="mb-4 text-lg font-medium text-gray-800">Paiement</h3>
 
                                     <div class="space-y-4">
+                                        <!-- Affichage du total -->
+                                        <div id="total-display" class="mt-4 text-xl font-extrabold text-red-500">
+                                            Total : 0 FCFA
+                                        </div>
                                         <div>
                                             <label class="text-sm font-medium text-gray-700">Avance client</label>
                                             <div class="relative mt-1">
                                                 <input type="number" name="avance_client"
                                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                                    placeholder="1500.00" step="0.01">
-                                                <span class="absolute text-gray-500 right-3 top-3">TND</span>
+                                                    placeholder="00.00" step="0.01">
+                                                <span class="absolute text-gray-500 right-3 top-3">FCFA</span>
                                             </div>
                                         </div>
+
+
 
                                         <div>
                                             <label class="text-sm font-medium text-gray-700">Remise</label>
@@ -528,86 +549,418 @@
 
 
 
-    <script>
-        // Fonction pour ajouter un objet
+
+    {{-- <script>
+        function updateTotalPrice() {
+            let totalPrice = 0;
+
+            document.querySelectorAll('#objets-container .flex').forEach(row => {
+                const select = row.querySelector('select');
+                const quantity = row.querySelector('input[type="number"]');
+                const priceInput = row.querySelector('input[type="hidden"]');
+
+                const unitPrice = parseFloat(select.options[select.selectedIndex].dataset.price);
+                const qty = parseInt(quantity.value) || 1;
+
+                const itemTotal = unitPrice * qty;
+                priceInput.value = itemTotal.toFixed(2); // Stocke le prix dans le champ caché
+
+                totalPrice += itemTotal;
+            });
+
+            // Met à jour l'affichage
+            document.getElementById('total-display').textContent = `Total : ${totalPrice.toFixed(2)} FCFA`;
+            document.querySelector('input[name="avance_client"]').value = totalPrice.toFixed(2);
+        }
+
+        // Écouteurs d'événements
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('select, input[type="number"]')) {
+                updateTotalPrice();
+            }
+        });
+
+        // Fonction pour ajouter des articles (à compléter)
+        let itemCount = 1;
+
+        function addObjectField() {
+            const newItem = document.querySelector('#objets-container-0').cloneNode(true);
+            newItem.id = `objets-container-${itemCount}`;
+
+            // Met à jour les names
+            newItem.querySelector('select').name = `objets[${itemCount}][id]`;
+            newItem.querySelector('input[type="number"]').name = `objets[${itemCount}][quantite]`;
+            newItem.querySelector('input[type="hidden"]').name = `objets[${itemCount}][prix]`;
+            newItem.querySelector('input[type="text"]').name = `objets[${itemCount}][description]`;
+
+            document.getElementById('objets-container').appendChild(newItem);
+            itemCount++;
+        }
+
+        // Initialisation
+        updateTotalPrice();
+    </script> --}}
+
+    {{-- <script>
+        // Récupération du HTML des options (Blade l'a déjà rendu correctement)
+        const objetOptionsHTML = document.querySelector('select[name="objets[0][id]"]').innerHTML;
+
+        function updateTotalPrice() {
+            let total = 0;
+            document.querySelectorAll('#objets-container .flex').forEach(row => {
+                const select = row.querySelector('select');
+                const qtyInput = row.querySelector('input[type="number"]');
+                const prixHidden = row.querySelector('input[type="hidden"][name*="[prix]"]');
+
+                const unitPrice = parseFloat(select.selectedOptions[0].dataset.price) || 0;
+                const qty = parseInt(qtyInput.value) || 1;
+                const lineTotal = unitPrice * qty;
+
+                prixHidden.value = lineTotal.toFixed(2);
+                total += lineTotal;
+            });
+
+            document.getElementById('total-display').textContent =
+                `Total : ${total.toFixed(2)} FCFA`;
+        }
+
         function addObjectField() {
             const container = document.getElementById('objets-container');
             const index = container.children.length;
-            const template = `
-            <div class="flex gap-4 mb-2" id="objets-container-${index}">
-                <select name="objets[${index}][id]" class="w-full p-2 mt-1 border rounded-md" required onchange="updatePrice(this)">
-                    @foreach ($objets as $objet)
-                        <option value="{{ $objet->id }}" data-price="{{ $objet->prix }}">{{ $objet->nom }}</option>
-                    @endforeach
-                </select>
-                <input type="number" name="objets[${index}][quantite]" class="w-20 p-2 mt-1 border rounded-md" placeholder="Qté" min="1" required>
-                <input type="text" name="objets[${index}][description]" class="w-full p-2 mt-1 border rounded-md" placeholder="Description" required>
-                <input type="hidden" name="objets[${index}][prix]" value="" />
-                <!-- Bouton pour supprimer cet objet -->
-                <button type="button" class="px-2 py-1 text-white bg-red-500 rounded h:bg-red-600" onclick="removeObjectField(this)">Supprimer</button>
-            </div>
-        `;
-            container.insertAdjacentHTML('beforeend', template);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-4 mb-2';
+
+            wrapper.innerHTML = `
+            <select name="objets[${index}][id]" class="flex-1 px-4 py-2.5 border rounded-lg" required>
+              ${objetOptionsHTML}
+            </select>
+            <input type="hidden" name="objets[${index}][prix]" value="0">
+            <input type="number" name="objets[${index}][quantite]"
+                   class="w-20 px-3 py-2.5 border rounded-lg text-center"
+                   value="1" min="1" required>
+            <input type="text" name="objets[${index}][description]"
+                   class="flex-1 px-4 py-2.5 border rounded-lg"
+                   placeholder="Description détaillée">
+            <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+              Supprimer
+            </button>
+          `;
+
+            container.appendChild(wrapper);
+            updateTotalPrice();
         }
 
-        // Fonction pour supprimer un objet
-        function removeObjectField(button) {
-            // Trouver le conteneur du champ à supprimer (le parent du bouton)
-            const container = button.closest('.flex');
-            // Supprimer l'élément
-            container.remove();
-        }
-
-        // Fonction pour mettre à jour le prix en fonction de l'objet sélectionné
-        function updatePrice(selectElement) {
-            const price = selectElement.options[selectElement.selectedIndex].dataset.price;
-            const hiddenInput = selectElement.closest('div').querySelector('input[type="hidden"]');
-            hiddenInput.value = price;
-        }
-
-        function updatePrice(selectElement) {
-            const row = selectElement.closest('.flex');
-            const price = selectElement.selectedOptions[0].dataset.price;
-            const quantityInput = row.querySelector('input[type="number"]');
-            const priceInput = row.querySelector('input[type="hidden"]');
-
-            // Met à jour le prix quand la quantité change
-            quantityInput.addEventListener('input', () => {
-                priceInput.value = price * quantityInput.value;
-            });
-
-            // Initialisation
-            priceInput.value = price * quantityInput.value;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sélectionne le bouton et la popup par leurs IDs
-            const submitButton = document.getElementById('submitButton');
-            const confirmationPopup = document.getElementById('confirmationPopup');
-
-            // Vérifie que le bouton est bien trouvé (utile pour le debug)
-            if (!submitButton) {
-                console.error("Bouton 'submitButton' introuvable");
-                return;
+        // Écouteurs unifiés (input pour quantité, change pour select, click pour supprimer)
+        const cont = document.getElementById('objets-container');
+        cont.addEventListener('input', e => {
+            if (e.target.matches('input[type="number"][name*="[quantite]"]')) {
+                updateTotalPrice();
             }
-
-            // Ajoute l'événement click au bouton pour afficher la popup
-            submitButton.addEventListener('click', function() {
-                confirmationPopup.classList.remove('hidden');
-            });
+        });
+        cont.addEventListener('change', e => {
+            if (e.target.matches('select[name*="[id]"]')) {
+                updateTotalPrice();
+            }
+        });
+        cont.addEventListener('click', e => {
+            if (e.target.tagName === 'BUTTON') {
+                e.target.closest('.flex').remove();
+                updateTotalPrice();
+            }
         });
 
-        // Fonction globale pour annuler la commande (cache la popup)
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', updateTotalPrice);
+    </script> --}}
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1) Récupère le container des objets et le select initial
+            const container = document.getElementById('objets-container');
+            const originalSelect = container.querySelector('select[name="objets[0][id]"]');
+            if (!originalSelect) {
+                console.error('Select initial introuvable');
+                return;
+            }
+            const optionsHTML = originalSelect.innerHTML;
+
+            // 2) Calcul du total
+            function updateTotalPrice() {
+                let total = 0;
+                container.querySelectorAll('.flex').forEach(row => {
+                    const select = row.querySelector('select');
+                    const qtyInput = row.querySelector('input[type="number"]');
+                    const prixHidden = row.querySelector('input[type="hidden"][name*="[prix]"]');
+                    const unitPrice = parseFloat(select.selectedOptions[0].dataset.price) || 0;
+                    const qty = parseInt(qtyInput.value, 10) || 1;
+                    const lineTotal = unitPrice * qty;
+                    prixHidden.value = lineTotal.toFixed(2);
+                    total += lineTotal;
+                });
+                document.getElementById('total-display').textContent =
+                    `Total : ${total.toFixed(2)} TND`;
+            }
+
+            // 3) Ajout d'une nouvelle ligne d’objet
+            function addObjectField() {
+                const index = container.children.length;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex gap-4 mb-2';
+                wrapper.innerHTML = `
+              <select name="objets[${index}][id]" class="flex-1 px-4 py-2.5 border rounded-lg" required>
+                ${optionsHTML}
+              </select>
+              <input type="hidden" name="objets[${index}][prix]" value="0">
+              <input type="number" name="objets[${index}][quantite]"
+                     class="w-20 px-3 py-2.5 border rounded-lg text-center"
+                     value="1" min="1" required>
+              <input type="text" name="objets[${index}][description]"
+                     class="flex-1 px-4 py-2.5 border rounded-lg"
+                     placeholder="Description détaillée">
+              <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                Supprimer
+              </button>
+            `;
+                container.appendChild(wrapper);
+                updateTotalPrice();
+            }
+
+            // 4) Déléguation des événements (quantité, sélection et suppression)
+            container.addEventListener('input', e => e.target.matches('input[type="number"]') &&
+                updateTotalPrice());
+            container.addEventListener('change', e => e.target.matches('select[name*="[id]"]') &&
+                updateTotalPrice());
+            container.addEventListener('click', e => {
+                if (e.target.tagName === 'BUTTON') {
+                    e.target.closest('.flex').remove();
+                    updateTotalPrice();
+                }
+            });
+
+            // 5) Liaison du bouton “+ Ajouter un article”
+            const addBtn = document.getElementById('add-object-btn');
+            if (addBtn) addBtn.addEventListener('click', addObjectField);
+            else console.error('Bouton + Ajouter un article introuvable');
+
+            // 6) Initialisation du total
+            updateTotalPrice();
+
+            // 7) Gestion du bouton de soumission et du modal
+            const submitButton = document.getElementById('submitButton');
+            const confirmationPopup = document.getElementById('confirmationPopup');
+            if (!submitButton || !confirmationPopup) {
+                console.error('submitButton ou confirmationPopup introuvable');
+            } else {
+                submitButton.addEventListener('click', () => {
+                    confirmationPopup.classList.remove('hidden');
+                });
+            }
+        });
+
+        // Fonctions globales pour piloter la popup
         function cancelOrder() {
             document.getElementById('confirmationPopup').classList.add('hidden');
         }
 
-        // Fonction globale pour confirmer la commande : cache la popup et soumet le formulaire
-        window.confirmOrder = function() {
+        function confirmOrder() {
             document.getElementById('confirmationPopup').classList.add('hidden');
             document.getElementById('orderForm').submit();
-        };
+        }
+    </script> --}}
+
+
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1) Récupère le container et le select initial
+            const container = document.getElementById('objets-container');
+            const originalSelect = container.querySelector('select[name="objets[0][id]"]');
+            if (!originalSelect) {
+                console.error('Select initial introuvable');
+                return;
+            }
+            const optionsHTML = originalSelect.innerHTML;
+
+            // 2) Calcul du total
+            function updateTotalPrice() {
+                let total = 0;
+                container.querySelectorAll('.flex').forEach(row => {
+                    const select = row.querySelector('select');
+                    const qtyInput = row.querySelector('input[type="number"]');
+                    const prixHidden = row.querySelector('input[type="hidden"][name*="[prix]"]');
+                    const unitPrice = parseFloat(select.selectedOptions[0].dataset.price) || 0;
+                    const qty = parseInt(qtyInput.value, 10) || 1;
+                    const lineTotal = unitPrice * qty;
+                    prixHidden.value = lineTotal.toFixed(2);
+                    total += lineTotal;
+                });
+                document.getElementById('total-display').textContent =
+                    `Total : ${total.toFixed(2)} TND`;
+            }
+
+            // 3) Ajout d'une nouvelle ligne
+            function addObjectField() {
+                const index = container.children.length;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex gap-4 mb-2';
+                wrapper.innerHTML = `
+          <select name="objets[${index}][id]" class="flex-1 px-4 py-2.5 border rounded-lg" required>
+            ${optionsHTML}
+          </select>
+          <input type="hidden" name="objets[${index}][prix]" value="0">
+          <input type="number" name="objets[${index}][quantite]" class="w-20 px-3 py-2.5 border rounded-lg text-center" value="1" min="1" required>
+          <input type="text" name="objets[${index}][description]" class="flex-1 px-4 py-2.5 border rounded-lg" placeholder="Description détaillée">
+          <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">Supprimer</button>
+        `;
+                container.appendChild(wrapper);
+                updateTotalPrice();
+            }
+
+            // 4) Déléguation des événements
+            container.addEventListener('input', e => e.target.matches('input[type="number"]') &&
+                updateTotalPrice());
+            container.addEventListener('change', e => e.target.matches('select[name*="[id]"]') &&
+                updateTotalPrice());
+            container.addEventListener('click', e => {
+                if (e.target.tagName === 'BUTTON') {
+                    e.target.closest('.flex').remove();
+                    updateTotalPrice();
+                }
+            });
+
+            // 5) Lien avec le bouton « + Ajouter un article »
+            const addBtn = document.getElementById('add-object-btn');
+            if (addBtn) addBtn.addEventListener('click', addObjectField);
+            else console.error('Bouton + Ajouter un article introuvable');
+
+            // 6) Init
+            updateTotalPrice();
+        });
+    </script> --}}
+
+    <script>
+        // Fonction principale de calcul
+        function updateTotalPrice() {
+            let total = 0;
+
+            document.querySelectorAll('#objets-container .flex').forEach(row => {
+                const select = row.querySelector('select');
+                const quantity = row.querySelector('input[type="number"]');
+                const priceInput = row.querySelector('input[type="hidden"][name*="[prix]"]');
+
+                // Correction 1 : Gestion des valeurs non numériques
+                const unitPrice = parseFloat(select.selectedOptions[0].dataset.price) || 0;
+                const qty = parseInt(quantity.value) || 1; // Si valeur vide → 1
+
+                const itemTotal = unitPrice * qty;
+
+                priceInput.value = itemTotal.toFixed(2);
+                total += itemTotal;
+            });
+
+            // Correction 2 : Affichage conditionnel pour éviter NaN
+            document.getElementById('total-display').textContent =
+                `Total : ${!isNaN(total) ? total.toFixed(2) : '0.00'} FCFA`;
+
+            // document.querySelector('input[name="avance_client"]').value = !isNaN(total) ? total.toFixed(2) : '0';
+        }
+
+        // Fonction d'ajout d'objet (version corrigée)
+        function addObjectField() {
+            const container = document.getElementById('objets-container');
+            const index = container.children.length;
+            const template = document.createElement('div');
+            template.className = 'flex gap-4 mb-2';
+
+            // Correction 3 : Clone PROPRE des options avec data-price
+            const originalSelect = document.querySelector('select[name="objets[0][id]"]');
+            const optionsHTML = Array.from(originalSelect.options).map(option =>
+                `<option value="${option.value}" data-price="${option.dataset.price}">
+                    ${option.text}
+                </option>`
+            ).join('');
+
+            template.innerHTML = `
+                <select name="objets[${index}][id]" class="w-full p-2 mt-1 border rounded-md" required>
+                    ${optionsHTML}
+                </select>
+                <input type="number" name="objets[${index}][quantite]"
+                       class="w-20 p-2 mt-1 border rounded-md" value="1" min="1" required>
+                <input type="text" name="objets[${index}][description]"
+                       class="w-full p-2 mt-1 border rounded-md" placeholder="Description" required>
+                <input type="hidden" name="objets[${index}][prix]" value="0">
+                <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                    Supprimer
+                </button>
+            `;
+
+            container.appendChild(template);
+            updateTotalPrice(); // Force le calcul après ajout
+        }
+
+        // Écouteurs d'événements (inchangés mais nécessaires)
+        document.addEventListener('input', e => {
+            if (e.target.matches('select[name*="[id]"], input[type="number"][name*="[quantite]"]')) {
+                updateTotalPrice();
+            }
+        });
+
+        document.getElementById('objets-container').addEventListener('click', e => {
+            if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Supprimer') {
+                e.target.closest('.flex').remove();
+                updateTotalPrice();
+            }
+        });
+
+        // 7) Gestion du bouton de soumission et du modal
+        const submitButton = document.getElementById('submitButton');
+        const confirmationPopup = document.getElementById('confirmationPopup');
+        if (!submitButton || !confirmationPopup) {
+            console.error('submitButton ou confirmationPopup introuvable');
+        } else {
+            submitButton.addEventListener('click', () => {
+                confirmationPopup.classList.remove('hidden');
+            });
+        }
+
+        // Fonctions globales pour piloter la popup
+        function cancelOrder() {
+            document.getElementById('confirmationPopup').classList.add('hidden');
+        }
+
+        function confirmOrder() {
+            document.getElementById('confirmationPopup').classList.add('hidden');
+            document.getElementById('orderForm').submit();
+        }
+
+        // Écouteurs unifiés (input pour quantité, change pour select, click pour supprimer)
+        const cont = document.getElementById('objets-container');
+        cont.addEventListener('input', e => {
+            if (e.target.matches('input[type="number"][name*="[quantite]"]')) {
+                updateTotalPrice();
+            }
+        });
+        cont.addEventListener('change', e => {
+            if (e.target.matches('select[name*="[id]"]')) {
+                updateTotalPrice();
+            }
+        });
+        cont.addEventListener('click', e => {
+            if (e.target.tagName === 'BUTTON') {
+                e.target.closest('.flex').remove();
+                updateTotalPrice();
+            }
+        });
+
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', updateTotalPrice);
     </script>
+
+
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('orderForm');
@@ -646,10 +999,10 @@
         });
 
         // Modification des fonctions dynamiques pour déclencher la vérification
-        function addObjectField() {
-            // ... votre code existant ...
-            checkFormValidity(); // Ajouter cette ligne à la fin
-        }
+        // function addObjectField() {
+        //     // ... votre code existant ...
+        //     checkFormValidity(); // Ajouter cette ligne à la fin
+        // }
 
         function removeObjectField(button) {
             // ... votre code existant ...

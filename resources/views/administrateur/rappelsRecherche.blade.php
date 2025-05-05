@@ -37,7 +37,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="font-bold sidebar-brand d-flex align-items-center justify-content-center"
-                href="{{ route('administration') }}">
+                href="{{ route('acceuil') }}">
                 <div class="mx-3 sidebar-brand-text">Laundgram</div>
             </a>
 
@@ -221,11 +221,11 @@
                     <h1 class="mb-8 text-3xl font-bold text-center text-gray-800">
                         Commandes validées pour aujourd'hui
                     </h1>
-
+                    <!-- Formulaire de filtre -->
 
                     <div class="p-4 mb-6 space-y-6 bg-white rounded-lg shadow">
 
-                        <form method="GET" action="{{ route('commandesAdmin.filtrerRetrait') }}">
+                        <form method="GET" action="{{ route('commandes.filtrerRetrait') }}">
                             <div class="flex items-center space-x-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Date de début</label>
