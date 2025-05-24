@@ -254,7 +254,7 @@
 
 
                     <!-- Section des notes -->
-                    <div class="p-6 bg-white rounded-lg shadow-md">
+                    <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
                         <h2 class="mb-4 text-2xl font-semibold text-gray-700">Historique des Retraits / Notes</h2>
                         @if ($notes->isNotEmpty())
                             <table class="min-w-full border-collapse bg-gray-50">
@@ -269,22 +269,120 @@
                                 <tbody>
                                     @foreach ($notes as $note)
                                         <tr class="hover:bg-yellow-50">
-                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->commande_id }}
-                                            </td>
-                                            <td class="px-4 py-2 border border-yellow-300">
-                                                {{ $note->user->name ?? 'Utilisateur Inconnu' }}</td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->commande_id }}</td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->user->name ?? 'Utilisateur Inconnu' }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->note }}</td>
-                                            <td class="px-4 py-2 border border-yellow-300">
-                                                {{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}
-                                            </td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         @else
-                            <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucune note
-                                enregistrée pour cet utilisateur.</p>
+                            <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucune note enregistrée pour cette période.</p>
                         @endif
+                    </div>
+
+                                        <!-- Section des paiements filtrés -->
+                                        <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
+                        <h2 class="mb-4 text-2xl font-semibold text-gray-700">Historique des Paiements</h2>
+                        @if ($payments->isNotEmpty())
+                            <table class="min-w-full border-collapse bg-gray-50">
+                                <thead>
+                                    <tr class="text-white bg-green-500">
+                                        <th class="px-4 py-2 border border-green-400">Numéro de Facture</th>
+                                        <th class="px-4 py-2 border border-green-400">Utilisateur</th>
+                                        <th class="px-4 py-2 border border-green-400">Montant</th>
+                                        <th class="px-4 py-2 border border-green-400">Action</th>
+                                        <th class="px-4 py-2 border border-green-400">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($payments as $payment)
+                                        <tr class="hover:bg-green-50">
+                                            <td class="px-4 py-2 border border-green-300">{{ $payment->commande_id }}
+                                            </td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                {{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                {{ number_format($payment->amount, 2, ',', ' ') }} F</td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                {{ $payment->payment_method ?? 'Non spécifié' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                {{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <!-- Affichage du total des paiements -->
+                            <div class="p-4 mt-4 text-lg font-semibold text-right bg-gray-100">
+                                <p>Total des paiements : <span
+                                        class="font-bold">{{ number_format($montant_total_paiements, 2, ',', ' ') }}
+                                        F</span></p>
+                            </div>
+                        @else
+                            <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucun
+                                paiement enregistré pour cette période.</p>
+                        @endif
+                    </div>
+
+                    <!-- Section des mouvements d'argent -->
+                    <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
+                        <h2 class="mb-4 text-2xl font-semibold text-gray-700">Tous les Mouvements d'Argent</h2>
+                        @if ($mouvements->isNotEmpty())
+                            <table class="min-w-full border-collapse bg-gray-50">
+                                <thead>
+                                    <tr class="text-white bg-blue-500">
+                                        <th class="px-4 py-2 border border-blue-400">Date</th>
+                                        <th class="px-4 py-2 border border-blue-400">Type</th>
+                                        <th class="px-4 py-2 border border-blue-400">Montant</th>
+                                        <th class="px-4 py-2 border border-blue-400">Description</th>
+                                        <th class="px-4 py-2 border border-blue-400">Facture</th>
+                                        <th class="px-4 py-2 border border-blue-400">Utilisateur</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $solde = 0; @endphp
+                                    @foreach ($mouvements as $mouvement)
+                                        @php $solde += $mouvement['montant']; @endphp
+                                        <tr class="hover:bg-blue-50">
+                                            <td class="px-4 py-2 border border-blue-300">{{ \Carbon\Carbon::parse($mouvement['date'])->format('d/m/Y H:i') }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">
+                                                <span class="px-2 py-1 text-sm font-semibold rounded {{ $mouvement['type'] === 'Entrée' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ $mouvement['type'] }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2 border border-blue-300 {{ $mouvement['montant'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ number_format(abs($mouvement['montant']), 2, ',', ' ') }} F
+                                            </td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['description'] }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['commande_id'] }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['user'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-gray-100">
+                                        <td colspan="2" class="px-4 py-2 font-semibold text-right border border-blue-300">Solde :</td>
+                                        <td class="px-4 py-2 font-semibold border border-blue-300 {{ $solde >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                            {{ number_format(abs($solde), 2, ',', ' ') }} F
+                                        </td>
+                                        <td colspan="3" class="px-4 py-2 border border-blue-300"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        @else
+                            <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucun mouvement d'argent enregistré pour cette période.</p>
+                        @endif
+                    </div>
+
+                    <!-- Section du Montant Total -->
+                    <div class="p-6 bg-white rounded-lg shadow-md">
+                        <h2 class="mb-4 text-2xl font-semibold text-gray-700">Montant Total</h2>
+                        <p class="text-2xl font-bold text-gray-700">
+                            {{ number_format($total, 2, ',', ' ') }} F
+                        </p>
                     </div>
                 </div>
 

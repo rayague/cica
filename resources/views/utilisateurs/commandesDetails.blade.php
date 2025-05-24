@@ -564,6 +564,34 @@
 
 
 
+                    <!-- Boutons d'action -->
+                    <div class="flex flex-wrap items-center justify-between gap-4 mt-8">
+                        <!-- Bouton WhatsApp -->
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $commande->numero_whatsapp) }}"
+                           target="_blank"
+                           class="flex items-center px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600">
+                            <i class="fab fa-whatsapp mr-2"></i>
+                            Envoyer par WhatsApp
+                        </a>
+
+                        <!-- Bouton Retrait -->
+                        <button type="button"
+                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                            <i class="fas fa-box mr-2"></i>
+                            Faire un retrait
+                        </button>
+
+                        <!-- Bouton Imprimer -->
+                        <a href="{{ route('factures.print', $commande->id) }}"
+                           target="_blank"
+                           class="px-4 py-2 text-white bg-purple-500 rounded-md hover:bg-purple-600">
+                            <i class="fas fa-print mr-2"></i>
+                            Imprimer
+                        </a>
+                    </div>
+
                     <!-- Boutons de navigation -->
                     <div class="flex flex-row items-center justify-between gap-4 mx-4 my-10">
                         <a href="{{ route('listeCommandes') }}"
@@ -828,6 +856,57 @@
             });
         });
     });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateFinancialForm = document.querySelector('form[action*="update-financial"]');
+            if (updateFinancialForm) {
+                updateFinancialForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const response = await fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Recharger la page pour afficher les nouvelles valeurs
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const montantPayeInput = document.getElementById('montant_paye');
+            const soldeRestantElement = document.querySelector('[data-solde-restant]');
+            const totalElement = document.querySelector('[data-total]');
+
+            if (montantPayeInput && soldeRestantElement && totalElement) {
+                const totalInitial = parseFloat(totalElement.getAttribute('data-total'));
+                const soldeInitial = parseFloat(soldeRestantElement.getAttribute('data-solde-restant'));
+                const avanceInitiale = parseFloat('{{ $commande->avance_client }}');
+
+                montantPayeInput.addEventListener('input', function() {
+                    const nouvelleAvance = parseFloat(this.value) || 0;
+                    const nouveauSolde = Math.max(0, totalInitial - (avanceInitiale + nouvelleAvance));
+
+                    // Mise à jour de l'affichage du solde restant
+                    soldeRestantElement.textContent = nouveauSolde.toLocaleString('fr-FR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + ' FCFA';
+                });
+            }
+        });
     </script>
 
 </body>

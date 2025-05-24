@@ -214,22 +214,79 @@ class AdminController extends Controller
         // Récupérer l'ID de l'utilisateur connecté
         $userId = Auth::id();
 
-        // Récupérer les commandes de l'utilisateur connecté
-        $commandes = Commande::where('user_id', $userId)->get();
+        // Définir la date d'aujourd'hui
+        $today = Carbon::today()->toDateString();
+
+        // Récupérer les commandes de l'utilisateur connecté pour aujourd'hui
+        $commandes = Commande::where('user_id', $userId)
+            ->whereDate('created_at', $today)
+            ->get();
 
         // Si aucune commande n'est trouvée pour cet utilisateur
         if ($commandes->isEmpty()) {
             return redirect()->route('comptabiliteAdmin')->with('error', 'Aucune commande trouvée pour cet utilisateur.');
         }
 
-        // Récupérer les paiements associés à cet utilisateur
-        $payments = CommandePayment::where('user_id', $userId)->get();
+        // Calculer le montant total des commandes
+        $total = $commandes->sum('total');
 
-        // Récupérer les notes associées à cet utilisateur
-        $notes = Note::where('user_id', $userId)->get();
+        // Récupérer les paiements associés à cet utilisateur pour aujourd'hui
+        $payments = CommandePayment::where('user_id', $userId)
+            ->whereDate('created_at', $today)
+            ->get();
+
+        // Calculer le montant total des paiements
+        $montant_total_paiements = $payments->sum('amount');
+
+        // Récupérer les notes associées à cet utilisateur pour aujourd'hui
+        $notes = Note::where('user_id', $userId)
+            ->whereDate('created_at', $today)
+            ->get();
+
+        // Récupérer tous les mouvements d'argent (paiements et retraits)
+        $mouvements = collect();
+
+        // Ajouter les paiements comme mouvements positifs
+        foreach ($payments as $payment) {
+            $mouvements->push([
+                'date' => $payment->created_at,
+                'type' => 'Entrée',
+                'montant' => $payment->amount,
+                'description' => 'Paiement - ' . ($payment->payment_method ?? 'Non spécifié'),
+                'commande_id' => $payment->commande_id,
+                'user' => $payment->user->name ?? 'Utilisateur Inconnu'
+            ]);
+        }
+
+        // Ajouter les retraits comme mouvements négatifs
+        foreach ($notes as $note) {
+            // On suppose que le montant du retrait est dans la note
+            $montant = floatval(preg_replace('/[^0-9.]/', '', $note->note));
+            if ($montant > 0) {
+                $mouvements->push([
+                    'date' => $note->created_at,
+                    'type' => 'Sortie',
+                    'montant' => -$montant,
+                    'description' => 'Retrait - ' . $note->note,
+                    'commande_id' => $note->commande_id,
+                    'user' => $note->user->name ?? 'Utilisateur Inconnu'
+                ]);
+            }
+        }
+
+        // Trier les mouvements par date
+        $mouvements = $mouvements->sortBy('date');
 
         // Retourner la vue avec les données
-        return view('administrateur.comptabilite', compact('commandes', 'payments', 'notes', 'userId'));
+        return view('administrateur.comptabilite', compact(
+            'commandes',
+            'payments',
+            'notes',
+            'userId',
+            'total',
+            'montant_total_paiements',
+            'mouvements'
+        ));
     }
 
 
@@ -914,10 +971,56 @@ class AdminController extends Controller
             ->whereBetween('created_at', [$date_debut, $date_fin])
             ->get();
 
+        // Récupérer tous les mouvements d'argent (paiements et retraits)
+        $mouvements = collect();
+
+        // Ajouter les paiements comme mouvements positifs
+        foreach ($payments as $payment) {
+            $mouvements->push([
+                'date' => $payment->created_at,
+                'type' => 'Entrée',
+                'montant' => $payment->amount,
+                'description' => 'Paiement - ' . ($payment->payment_method ?? 'Non spécifié'),
+                'commande_id' => $payment->commande_id,
+                'user' => $payment->user->name ?? 'Utilisateur Inconnu'
+            ]);
+        }
+
+        // Ajouter les retraits comme mouvements négatifs
+        foreach ($notes as $note) {
+            // On suppose que le montant du retrait est dans la note
+            // Vous devrez adapter cette partie selon votre structure de données
+            $montant = floatval(preg_replace('/[^0-9.]/', '', $note->note));
+            if ($montant > 0) {
+                $mouvements->push([
+                    'date' => $note->created_at,
+                    'type' => 'Sortie',
+                    'montant' => -$montant,
+                    'description' => 'Retrait - ' . $note->note,
+                    'commande_id' => $note->commande_id,
+                    'user' => $note->user->name ?? 'Utilisateur Inconnu'
+                ]);
+            }
+        }
+
+        // Trier les mouvements par date
+        $mouvements = $mouvements->sortBy('date');
+
         $montant_total_paiements = $payments->sum('amount');
         $objets = Objets::all();
 
-        return view('administrateur.comptabiliteFiltreRetraits', compact('commandes', 'payments', 'notes', 'userId', 'date_debut', 'date_fin', 'montant_total', 'objets', 'montant_total_paiements'));
+        return view('administrateur.comptabiliteFiltreRetraits', compact(
+            'commandes',
+            'payments',
+            'notes',
+            'userId',
+            'date_debut',
+            'date_fin',
+            'montant_total',
+            'objets',
+            'montant_total_paiements',
+            'mouvements'
+        ));
     }
 
 

@@ -36,17 +36,13 @@ class Commande extends Model
         'date_retrait',
         'heure_retrait',
         'type_lavage',
-        'emplacement',
-        'montant_remis',
-        'total',
-        'avance_client',
-        'solde_restant',
         'statut',
-        'cout_total_commande',
-        'reste_a_payer',
+        'avance_client',
+        'total',
+        'solde_restant',
+        'remise_reduction',
         'original_total',
-        'discount_amount',
-        'remise_reduction'
+        'discount_amount'
     ];
 
     // // Relation many-to-many avec Objets

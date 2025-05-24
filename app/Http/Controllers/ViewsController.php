@@ -112,39 +112,76 @@ class ViewsController extends Controller
 
     public function comptabilite()
     {
-        // 1) Récupérer l’ID de l’utilisateur connecté
+        // 1) Récupérer l'ID de l'utilisateur connecté
         $userId = Auth::id();
 
-        // 2) Définir la date d’aujourd’hui
+        // 2) Définir la date d'aujourd'hui
         $today = Carbon::today()->toDateString();
 
-        // 3) Charger les commandes de l’utilisateur créées aujourd’hui
+        // 3) Charger les commandes de l'utilisateur créées aujourd'hui
         $commandes = Commande::where('user_id', $userId)
             ->whereDate('created_at', $today)
             ->get();
 
-        // // 4) Si aucune commande aujourd’hui, on peut le signaler
-        // if ($commandes->isEmpty()) {
-        //     return view('utilisateurs.comptabilite')
-        //         ->with('error', 'Pas de commande pour aujourd’hui.');
-        // }
+        // Calculer le montant total des commandes
+        $total = $commandes->sum('total');
 
-        // 5) Charger les paiements de l’utilisateur réalisés aujourd’hui
+        // 5) Charger les paiements de l'utilisateur réalisés aujourd'hui
         $payments = CommandePayment::where('user_id', $userId)
             ->whereDate('created_at', $today)
             ->get();
 
-        // 6) Charger les notes de l’utilisateur créées aujourd’hui
+        // 6) Charger les notes de l'utilisateur créées aujourd'hui
         $notes = Note::where('user_id', $userId)
             ->whereDate('created_at', $today)
             ->get();
+
+        // Calculer le montant total des paiements
+        $montant_total_paiements = $payments->sum('amount');
+
+        // Récupérer tous les mouvements d'argent (paiements et retraits)
+        $mouvements = collect();
+
+        // Ajouter les paiements comme mouvements positifs
+        foreach ($payments as $payment) {
+            $mouvements->push([
+                'date' => $payment->created_at,
+                'type' => 'Entrée',
+                'montant' => $payment->amount,
+                'description' => 'Paiement - ' . ($payment->payment_method ?? 'Non spécifié'),
+                'commande_id' => $payment->commande_id,
+                'user' => $payment->user->name ?? 'Utilisateur Inconnu'
+            ]);
+        }
+
+        // Ajouter les retraits comme mouvements négatifs
+        foreach ($notes as $note) {
+            // On suppose que le montant du retrait est dans la note
+            $montant = floatval(preg_replace('/[^0-9.]/', '', $note->note));
+            if ($montant > 0) {
+                $mouvements->push([
+                    'date' => $note->created_at,
+                    'type' => 'Sortie',
+                    'montant' => -$montant,
+                    'description' => 'Retrait - ' . $note->note,
+                    'commande_id' => $note->commande_id,
+                    'user' => $note->user->name ?? 'Utilisateur Inconnu'
+                ]);
+            }
+        }
+
+        // Trier les mouvements par date
+        $mouvements = $mouvements->sortBy('date');
 
         // 7) Retourner la vue avec les données
         return view('utilisateurs.comptabilite', compact(
             'commandes',
             'payments',
             'notes',
-            'userId'
+            'userId',
+            'montant_total_paiements',
+            'mouvements',
+            'total'
         ));
     }
 
@@ -154,10 +191,10 @@ class ViewsController extends Controller
 
     public function rappels($commandeId = null)
     {
-        // Récupérer l’ID de l’utilisateur connecté
+        // Récupérer l'ID de l'utilisateur connecté
         $userId = Auth::id();
 
-        // Date d’aujourd’hui
+        // Date d'aujourd'hui
         $today = Carbon::today()->toDateString();
 
         if ($commandeId) {
@@ -170,20 +207,20 @@ class ViewsController extends Controller
                 ->with('objets')
                 ->get();
 
-            // Notes associées à cette commande, créées aujourd’hui
+            // Notes associées à cette commande, créées aujourd'hui
             $notes = Note::where('commande_id', $commandeId)
                 ->whereDate('created_at', $today)
                 ->with('user')
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else {
-            // Toutes les commandes validées pour cet utilisateur dont le retrait est aujourd’hui
+            // Toutes les commandes validées pour cet utilisateur dont le retrait est aujourd'hui
             $commandes = Commande::where('user_id', $userId)
                 ->where('statut', 'validée')
                 ->whereDate('date_retrait', $today)
                 ->get();
 
-            // Toutes les notes de l’utilisateur créées aujourd’hui
+            // Toutes les notes de l'utilisateur créées aujourd'hui
             $notes = Note::where('user_id', $userId)
                 ->whereDate('created_at', $today)
                 ->orderBy('created_at', 'desc')
