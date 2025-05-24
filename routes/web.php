@@ -238,6 +238,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/liste_des_commandes', [CommandeController::class, 'listeCommandes'])->name('listeCommandes');
     Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('commandes.show');
+    Route::delete('/commandes/{id}/delete', [AdminController::class, 'destroyCommande'])->name('commandesAdmin.destroy');
     Route::post('/commande/{commande}/objet/{objet}/retirer', [CommandeController::class, 'retirerObjet'])->name('commande.retirer');
     Route::post('/commandes/{commande}/retirer-plusieurs', [CommandeController::class, 'retirerPlusieursObjets'])->name('commande.retirerPlusieurs');
 

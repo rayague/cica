@@ -9,12 +9,12 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 10mm;
+            margin: 5mm;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            font-size: 10px;
+            font-size: 7px;
             margin: 0;
             padding: 0;
             color: #2d3748;
@@ -24,26 +24,32 @@
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            page-break-inside: avoid;
         }
 
         .sheet-table td {
             width: 50%;
             vertical-align: top;
-            padding: 5mm;
+            padding: 2mm;
+            page-break-inside: avoid;
         }
 
         .invoice-column {
             border: 1px solid #e2e8f0;
             border-radius: 4px;
-            padding: 5mm;
+            padding: 3mm;
+            height: 185mm;
+            overflow: hidden;
+            page-break-inside: avoid;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
-            border-bottom: 2px solid #38a169;
-            margin-bottom: 4mm;
-            padding-bottom: 3mm;
+            border-bottom: 1px solid #38a169;
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
+            page-break-inside: avoid;
         }
 
         .brand-section {
@@ -51,129 +57,155 @@
         }
 
         .brand-section h1 {
-            font-size: 12px;
-            margin: 0 0 2mm 0;
+            font-size: 9px;
+            margin: 0 0 1mm 0;
             color: #38a169;
         }
 
         .brand-section p {
             margin: 0;
-            font-size: 9px;
+            font-size: 7px;
         }
 
         .invoice-info {
             text-align: right;
-            font-size: 9px;
+            font-size: 7px;
         }
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 10px;
+            font-size: 8px;
         }
 
         .details-grid {
-            /* display: flex; */
+            display: flex;
             justify-content: space-between;
             background: #f0fdf4;
             border: 1px solid #c6f6d5;
-            padding: 4mm;
-            border-radius: 5px;
-            margin-bottom: 5mm;
+            padding: 2mm;
+            border-radius: 3px;
+            margin-bottom: 2mm;
+            font-size: 7px;
+            page-break-inside: avoid;
         }
 
         .detail-block {
             width: 48%;
-            font-size: 9px;
-            display: flex;
-
+            font-size: 7px;
         }
 
         .detail-block h4 {
-            margin: 0 0 2mm 0;
-            font-size: 10px;
+            margin: 0 0 1mm 0;
+            font-size: 8px;
             color: #38a169;
             text-transform: uppercase;
         }
 
-
         .items-table {
             width: 100%;
-            font-size: 8px;
+            font-size: 7px;
             border-collapse: collapse;
-            margin: 3mm 0;
+            margin: 1mm 0;
+            page-break-inside: avoid;
         }
 
         .items-table th {
             background-color: #38a169;
             color: white;
-            padding: 2mm;
+            padding: 1mm;
             text-align: left;
+            font-size: 7px;
         }
 
         .items-table td {
             border-bottom: 1px solid #e2e8f0;
-            padding: 2mm;
+            padding: 1mm;
+            font-size: 7px;
         }
 
         .total-section {
-            margin-top: 4mm;
-            font-size: 9px;
+            margin-top: 2mm;
+            font-size: 7px;
+            page-break-inside: avoid;
         }
 
         .total-line {
             display: flex;
             justify-content: space-between;
-            margin: 1mm 0;
+            margin: 0.5mm 0;
         }
 
         .badge {
-            padding: 1mm 3mm;
+            padding: 0.5mm 1mm;
             background-color: #edf2f7;
-            border-radius: 3px;
+            border-radius: 2px;
             font-weight: bold;
+            font-size: 7px;
         }
 
         .historique-header {
-            margin-top: 6mm;
-            font-size: 9px;
+            margin-top: 2mm;
+            font-size: 8px;
             font-weight: bold;
         }
 
         .notes-table {
             width: 100%;
-            font-size: 8px;
+            font-size: 6px;
             border-collapse: collapse;
-            margin-top: 2mm;
+            margin-top: 1mm;
+            page-break-inside: avoid;
         }
 
         .notes-table th {
             background-color: #38a169;
             color: white;
-            padding: 2mm;
+            padding: 1mm;
+            font-size: 6px;
         }
 
         .notes-table td {
-            padding: 2mm;
+            padding: 1mm;
             border-bottom: 1px solid #e2e8f0;
+            font-size: 6px;
         }
 
         .conditions {
-            margin-top: 6mm;
-            font-size: 8px;
+            margin-top: 2mm;
+            font-size: 6px;
+            page-break-inside: avoid;
         }
 
         .conditions ul {
-            padding-left: 14px;
+            padding-left: 10px;
+            margin: 1mm 0;
+        }
+
+        .conditions li {
+            margin-bottom: 0.5mm;
         }
 
         @media print {
+            body {
+                font-size: 7px;
+            }
+
             .invoice-column {
                 border: none;
                 padding: 0;
+                height: auto;
             }
 
             .sheet-table td {
                 padding: 0;
+            }
+
+            .sheet-table tr {
+                page-break-after: always;
+            }
+
+            .sheet-table tr:last-child {
+                page-break-after: avoid;
             }
         }
     </style>
@@ -195,9 +227,7 @@
                             <div class="invoice-info">
                                 <h2>Facture</h2>
                                 <p><strong>N° :</strong> {{ $commande->numero }}</p>
-                                <p><strong>Date dépôt
-                                        :</strong><br>{{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}
-                                </p>
+                                <p><strong>Date dépôt :</strong> {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p>
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>
@@ -206,7 +236,7 @@
                             <div class="detail-block">
                                 <strong>CLIENT :</strong>
                                 {{ $commande->client }}<br>
-                                WhatsApp : {{ $commande->numero_whatsapp }}
+                                Contact : {{ $commande->numero_whatsapp }}
                             </div>
                             <div class="detail-block">
                                 <strong>DATES</strong><br>
@@ -232,8 +262,7 @@
                                         <td>{{ $objet->pivot->quantite }}</td>
                                         <td>{{ $objet->pivot->description }}</td>
                                         <td>{{ number_format($objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
-                                        <td>{{ number_format($objet->pivot->quantite * $objet->prix_unitaire, 2, ',', ' ') }}
-                                            FCFA</td>
+                                        <td>{{ number_format($objet->pivot->quantite * $objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -257,15 +286,13 @@
                                                 <td>{{ $commande->numero }}</td>
                                                 <td>{{ $note->user->name ?? $note->user_id }}</td>
                                                 <td>{{ $note->note }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}
-                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             @else
-                                <p style="text-align:center; font-weight:bold; background:#ffd900; color:#fff;">Aucune
-                                    note enregistrée</p>
+                                <p style="text-align:center; font-weight:bold; background:#ffd900; color:#000; font-size:7px; padding:1mm; margin:1mm 0;">Aucune note enregistrée</p>
                             @endif
                         </div>
 
@@ -279,8 +306,7 @@
                             @if ($remiseReduction > 0)
                                 <div class="total-line">
                                     <span class="label">Remise ({{ $remiseReduction }}%) :</span>
-                                    <span class="value text-red">-{{ number_format($discountAmount, 2, ',', ' ') }}
-                                        FCFA</span>
+                                    <span class="value text-red">-{{ number_format($discountAmount, 2, ',', ' ') }} FCFA</span>
                                 </div>
                             @endif
 
@@ -291,17 +317,14 @@
 
                             <div class="total-line">
                                 <span class="label">Avance versée :</span>
-                                <span class="value">{{ number_format($commande->avance_client, 2, ',', ' ') }}
-                                    FCFA</span>
+                                <span class="value">{{ number_format($commande->avance_client, 2, ',', ' ') }} FCFA</span>
                             </div>
 
                             <div class="total-line solde">
                                 <span class="label">Solde à payer :</span>
-                                <span class="badge">{{ number_format($commande->solde_restant, 2, ',', ' ') }}
-                                    FCFA</span>
+                                <span class="badge">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</span>
                             </div>
                         </div>
-
 
                         <div class="conditions">
                             <strong>Conditions :</strong>
