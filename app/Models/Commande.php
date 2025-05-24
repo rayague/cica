@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Commande extends Model
 {
@@ -70,5 +71,9 @@ class Commande extends Model
         return $this->payments()->sum('amount');
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(CommandeImage::class);
+    }
 
 }

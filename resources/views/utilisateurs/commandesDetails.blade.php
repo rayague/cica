@@ -565,29 +565,55 @@
 
 
                     <!-- Boutons de navigation -->
-                    <div class="flex flex-col items-center justify-between gap-4 my-8 ml-4">
-                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
-                            class="flex items-center justify-center w-full p-2 text-center text-white bg-blue-500 rounded-md hover:bg-blue-600">
-                            <i class="mr-2 fas fa-hand-holding-usd"></i> Faire un retrait
-                        </button>
-                        <a href="{{ route('factures.print', ['commande' => $commande->id]) }}"
-                            class="flex items-center justify-center w-full p-2 text-center text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
-                            target="_blank">
-                            <i class="mr-2 fas fa-print"></i> Imprimer
+                    <div class="flex flex-row items-center justify-between gap-4 mx-4 my-10">
+                        <a href="{{ route('listeCommandes') }}"
+                            class="p-2 text-white rounded-md bg-sky-500 hover:bg-sky-600">
+                            Retour à la liste des commandes
                         </a>
-
-                        <a href="https://api.whatsapp.com/send?phone={{ $commande->numero_whatsapp }}&text={{ urlencode('Bonjour, voici votre facture : ' . route('factures.download', ['id' => $commande->id])) }}"
-                            class="flex items-center justify-center w-full p-2 text-center text-white bg-green-500 rounded-md hover:bg-green-600"
-                            target="_blank">
-                            <i class="mr-2 fab fa-whatsapp"></i> Envoyer par WhatsApp
-                        </a>
-
+                        <form action="{{ route('commandes.valider', $commande->id) }}" method="POST"
+                            onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
+                                Valider la facture
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- Button trigger modal -->
+                    <!-- Section des images -->
+                    <div class="p-6 mx-4 mb-6 bg-white rounded-lg shadow-md">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-2xl font-black">Images de la commande</h3>
+                            <button type="button" id="addImageBtn" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                <i class="fas fa-plus mr-2"></i>Ajouter une image
+                            </button>
+                        </div>
 
+                        <!-- Zone d'affichage des images -->
+                        <div id="imagesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            @foreach($commande->images as $image)
+                                <div class="relative group border rounded-lg p-2" data-image-id="{{ $image->id }}">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}"
+                                         alt="{{ $image->original_name }}"
+                                         class="w-full h-48 object-cover rounded-lg shadow-md">
+                                    <div class="absolute top-2 right-2 flex gap-2 bg-black bg-opacity-50 p-2 rounded-lg">
+                                        <button type="button" class="updateImageBtn p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="deleteImageBtn p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mt-2 text-center text-sm text-gray-600">
+                                        {{ $image->original_name }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
 
+                        <!-- Input caché pour l'upload d'image -->
+                        <input type="file" id="imageInput" class="hidden" accept="image/*">
+                    </div>
 
                 </div>
                 <!-- Boutons de navigation -->
@@ -610,10 +636,7 @@
             </div>
             <!-- /.container-fluid -->
 
-
-
             <!-- End of Main Content -->
-
 
             <!-- Footer -->
             <footer class="bg-white sticky-footer">
@@ -698,6 +721,113 @@
     <script src="{{ asset('dashboard-assets/js/demo/chart-pie-demo.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+
+    <!-- Scripts pour la gestion des images -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addImageBtn = document.getElementById('addImageBtn');
+        const imageInput = document.getElementById('imageInput');
+        const imagesContainer = document.getElementById('imagesContainer');
+        const maxImages = 10;
+
+        // Gestionnaire pour le bouton d'ajout d'image
+        addImageBtn.addEventListener('click', () => {
+            const currentImages = document.querySelectorAll('#imagesContainer > div').length;
+            if (currentImages >= maxImages) {
+                alert('Maximum 10 images autorisées par commande');
+                return;
+            }
+            imageInput.click();
+        });
+
+        // Gestionnaire pour l'upload d'image
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            try {
+                const response = await fetch(`/commandes/{{ $commande->id }}/images`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Erreur lors de l\'upload');
+
+                // Recharger la page pour afficher la nouvelle image
+                location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Gestionnaire pour la suppression d'images
+        document.querySelectorAll('.deleteImageBtn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) return;
+
+                const imageContainer = btn.closest('[data-image-id]');
+                const imageId = imageContainer.dataset.imageId;
+
+                try {
+                    const response = await fetch(`/commande-images/${imageId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+                    // Recharger la page pour mettre à jour l'affichage
+                    location.reload();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+        });
+
+        // Gestionnaire pour la mise à jour d'images
+        document.querySelectorAll('.updateImageBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const updateInput = document.createElement('input');
+                updateInput.type = 'file';
+                updateInput.accept = 'image/*';
+
+                updateInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const imageContainer = btn.closest('[data-image-id]');
+                    const imageId = imageContainer.dataset.imageId;
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    try {
+                        const response = await fetch(`/commande-images/${imageId}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+
+                        // Recharger la page pour afficher l'image mise à jour
+                        location.reload();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                });
+
+                updateInput.click();
+            });
+        });
+    });
     </script>
 
 </body>

@@ -8,6 +8,7 @@ use App\Http\Controllers\ObjectController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\CommandeImageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -310,5 +311,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/commandes/{commande}/images', [CommandeImageController::class, 'store'])->name('commande.images.store');
+Route::delete('/commande-images/{image}', [CommandeImageController::class, 'destroy'])->name('commande.images.destroy');
+Route::post('/commande-images/{image}', [CommandeImageController::class, 'update'])->name('commande.images.update');
 
 require __DIR__ . '/auth.php';
