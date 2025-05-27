@@ -328,7 +328,7 @@
                     </div>
 
                     <!-- Section des mouvements d'argent -->
-                    <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
+                    {{-- <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
                         <h2 class="mb-4 text-2xl font-semibold text-gray-700">Tous les Mouvements d'Argent</h2>
                         @if ($mouvements->isNotEmpty())
                             <table class="min-w-full border-collapse bg-gray-50">
@@ -375,15 +375,15 @@
                         @else
                             <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucun mouvement d'argent enregistré pour cette période.</p>
                         @endif
-                    </div>
+                    </div> --}}
 
                     <!-- Section du Montant Total -->
-                    <div class="p-6 bg-white rounded-lg shadow-md">
+                    {{-- <div class="p-6 bg-white rounded-lg shadow-md">
                         <h2 class="mb-4 text-2xl font-semibold text-gray-700">Montant Total</h2>
                         <p class="text-2xl font-bold text-gray-700">
                             {{ number_format($total, 2, ',', ' ') }} F
                         </p>
-                    </div>
+                    </div> --}}
                 </div>
 
             </div>

@@ -98,14 +98,15 @@ class ViewsController extends Controller
         // Récupérer l'utilisateur connecté
         $user = Auth::user();
 
-        // Définir la date d'aujourd'hui au format 'YYYY-MM-DD'
-        $today = Carbon::today()->toDateString();
-
-        // Récupérer toutes les commandes de l'utilisateur dont la date de retrait est aujourd'hui
-        // et qui sont en attente (statut 'en attente')
+        // Récupérer toutes les commandes de l'utilisateur qui sont en attente
         $commandes = Commande::where('user_id', $user->id)
-            ->whereDate('date_retrait', $today)
-            ->where('statut', 'en attente')
+            ->where(function($query) {
+                $query->where('statut', 'Non retirée')
+                      ->orWhere('statut', 'Non retiré')
+                      ->orWhere('statut', 'Partiellement payé')
+                      ->orWhere('statut', 'Payé - Non retiré');
+            })
+            ->orderBy('date_retrait', 'asc')  // Trier par date de retrait croissante
             ->get();
 
         // Passer les commandes à la vue 'utilisateurs.pending'

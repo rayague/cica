@@ -15,6 +15,7 @@ class CommandePayment extends Model
         'user_id',
         'amount',
         'payment_method',
+        'payment_type',
     ];
 
     public function commande()

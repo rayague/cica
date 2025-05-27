@@ -176,14 +176,38 @@ class CommandeController extends Controller
             return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à mettre à jour cette commande.');
         }
 
+        // Vérifier si le solde est déjà à zéro
+        if ($commande->solde_restant <= 0) {
+            return redirect()->back()->with('error', 'Le solde de cette commande est déjà à zéro. Aucune mise à jour n\'est nécessaire.');
+        }
+
         // Valider les données du formulaire
         $request->validate([
-            'montant_paye' => 'required|numeric|min:0',
+            'montant_paye' => [
+                'required',
+                'numeric',
+                'min:0',
+                'max:' . $commande->solde_restant,
+            ],
             'payment_method' => 'nullable|string',
+            'payment_type' => 'required|string|in:Espèce,Mobile Money',
+        ], [
+            'montant_paye.required' => 'Le montant de l\'avance est requis.',
+            'montant_paye.numeric' => 'Le montant doit être un nombre.',
+            'montant_paye.min' => 'Le montant ne peut pas être négatif.',
+            'montant_paye.max' => 'Le montant de l\'avance ne peut pas dépasser le solde restant de ' . number_format($commande->solde_restant, 2, ',', ' ') . ' FCFA',
+            'payment_type.required' => 'Le moyen de paiement est requis.',
+            'payment_type.in' => 'Le moyen de paiement doit être Espèce ou Mobile Money.',
         ]);
 
         $montantPaye = floatval($request->input('montant_paye'));
         $paymentMethod = $request->input('payment_method') ?? null;
+        $paymentType = $request->input('payment_type');
+
+        // Vérifier une dernière fois que le montant ne dépasse pas le solde restant
+        if ($montantPaye > $commande->solde_restant) {
+            return redirect()->back()->with('error', 'Le montant de l\'avance ne peut pas dépasser le solde restant.');
+        }
 
         // Créer un enregistrement de paiement via le modèle CommandePayment
         CommandePayment::create([
@@ -191,6 +215,7 @@ class CommandeController extends Controller
             'user_id' => Auth::id(),
             'amount' => $montantPaye,
             'payment_method' => $paymentMethod,
+            'payment_type' => $paymentType,
         ]);
 
         // Rafraîchir l'instance de commande et recharger la relation payments
@@ -251,9 +276,11 @@ class CommandeController extends Controller
     public function listeCommandes()
     {
         $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
+        $today = Carbon::today()->format('Y-m-d'); // Format YYYY-MM-DD
 
         $commandes = Commande::where('user_id', $userId)
-            ->whereDate('created_at', Carbon::today()) // Filtrer par date du jour
+            ->whereRaw('DATE(date_depot) = ?', [$today]) // Filtre strict sur la date
+            ->orderBy('created_at', 'desc') // Trier par date de création décroissante
             ->get();
 
         $objets = Objets::all();
@@ -369,12 +396,25 @@ class CommandeController extends Controller
         // Récupérer la commande
         $commande = Commande::findOrFail($id);
 
+        // Récupérer le solde restant avant la mise à jour
+        $soldeRestant = $commande->solde_restant;
+
         // Mettre à jour le statut de la commande
         $commande->update([
             'statut' => 'Retiré',
             'solde_restant' => 0, // Mettre à jour le solde restant à 0 car la facture est validée
             'avance_client' => $commande->total // Mettre à jour l'avance client au montant total
         ]);
+
+        // Si il y a un solde restant, l'enregistrer comme paiement
+        if ($soldeRestant > 0) {
+            CommandePayment::create([
+                'commande_id' => $commande->id,
+                'user_id' => Auth::id(),
+                'amount' => $soldeRestant,
+                'payment_method' => 'Validation'
+            ]);
+        }
 
         // Rediriger vers la page précédente avec un message de succès
         return redirect()->back()->with('success', 'La facture a été validée avec succès.');

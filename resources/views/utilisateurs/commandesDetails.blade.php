@@ -480,6 +480,7 @@
 
 
                     <!-- Formulaire de mise à jour des entrées d'argent -->
+                    @if($commande->solde_restant > 0)
                     <div class="p-4 mt-8 bg-gray-200 rounded">
                         <h3 class="mb-4 text-xl font-semibold">Mettre à jour les entrées d'argent</h3>
                         <form action="{{ route('commande.updateFinancial', $commande->id) }}" method="POST"
@@ -490,7 +491,10 @@
                                 Nouvelle avance :
                             </label>
                             <input type="number" name="montant_paye" id="montant_paye" step="0.01"
-                                min="0" class="w-32 p-2 border rounded-md" required placeholder="montant">
+                                min="0" max="{{ $commande->solde_restant }}"
+                                class="w-32 p-2 border rounded-md" required placeholder="montant"
+                                oninvalid="this.setCustomValidity('Le montant ne peut pas dépasser {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA')"
+                                oninput="this.setCustomValidity('')">
                             <!-- Optionnel : Champ pour la méthode de paiement -->
                             <select name="payment_method" id="payment_method"
                                 class="w-48 p-2 bg-white border rounded-md">
@@ -498,12 +502,25 @@
                                 <option value="Avance">Avance</option>
                                 <option value="Retrait">Retrait</option>
                             </select>
+                            <!-- Nouveau champ pour le moyen de paiement -->
+                            <select name="payment_type" id="payment_type"
+                                class="w-48 p-2 bg-white border rounded-md">
+                                <option value="">Moyen de paiement</option>
+                                <option value="Espèce">Espèce</option>
+                                <option value="Mobile Money">Mobile Money</option>
+                            </select>
                             <button type="submit"
                                 class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
                                 Mettre à jour
                             </button>
                         </form>
                     </div>
+                    @else
+                    <div class="p-4 mt-8 bg-gray-200 rounded">
+                        <h3 class="mb-4 text-xl font-semibold text-gray-600">Mettre à jour les entrées d'argent</h3>
+                        <p class="text-gray-600">Le solde de cette commande est déjà à zéro. Aucune mise à jour n'est nécessaire.</p>
+                    </div>
+                    @endif
 
                     <!-- Modal pour faire le retrait  -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -607,7 +624,7 @@
                             class="p-2 text-white rounded-md bg-sky-500 hover:bg-sky-600">
                             Retour à la liste des commandes
                         </a>
-                        @if(isset($commande->valide) && !$commande->valide)
+                        @if($commande->statut === 'Non retirée' || $commande->statut === 'Non retiré' || $commande->statut === 'Partiellement payé')
                             <form action="{{ route('commandes.valider', $commande->id) }}" method="POST"
                                 onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');">
                                 @csrf
@@ -768,6 +785,46 @@
     <!-- Scripts pour la gestion des images -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Gestion du formulaire de mise à jour financière
+        const form = document.querySelector('form[action*="updateFinancial"]');
+        const montantInput = document.getElementById('montant_paye');
+        const soldeRestant = {{ $commande->solde_restant }};
+
+        if (form && montantInput) {
+            // Désactiver la validation HTML5
+            form.setAttribute('novalidate', true);
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const montant = parseFloat(montantInput.value);
+
+                if (montant > soldeRestant) {
+                    alert('Le montant ne peut pas dépasser ' + new Intl.NumberFormat('fr-FR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(soldeRestant) + ' FCFA');
+                    return;
+                }
+
+                if (montant <= 0) {
+                    alert('Le montant doit être supérieur à 0');
+                    return;
+                }
+
+                // Si la validation passe, soumettre le formulaire
+                form.submit();
+            });
+
+            // Empêcher la saisie de valeurs négatives
+            montantInput.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+            });
+        }
+
+        // Le reste du code existant pour la gestion des images...
         const addImageBtn = document.getElementById('addImageBtn');
         const imageInput = document.getElementById('imageInput');
         const imagesContainer = document.getElementById('imagesContainer');
