@@ -102,8 +102,10 @@ class ViewsController extends Controller
         $today = Carbon::today()->toDateString();
 
         // Récupérer toutes les commandes de l'utilisateur dont la date de retrait est aujourd'hui
+        // et qui sont en attente (statut 'en attente')
         $commandes = Commande::where('user_id', $user->id)
             ->whereDate('date_retrait', $today)
+            ->where('statut', 'en attente')
             ->get();
 
         // Passer les commandes à la vue 'utilisateurs.pending'
@@ -198,11 +200,11 @@ class ViewsController extends Controller
         $today = Carbon::today()->toDateString();
 
         if ($commandeId) {
-            // On ne charge la commande que si elle est validée, appartient à l'utilisateur
+            // On ne charge la commande que si elle est retirée, appartient à l'utilisateur
             // ET si sa date_retrait est aujourd'hui
             $commandes = Commande::where('id', $commandeId)
                 ->where('user_id', $userId)
-                ->where('statut', 'validée')
+                ->where('statut', 'Retiré')
                 ->whereDate('date_retrait', $today)
                 ->with('objets')
                 ->get();
@@ -214,9 +216,9 @@ class ViewsController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else {
-            // Toutes les commandes validées pour cet utilisateur dont le retrait est aujourd'hui
+            // Toutes les commandes retirées pour cet utilisateur dont le retrait est aujourd'hui
             $commandes = Commande::where('user_id', $userId)
-                ->where('statut', 'validée')
+                ->where('statut', 'Retiré')
                 ->whereDate('date_retrait', $today)
                 ->get();
 

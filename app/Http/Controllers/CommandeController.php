@@ -437,21 +437,31 @@ class CommandeController extends Controller
 
     public function retraitsFiltrer(Request $request)
     {
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
+        $userId = Auth::id();
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
-        $commandes = Commande::where('user_id', $userId) // Filtrer par utilisateur
+        // Requête de base pour les commandes de l'utilisateur
+        $query = Commande::where('user_id', $userId)
             ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'retirée')
-            ->get();
+            ->where(function($q) {
+                $q->where('statut', 'Retiré')
+                  ->orWhere('statut', 'retirée');
+            });
 
-        $montant_total = $commandes->sum('total');
+        // Exécuter la requête
+        $commandes = $query->get();
 
-        // Si $objets est nécessaire, ajoute-le ici (remplace par la bonne requête)
+        // Calculer le total
+        $total = $commandes->sum('total');
+
         $objets = Objets::all();
 
-        return view('utilisateurs.listeCommandesFiltreRetraits', compact('commandes', 'date_debut', 'date_fin', 'montant_total', 'objets'));
+        $message = $commandes->isEmpty()
+            ? "Aucune commande trouvée pour la période sélectionnée."
+            : null;
+
+        return view('utilisateurs.rappelsRecherche', compact('commandes', 'objets', 'message', 'total', 'date_debut', 'date_fin'));
     }
 
     public function printListeCommandesRetraits(Request $request)
@@ -585,22 +595,29 @@ class CommandeController extends Controller
     public function rechercheRetrait(Request $request)
     {
         $userId = Auth::id();
-
-        // on récupère la chaîne tapée
-        // (si vous gardez name="client", remplacez 'search' par 'client' ici)
         $search = $request->input('client');
 
-        // on commence la requête : commandes de l'utilisateur
-        $commandes = Commande::where('user_id', $userId)
-            // si search n'est pas vide, on ajoute le filtre multi-colonnes
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('client', 'like', "%{$search}%")
-                        ->orWhere('numero_whatsapp', 'like', "%{$search}%")
-                        ->orWhere('numero', 'like', "%{$search}%");
-                });
-            })
-            ->get();
+        // Requête de base pour les commandes de l'utilisateur avec statut "Retiré" ou "retirée"
+        $query = Commande::where('user_id', $userId)
+            ->where(function($q) {
+                $q->where('statut', 'Retiré')
+                  ->orWhere('statut', 'retirée');
+            });
+
+        // Si une recherche est effectuée, ajouter les conditions de recherche
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('client', 'like', "%{$search}%")
+                    ->orWhere('numero_whatsapp', 'like', "%{$search}%")
+                    ->orWhere('numero', 'like', "%{$search}%");
+            });
+        }
+
+        // Exécuter la requête
+        $commandes = $query->get();
+
+        // Calculer le total
+        $total = $commandes->sum('total');
 
         $objets = Objets::all();
 
@@ -608,6 +625,6 @@ class CommandeController extends Controller
             ? "Aucun résultat pour « {$search} »."
             : null;
 
-        return view('utilisateurs.rappelsRecherche', compact('commandes', 'objets', 'message', 'search'));
+        return view('utilisateurs.rappelsRecherche', compact('commandes', 'objets', 'message', 'search', 'total'));
     }
 }

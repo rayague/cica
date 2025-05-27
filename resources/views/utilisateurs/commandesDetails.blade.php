@@ -238,6 +238,15 @@
                         <div class="flex justify-between"><strong>Date de Retrait:</strong>
                             <span>{{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL') }}</span>
                         </div>
+                        <div class="flex justify-between">
+                            <strong>Type de Lavage:</strong>
+                            <span class="px-2 py-1 text-white rounded-md {{ strtolower($commande->type_lavage) === 'lavage express' ? 'bg-yellow-500' : 'bg-blue-500' }}">
+                                {{ $commande->type_lavage }}
+                                @if(strtolower($commande->type_lavage) === 'lavage express')
+                                    (Prix x 2)
+                                @endif
+                            </span>
+                        </div>
 
                         <!-- Liste des objets -->
                         <div class="mt-8">
@@ -580,7 +589,7 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#exampleModal">
                             <i class="fas fa-box mr-2"></i>
-                            Faire un retrait
+                            Faire un retrait / Ajouter une note
                         </button>
 
                         <!-- Bouton Imprimer -->
@@ -598,14 +607,20 @@
                             class="p-2 text-white rounded-md bg-sky-500 hover:bg-sky-600">
                             Retour à la liste des commandes
                         </a>
-                        <form action="{{ route('commandes.valider', $commande->id) }}" method="POST"
-                            onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');">
-                            @csrf
-                            @method('PUT')
-                            <button type="submit" class="p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
-                                Valider la facture
-                            </button>
-                        </form>
+                        @if(isset($commande->valide) && !$commande->valide)
+                            <form action="{{ route('commandes.valider', $commande->id) }}" method="POST"
+                                onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
+                                    Valider la facture
+                                </button>
+                            </form>
+                        @else
+                            <div class="p-2 text-white bg-red-500 rounded-md">
+                                Cette commande est déjà validée et ne peut plus être modifiée
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Section des images -->
@@ -644,22 +659,21 @@
                     </div>
 
                 </div>
-                <!-- Boutons de navigation -->
-                <div class="flex flex-row items-center justify-between gap-4 mx-4 my-10">
-                    <a href="{{ route('listeCommandes') }}"
-                        class="p-2 text-white rounded-md bg-sky-500 hover:bg-sky-600">
-                        Retour à la liste des commandes
-                    </a>
-                    <form action="{{ route('commandes.valider', $commande->id) }}" method="POST"
-                        onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
-                            Valider la facture
-                        </button>
-                    </form>
+                <!-- /.container-fluid -->
 
-                </div>
+                <!-- End of Main Content -->
+
+                <!-- Footer -->
+                <footer class="bg-white sticky-footer">
+                    <div class="container my-auto">
+                        <div class="my-auto text-center copyright">
+                            Copyrignt © <span class="text-yellow-500"
+                                style="font-family: 'Dancing Script', cursive;">Cica</span> Ray
+                            Ague.
+                        </div>
+                    </div>
+                </footer>
+                <!-- End of Footer -->
 
             </div>
             <!-- /.container-fluid -->

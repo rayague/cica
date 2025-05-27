@@ -263,29 +263,38 @@
                         <table class="w-full border border-collapse table-auto">
                             <thead class="text-white bg-blue-600">
                                 <tr>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Numéro de la Facture</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Nom du Client</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Numéro de Téléphone</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Date de Retrait</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Montant de la Facture</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Utilisateur</th>
-                                    <th class="px-4 py-3 text-center border border-blue-400">Action</th>
+                                    <th class="px-4 py-2 border border-blue-400">Numéro</th>
+                                    <th class="px-4 py-2 border border-blue-400">Client</th>
+                                    <th class="px-4 py-2 border border-blue-400">Date de Dépôt</th>
+                                    <th class="px-4 py-2 border border-blue-400">Date de Retrait</th>
+                                    <th class="px-4 py-2 border border-blue-400">Total</th>
+                                    <th class="px-4 py-2 border border-blue-400">Statut</th>
+                                    <th class="px-4 py-2 border border-blue-400">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($commandes as $commande)
-                                    <tr class="hover:bg-blue-50">
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->client }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero_whatsapp }}
+                                    <tr class="{{ $commande->statut === 'En route' ? 'bg-yellow-100' : ($commande->statut === 'Retiré' ? 'bg-red-200' : '') }}">
+                                        <td class="px-4 py-2 border border-blue-400">{{ $commande->numero }}</td>
+                                        <td class="px-4 py-2 border border-blue-400">{{ $commande->client }}</td>
+                                        <td class="px-4 py-2 border border-blue-400">
+                                            {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}
                                         </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->date_retrait }}
+                                        <td class="px-4 py-2 border border-blue-400">
+                                            {{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL') }}
                                         </td>
-                                        <td class="px-4 py-3 border border-blue-300">
+                                        <td class="px-4 py-2 border border-blue-400">
                                             {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                         </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>
-                                        <td class="px-4 py-3 text-center border border-blue-300">
+                                        <td class="px-4 py-2 border border-blue-400">
+                                            <span class="px-2 items-center justify-center flex py-1 text-white rounded-md {{
+                                                $commande->statut === 'En route' ? 'bg-yellow-500' :
+                                                ($commande->statut === 'Retiré' ? 'bg-red-500' : 'bg-green-500')
+                                            }}">
+                                                {{ $commande->statut }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 border border-blue-400">
                                             <a href="{{ route('commandes.show', $commande->id) }}"
                                                 class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
                                                 Voir
@@ -295,7 +304,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" class="px-4 py-6 text-center text-gray-500">
-                                            Aucune facture enregistrée aujourd’hui.
+                                            Aucune facture enregistrée aujourd'hui.
                                         </td>
                                     </tr>
                                 @endforelse
@@ -413,3 +422,4 @@
 </body>
 
 </html>
+
