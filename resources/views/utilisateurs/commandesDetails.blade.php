@@ -453,20 +453,31 @@
 
                         <!-- Détails des avances individuelles -->
                         <div class="mt-4">
-                            <h4 class="text-lg font-semibold">Détails des Avances :</h4>
-                            <ul>
-                                @foreach ($commande->payments as $index => $payment)
-                                    <li
-                                        class="flex items-center justify-between p-2 my-3 text-white bg-blue-500 rounded">
-                                        <span class="text-lg font-extrabold"> Avance {{ $index + 1 }} : </span>
-                                        {{ number_format($payment->amount, 2, ',', ' ') }} FCFA
-                                        @if ($payment->payment_method)
-                                            ({{ $payment->payment_method }})
-                                        @endif
-                                        le {{ $payment->created_at->format('d/m/Y H:i') }}
-                                    </li>
-                                @endforeach
-                            </ul>
+                            {{-- <h4 class="text-lg font-semibold">Historique des Paiements :</h4>
+                            <table class="w-full mt-4 border border-collapse table-auto">
+                                <thead class="text-white bg-blue-500">
+                                    <tr>
+                                        <th class="px-4 py-2 border border-blue-400">Numéro de Facture</th>
+                                        <th class="px-4 py-2 border border-blue-400">Utilisateur</th>
+                                        <th class="px-4 py-2 border border-blue-400">Montant</th>
+                                        <th class="px-4 py-2 border border-blue-400">Moyen de Paiement</th>
+                                        <th class="px-4 py-2 border border-blue-400">Action</th>
+                                        <th class="px-4 py-2 border border-blue-400">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($commande->payments as $payment)
+                                        <tr class="hover:bg-blue-50">
+                                            <td class="px-4 py-2 border border-blue-300">{{ $commande->numero }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ number_format($payment->amount, 2, ',', ' ') }} FCFA</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $payment->payment_type ?? 'Non spécifié' }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $payment->payment_method ?? 'Validation' }}</td>
+                                            <td class="px-4 py-2 border border-blue-300">{{ $payment->created_at->format('d/m/Y H:i') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table> --}}
                         </div>
                     </div>
 

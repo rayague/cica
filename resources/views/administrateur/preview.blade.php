@@ -51,17 +51,17 @@
 
         .brand-section p {
             margin: 0;
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .invoice-info {
             text-align: right;
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 9px;
+            font-size: 10px;
         }
 
         .details-grid {
@@ -72,23 +72,24 @@
             padding: 3mm;
             border-radius: 3px;
             margin-bottom: 3mm;
+            font-size: 9px;
         }
 
         .detail-block {
             width: 48%;
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .detail-block h4 {
             margin: 0 0 1mm 0;
-            font-size: 9px;
+            font-size: 10px;
             color: #38a169;
             text-transform: uppercase;
         }
 
         .items-table {
             width: 100%;
-            font-size: 7px;
+            font-size: 9px;
             border-collapse: collapse;
             margin: 2mm 0;
         }
@@ -98,16 +99,18 @@
             color: white;
             padding: 1mm;
             text-align: left;
+            font-size: 9px;
         }
 
         .items-table td {
             border-bottom: 1px solid #e2e8f0;
             padding: 1mm;
+            font-size: 9px;
         }
 
         .total-section {
             margin-top: 3mm;
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .total-line {
@@ -121,17 +124,18 @@
             background-color: #edf2f7;
             border-radius: 2px;
             font-weight: bold;
+            font-size: 9px;
         }
 
         .historique-header {
             margin-top: 4mm;
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bold;
         }
 
         .notes-table {
             width: 100%;
-            font-size: 7px;
+            font-size: 8px;
             border-collapse: collapse;
             margin-top: 1mm;
         }
@@ -140,16 +144,18 @@
             background-color: #38a169;
             color: white;
             padding: 1mm;
+            font-size: 8px;
         }
 
         .notes-table td {
             padding: 1mm;
             border-bottom: 1px solid #e2e8f0;
+            font-size: 8px;
         }
 
         .conditions {
             margin-top: 4mm;
-            font-size: 7px;
+            font-size: 8px;
         }
 
         .conditions ul {
@@ -161,6 +167,7 @@
             body {
                 width: 297mm;
                 height: 210mm;
+                font-size: 9px;
             }
             .invoice-column {
                 width: 277mm;

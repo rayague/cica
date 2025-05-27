@@ -589,11 +589,15 @@
                             class="flex items-center gap-4">
                             @csrf
                             @method('PUT')
-                            <label for="montant_paye" class="block text-sm font-medium text-gray-700">
-                                Nouvelle avance :
-                            </label>
-                            <input type="number" name="montant_paye" id="montant_paye" step="0.01"
-                                min="0" value="0.00" class="w-32 p-2 border rounded-md" required>
+                            <div class="mb-4">
+                                <label for="montant_paye" class="block text-sm font-medium text-gray-700">Montant à payer</label>
+                                <input type="number" step="0.01" name="montant_paye" id="montant_paye"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                    max="{{ $commande->solde_restant }}" required
+                                    title="Le montant ne peut pas dépasser {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA"
+                                    oninvalid="this.setCustomValidity('Le montant ne peut pas dépasser {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA')"
+                                    oninput="this.setCustomValidity('')">
+                            </div>
                             <!-- Optionnel : Champ pour la méthode de paiement -->
                             <select name="payment_method" id="payment_method"
                                 class="w-48 p-2 bg-white border rounded-md" required>

@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            font-size: 7px;
+            font-size: 9px;
             margin: 0;
             padding: 0;
             color: #2d3748;
@@ -54,27 +54,34 @@
 
         .brand-section {
             width: 60%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-text {
+            flex: 1;
         }
 
         .brand-section h1 {
-            font-size: 9px;
+            font-size: 11px;
             margin: 0 0 1mm 0;
             color: #38a169;
         }
 
         .brand-section p {
             margin: 0;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .invoice-info {
             text-align: right;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 8px;
+            font-size: 10px;
         }
 
         .details-grid {
@@ -85,25 +92,25 @@
             padding: 2mm;
             border-radius: 3px;
             margin-bottom: 2mm;
-            font-size: 7px;
+            font-size: 9px;
             page-break-inside: avoid;
         }
 
         .detail-block {
             width: 48%;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .detail-block h4 {
             margin: 0 0 1mm 0;
-            font-size: 8px;
+            font-size: 10px;
             color: #38a169;
             text-transform: uppercase;
         }
 
         .items-table {
             width: 100%;
-            font-size: 7px;
+            font-size: 9px;
             border-collapse: collapse;
             margin: 1mm 0;
             page-break-inside: avoid;
@@ -114,18 +121,18 @@
             color: white;
             padding: 1mm;
             text-align: left;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .items-table td {
             border-bottom: 1px solid #e2e8f0;
             padding: 1mm;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .total-section {
             margin-top: 2mm;
-            font-size: 7px;
+            font-size: 9px;
             page-break-inside: avoid;
         }
 
@@ -140,18 +147,18 @@
             background-color: #edf2f7;
             border-radius: 2px;
             font-weight: bold;
-            font-size: 7px;
+            font-size: 9px;
         }
 
         .historique-header {
             margin-top: 2mm;
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bold;
         }
 
         .notes-table {
             width: 100%;
-            font-size: 6px;
+            font-size: 8px;
             border-collapse: collapse;
             margin-top: 1mm;
             page-break-inside: avoid;
@@ -161,18 +168,18 @@
             background-color: #38a169;
             color: white;
             padding: 1mm;
-            font-size: 6px;
+            font-size: 8px;
         }
 
         .notes-table td {
             padding: 1mm;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 6px;
+            font-size: 8px;
         }
 
         .conditions {
             margin-top: 2mm;
-            font-size: 6px;
+            font-size: 8px;
             page-break-inside: avoid;
         }
 
@@ -187,7 +194,7 @@
 
         @media print {
             body {
-                font-size: 7px;
+                font-size: 9px;
             }
 
             .invoice-column {
@@ -219,15 +226,17 @@
                     <div class="invoice-column">
                         <div class="header">
                             <div class="brand-section">
-                                <h1>CICA NOBLESSE PRESSING</h1>
-                                <p>Annexe Godomey, Zogbo - Bénin</p>
-                                <p>0272 BP 81 • IFU : 2201300990000</p>
-                                <p>Tél : (+229) 97 89 36 99 / 96 44 67 50</p>
+                                <div class="brand-text">
+                                    <h1>CICA NOBLESSE PRESSING</h1>
+                                    <p>Annexe Godomey, Zogbo - Bénin</p>
+                                    <p>0272 BP 81 • IFU : 2201300990000</p>
+                                    <p>Tél : (+229) 97 89 36 99 / 96 44 67 50</p>
+                                </div>
                             </div>
                             <div class="invoice-info">
                                 <h2>Facture</h2>
                                 <p><strong>N° :</strong> {{ $commande->numero }}</p>
-                                <p><strong>Date dépôt :</strong> {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p>
+                                {{-- <p><strong>Date dépôt :</strong> {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p> --}}
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>
@@ -242,6 +251,13 @@
                                 <strong>DATES</strong><br>
                                 Dépôt : {{ \Carbon\Carbon::parse($commande->date_depot)->isoFormat('LL') }}<br>
                                 Retrait : {{ \Carbon\Carbon::parse($commande->date_retrait)->isoFormat('LL') }}
+                            </div>
+                            <div class="detail-block">
+                                <strong>TYPE DE LAVAGE</strong><br>
+                                {{ $commande->type_lavage }}
+                                @if(strtolower($commande->type_lavage) === 'lavage express')
+                                    (Prix x 2)
+                                @endif
                             </div>
                         </div>
 
@@ -329,11 +345,20 @@
                         <div class="conditions">
                             <strong>Conditions :</strong>
                             <ul>
-                                <li>10 FCFA/jour après 10<sup>e</sup> jour.</li>
-                                <li>Responsabilité limitée après 60 jours.</li>
-                                <li>Indemnités selon barème en cas d'avaries.</li>
+                                <li>1. 10 FCFA par jour pour frais de magasinage seront perçus à partir du 10<sup>e</sup> jour après le dépôt.</li>
+                                <li>2. Après deux (02) mois, la maison n'est plus responsable des pertes ou avaries. (60 jours).</li>
+                                <li>3. En cas de dommages causés aux effets, la responsabilité du pressing est limitée à :
+                                    <ul>
+                                        <li>- Huit (8) fois le prix du blanchissage pour tout effet non griffé.</li>
+                                        <li>- Dix (10) fois le prix du blanchissage pour les linges griffés.</li>
+                                        <li>- Une (1) fois le prix du blanchissage pour les draps.</li>
+                                    </ul>
+                                </li>
+                                <li>4. Les synthétiques, boucles, boutons, fermetures, broderies de fil sur Bazin ne sont pas pris en compte.</li>
+                                <li>5. Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
                             </ul>
                         </div>
+
                     </div>
                 </td>
             @endfor

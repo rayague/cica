@@ -279,6 +279,7 @@
                                         <th class="px-4 py-2 border border-green-400">Numéro de Facture</th>
                                         <th class="px-4 py-2 border border-green-400">Utilisateur</th>
                                         <th class="px-4 py-2 border border-green-400">Montant</th>
+                                        <th class="px-4 py-2 border border-green-400">Moyen de Paiement</th>
                                         <th class="px-4 py-2 border border-green-400">Action</th>
                                         <th class="px-4 py-2 border border-green-400">Date</th>
                                     </tr>
@@ -294,6 +295,9 @@
                                                 {{ number_format($payment->amount, 2, ',', ' ') }} F</td>
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ $payment->payment_method ?? 'Non spécifié' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                {{ $payment->action }}
+                                            </td>
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}
                                             </td>
