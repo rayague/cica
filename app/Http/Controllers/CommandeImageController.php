@@ -43,9 +43,7 @@ class CommandeImageController extends Controller
         Storage::disk('public')->delete($image->image_path);
         $image->delete();
 
-        return response()->json([
-            'message' => 'Image supprimée avec succès'
-        ]);
+        return response()->json(['success' => true]);
     }
 
     public function update(Request $request, CommandeImage $image)
@@ -54,21 +52,34 @@ class CommandeImageController extends Controller
             'image' => 'required|image|max:2048',
         ]);
 
-        Storage::disk('public')->delete($image->image_path);
+        try {
+            // Supprimer l'ancienne image
+            if ($image->image_path) {
+                $oldPath = public_path('storage/' . $image->image_path);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
 
-        $file = $request->file('image');
-        $path = $file->store('commande-images', 'public');
+            // Sauvegarder la nouvelle image
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
 
-        $image->update([
-            'image_path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize()
-        ]);
+            // Déplacer l'image vers le dossier public
+            $file->move(public_path('storage/commande-images'), $fileName);
 
-        return response()->json([
-            'message' => 'Image mise à jour avec succès',
-            'image' => $image
-        ]);
+            // Mettre à jour l'image dans la base de données
+            $image->update([
+                'image_path' => 'commande-images/' . $fileName,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize()
+            ]);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la mise à jour de l\'image: ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -326,54 +326,7 @@
                     </div>
 
                     <!-- Section des mouvements d'argent -->
-                    <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
-                        <h2 class="mb-4 text-2xl font-semibold text-gray-700">Tous les Mouvements d'Argent</h2>
-                        @if ($mouvements->isNotEmpty())
-                            <table class="min-w-full border-collapse bg-gray-50">
-                                <thead>
-                                    <tr class="text-white bg-blue-500">
-                                        <th class="px-4 py-2 border border-blue-400">Date</th>
-                                        <th class="px-4 py-2 border border-blue-400">Type</th>
-                                        <th class="px-4 py-2 border border-blue-400">Montant</th>
-                                        <th class="px-4 py-2 border border-blue-400">Description</th>
-                                        <th class="px-4 py-2 border border-blue-400">Facture</th>
-                                        <th class="px-4 py-2 border border-blue-400">Utilisateur</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $solde = 0; @endphp
-                                    @foreach ($mouvements as $mouvement)
-                                        @php $solde += $mouvement['montant']; @endphp
-                                        <tr class="hover:bg-blue-50">
-                                            <td class="px-4 py-2 border border-blue-300">{{ \Carbon\Carbon::parse($mouvement['date'])->format('d/m/Y H:i') }}</td>
-                                            <td class="px-4 py-2 border border-blue-300">
-                                                <span class="px-2 py-1 text-sm font-semibold rounded {{ $mouvement['type'] === 'Entrée' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $mouvement['type'] }}
-                                                </span>
-                                            </td>
-                                            <td class="px-4 py-2 border border-blue-300 {{ $mouvement['montant'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                                {{ number_format(abs($mouvement['montant']), 2, ',', ' ') }} F
-                                            </td>
-                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['description'] }}</td>
-                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['commande_id'] }}</td>
-                                            <td class="px-4 py-2 border border-blue-300">{{ $mouvement['user'] }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="bg-gray-100">
-                                        <td colspan="2" class="px-4 py-2 font-semibold text-right border border-blue-300">Solde :</td>
-                                        <td class="px-4 py-2 font-semibold border border-blue-300 {{ $solde >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ number_format(abs($solde), 2, ',', ' ') }} F
-                                        </td>
-                                        <td colspan="3" class="px-4 py-2 border border-blue-300"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        @else
-                            <p class="p-3 text-lg font-black text-center text-white bg-orange-400 rounded">Aucun mouvement d'argent enregistré pour cette période.</p>
-                        @endif
-                    </div>
+
 
                 </div>
 

@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Models\CommandePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CommandeImage;
+use Illuminate\Support\Facades\Storage;
 
 class CommandeController extends Controller
 {
@@ -281,7 +283,7 @@ class CommandeController extends Controller
         $commandes = Commande::where('user_id', $userId)
             ->whereRaw('DATE(date_depot) = ?', [$today]) // Filtre strict sur la date
             ->orderBy('created_at', 'desc') // Trier par date de création décroissante
-            ->get();
+            ->paginate(10); // Utiliser paginate au lieu de get
 
         $objets = Objets::all();
 
@@ -290,14 +292,15 @@ class CommandeController extends Controller
 
     public function show($id)
     {
-        // Récupérer la commande avec ses objets associés
-        $commande = Commande::with('objets')->findOrFail($id);
+        // Récupérer la commande avec ses objets associés et ses paiements
+        $commande = Commande::with(['objets', 'payments'])->findOrFail($id);
 
         // Récupérer la note relative à la commande
         $notes = Note::where('commande_id', $commande->id)
             ->with('user')
             ->orderBy('created_at', 'desc')
             ->get();
+
         // Calcul du total initial sans réduction
         $originalTotal = 0;
         foreach ($commande->objets as $objet) {
@@ -666,5 +669,78 @@ class CommandeController extends Controller
             : null;
 
         return view('utilisateurs.rappelsRecherche', compact('commandes', 'objets', 'message', 'search', 'total'));
+    }
+
+    public function storeNote(Request $request, Commande $commande)
+    {
+        $request->validate([
+            'note' => 'required|string|max:500',
+        ]);
+
+        $note = new Note();
+        $note->commande_id = $commande->id;
+        $note->user_id = auth()->id();
+        $note->note = $request->note;
+        $note->save();
+
+        return redirect()->back()->with('success', 'Note ajoutée avec succès !');
+    }
+
+    public function storeImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+            'commande_id' => 'required|exists:commandes,id'
+        ]);
+
+        $image = $request->file('image');
+        $path = $image->store('public/commande-images');
+
+        $commandeImage = new CommandeImage();
+        $commandeImage->commande_id = $request->commande_id;
+        $commandeImage->image_path = str_replace('public/', '', $path);
+        $commandeImage->original_name = $image->getClientOriginalName();
+        $commandeImage->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updateImage(Request $request, $id)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048'
+        ]);
+
+        $image = CommandeImage::findOrFail($id);
+
+        // Supprimer l'ancienne image
+        if ($image->image_path) {
+            Storage::delete('public/' . $image->image_path);
+        }
+
+        // Sauvegarder la nouvelle image
+        $newImage = $request->file('image');
+        $path = $newImage->store('public/commande-images');
+
+        $image->image_path = str_replace('public/', '', $path);
+        $image->original_name = $newImage->getClientOriginalName();
+        $image->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteImage($id)
+    {
+        $image = CommandeImage::findOrFail($id);
+
+        // Supprimer le fichier
+        if ($image->image_path) {
+            Storage::delete('public/' . $image->image_path);
+        }
+
+        // Supprimer l'enregistrement
+        $image->delete();
+
+        return response()->json(['success' => true]);
     }
 }

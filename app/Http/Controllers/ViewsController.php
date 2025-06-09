@@ -10,20 +10,103 @@ use App\Models\Commande;
 use Illuminate\Http\Request;
 use App\Models\CommandePayment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class ViewsController extends Controller
 {
 
     public function acceuil()
     {
-        // // Récupérer les horaires existants
-        // $horaire = Horaire::first();
-        // $hours = OpeningHour::all();
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
+        // Récupérer les commandes en cours (non retirées)
+        $commandesEnCours = Commande::where('user_id', $user->id)
+            ->where(function($query) {
+                $query->where('statut', 'Non retirée')
+                      ->orWhere('statut', 'Non retiré')
+                      ->orWhere('statut', 'Partiellement payé')
+                      ->orWhere('statut', 'Payé - Non retiré');
+            })
+            ->count();
 
-        // Logique spécifique pour la page des commandes (si nécessaire)
-        return view('utilisateurs.dashboard'); // Retourne la vue 'commandes.blade.php'
+        // Récupérer les commandes du jour
+        $commandesDuJour = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+
+        // Récupérer les commandes à retirer (statut "Non retirée")
+        $commandesARetirer = Commande::where('user_id', $user->id)
+            ->where('statut', 'Non retirée')
+            ->count();
+
+        // Calculer le chiffre d'affaires du jour
+        $chiffreAffaires = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->sum('total');
+
+        // Récupérer les dernières commandes
+        $dernieresCommandes = Commande::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Retourner la vue avec toutes les variables
+        return view('utilisateurs.dashboard', compact(
+            'commandesEnCours',
+            'commandesDuJour',
+            'commandesARetirer',
+            'chiffreAffaires',
+            'dernieresCommandes'
+        ));
     }
+
+    public function dashboard()
+    {
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+
+        // Récupérer les commandes en cours (non retirées)
+        $commandesEnCours = Commande::where('user_id', $user->id)
+            ->where(function($query) {
+                $query->where('statut', 'Non retirée')
+                      ->orWhere('statut', 'Non retiré')
+                      ->orWhere('statut', 'Partiellement payé')
+                      ->orWhere('statut', 'Payé - Non retiré');
+            })
+            ->count();
+
+        // Récupérer les commandes du jour
+        $commandesDuJour = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+
+        // Récupérer les commandes à retirer (statut "Non retirée")
+        $commandesARetirer = Commande::where('user_id', $user->id)
+            ->where('statut', 'Non retirée')
+            ->count();
+
+        // Calculer le chiffre d'affaires du jour
+        $chiffreAffaires = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->sum('total');
+
+        // Récupérer les dernières commandes
+        $dernieresCommandes = Commande::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Retourner la vue avec toutes les variables
+        return view('utilisateurs.dashboard', compact(
+            'commandesEnCours',
+            'commandesDuJour',
+            'commandesARetirer',
+            'chiffreAffaires',
+            'dernieresCommandes'
+        ));
+    }
+
     public function commandes()
     {
         // Récupérer les objets disponibles
@@ -116,75 +199,106 @@ class ViewsController extends Controller
     public function comptabilite()
     {
         // 1) Récupérer l'ID de l'utilisateur connecté
-        $userId = Auth::id();
+        $user = Auth::user();
 
-        // 2) Définir la date d'aujourd'hui
-        $today = Carbon::today()->toDateString();
-
-        // 3) Charger les commandes de l'utilisateur créées aujourd'hui
-        $commandes = Commande::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+        // 2) Récupérer les commandes
+        $commandes = Commande::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // Calculer le montant total des commandes
-        $total = $commandes->sum('total');
+        // 3) Calculer les totaux des commandes
+        $totalVentes = $commandes->sum('total');
+        $totalAvances = $commandes->sum('avance');
+        $totalReste = $totalVentes - $totalAvances;
+        $totalCommandes = $commandes->count();
+        $totalCommandesPayees = $commandes->where('statut', 'Payé')->count();
+        $totalCommandesNonPayees = $commandes->where('statut', 'Non payé')->count();
+        $totalCommandesPartiellementPayees = $commandes->where('statut', 'Partiellement payé')->count();
+        $totalRetraits = $commandes->where('statut', 'Retiré')->count();
+        $soldeTotal = $totalVentes - $totalAvances;
 
-        // 5) Charger les paiements de l'utilisateur réalisés aujourd'hui
-        $payments = CommandePayment::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+        // 4) Récupérer les notes (retraits) pour aujourd'hui uniquement
+        $notes = Note::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // 6) Charger les notes de l'utilisateur créées aujourd'hui
-        $notes = Note::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+        // 5) Récupérer les paiements pour aujourd'hui uniquement
+        $payments = CommandePayment::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // Calculer le montant total des paiements
+        // 6) Calculer le montant total des paiements
         $montant_total_paiements = $payments->sum('amount');
 
-        // Récupérer tous les mouvements d'argent (paiements et retraits)
-        $mouvements = collect();
+        // 7) Créer la collection des transactions
+        $transactions = collect();
 
-        // Ajouter les paiements comme mouvements positifs
+        // Ajouter les paiements comme transactions
         foreach ($payments as $payment) {
-            $mouvements->push([
+            $transactions->push([
                 'date' => $payment->created_at,
                 'type' => 'Entrée',
                 'montant' => $payment->amount,
                 'description' => 'Paiement - ' . ($payment->payment_method ?? 'Non spécifié'),
                 'commande_id' => $payment->commande_id,
-                'user' => $payment->user->name ?? 'Utilisateur Inconnu'
+                'user' => $payment->user->name ?? 'Utilisateur Inconnu',
+                'payment_method' => $payment->payment_method ?? 'Non spécifié',
+                'payment_type' => $payment->payment_type ?? 'Non spécifié',
+                'statut' => 'Payé'
             ]);
         }
 
-        // Ajouter les retraits comme mouvements négatifs
+        // Ajouter les retraits comme transactions
         foreach ($notes as $note) {
             // On suppose que le montant du retrait est dans la note
             $montant = floatval(preg_replace('/[^0-9.]/', '', $note->note));
             if ($montant > 0) {
-                $mouvements->push([
+                $transactions->push([
                     'date' => $note->created_at,
                     'type' => 'Sortie',
                     'montant' => -$montant,
                     'description' => 'Retrait - ' . $note->note,
                     'commande_id' => $note->commande_id,
-                    'user' => $note->user->name ?? 'Utilisateur Inconnu'
+                    'user' => $note->user->name ?? 'Utilisateur Inconnu',
+                    'payment_method' => 'Retrait',
+                    'payment_type' => 'Retrait',
+                    'statut' => 'Retiré'
                 ]);
             }
         }
 
-        // Trier les mouvements par date
-        $mouvements = $mouvements->sortBy('date');
+        // Trier les transactions par date
+        $transactions = $transactions->sortByDesc('date');
 
-        // 7) Retourner la vue avec les données
+        // Convertir la collection en pagination
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $transactions = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transactions->forPage($page, $perPage),
+            $transactions->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        // 8) Retourner la vue avec les données
         return view('utilisateurs.comptabilite', compact(
             'commandes',
-            'payments',
+            'totalVentes',
+            'totalAvances',
+            'totalReste',
+            'totalCommandes',
+            'totalCommandesPayees',
+            'totalCommandesNonPayees',
+            'totalCommandesPartiellementPayees',
+            'totalRetraits',
+            'soldeTotal',
             'notes',
-            'userId',
+            'payments',
             'montant_total_paiements',
-            'mouvements',
-            'total'
+            'transactions'
         ));
     }
 

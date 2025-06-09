@@ -187,6 +187,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
 
     // Users routes
+    Route::get('/dashboard', [ViewsController::class, 'dashboard'])->name('dashboard');
     Route::get('/commandes/recherche', [CommandeController::class, 'recherche'])->name('commandes.recherche');
     Route::get('/commandes/recherche_administration', [AdminController::class, 'recherche'])->name('commandesAdmin.recherche');
     Route::get('/commandes_retirees/recherche', [CommandeController::class, 'rechercheRetrait'])->name('commandesRetrait.recherche');
@@ -224,7 +225,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::post('/retirer', [FactureController::class, 'submit'])->name('retirers.submit');
-    Route::post('/facture/{commande}/notes', [FactureController::class, 'storeNote'])->name('notes.store');
+    Route::post('/commandes/{commande}/notes', [CommandeController::class, 'storeNote'])->name('notes.store');
 
     // Afficher le PDF en mode streaming (prévisualisation)
     Route::get('/factures/{id}/stream', [FactureController::class, 'stream'])->name('factures.stream');
@@ -299,14 +300,6 @@ Route::prefix('commandes')->group(function () {
     Route::get('index', [CommandeController::class, 'index'])->name('commandes.index');
 });
 
-Route::get('/dashboard', function () {
-    return view('utilisateurs.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/administration', function () {
-    return view('administrateur.dashboard');
-})->middleware(['auth', 'verified'])->name('administration');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -316,5 +309,10 @@ Route::middleware('auth')->group(function () {
 Route::post('/commandes/{commande}/images', [CommandeImageController::class, 'store'])->name('commande.images.store');
 Route::delete('/commande-images/{image}', [CommandeImageController::class, 'destroy'])->name('commande.images.destroy');
 Route::post('/commande-images/{image}', [CommandeImageController::class, 'update'])->name('commande.images.update');
+
+// Routes pour la gestion des images
+Route::post('/commandes/images', [CommandeController::class, 'storeImage'])->name('images.store');
+Route::post('/commandes/images/{id}', [CommandeController::class, 'updateImage'])->name('images.update');
+Route::delete('/commandes/images/{id}', [CommandeController::class, 'deleteImage'])->name('images.delete');
 
 require __DIR__ . '/auth.php';
