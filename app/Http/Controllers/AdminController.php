@@ -132,14 +132,85 @@ class AdminController extends Controller
 
     public function acceuil()
     {
-        // // Récupérer les horaires existants
-        // $horaire = Horaire::first();
-        // $hours = OpeningHour::all();
+        $user = Auth::user();
 
+        // Récupérer uniquement les commandes de l'administrateur connecté
+        $commandesEnCours = Commande::where('user_id', $user->id)
+            ->whereIn('statut', ['Non retirée', 'Non retiré', 'Partiellement payé', 'Payé - Non retiré'])
+            ->count();
 
-        // Logique spécifique pour la page des commandes (si nécessaire)
-        return view('administrateur.dashboard'); // Retourne la vue 'commandes.blade.php'
+        $commandesDuJour = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+
+        $commandesARetirer = Commande::where('user_id', $user->id)
+            ->where('statut', 'Non retirée')
+            ->count();
+
+        $chiffreAffaires = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->sum('total');
+
+        $dernieresCommandes = Commande::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('administrateur.dashboard', compact(
+            'commandesEnCours',
+            'commandesDuJour',
+            'commandesARetirer',
+            'chiffreAffaires',
+            'dernieresCommandes'
+        ));
     }
+
+    public function dashboard()
+    {
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+
+        // Récupérer les commandes en cours (non retirées)
+        $commandesEnCours = Commande::where('user_id', $user->id)
+            ->where(function($query) {
+                $query->where('statut', 'Non retirée')
+                      ->orWhere('statut', 'Non retiré')
+                      ->orWhere('statut', 'Partiellement payé')
+                      ->orWhere('statut', 'Payé - Non retiré');
+            })
+            ->count();
+
+        // Récupérer les commandes du jour
+        $commandesDuJour = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+
+        // Récupérer les commandes à retirer (statut "Non retirée")
+        $commandesARetirer = Commande::where('user_id', $user->id)
+            ->where('statut', 'Non retirée')
+            ->count();
+
+        // Calculer le chiffre d'affaires du jour
+        $chiffreAffaires = Commande::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->sum('total');
+
+        // Récupérer les dernières commandes
+        $dernieresCommandes = Commande::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Retourner la vue avec toutes les variables
+        return view('administrateur.dashboard', compact(
+            'commandesEnCours',
+            'commandesDuJour',
+            'commandesARetirer',
+            'chiffreAffaires',
+            'dernieresCommandes'
+        ));
+    }
+
     public function commandes()
     {
         // Récupérer les objets disponibles
@@ -222,11 +293,6 @@ class AdminController extends Controller
             ->whereDate('created_at', $today)
             ->get();
 
-        // Si aucune commande n'est trouvée pour cet utilisateur
-        if ($commandes->isEmpty()) {
-            return redirect()->route('comptabiliteAdmin')->with('error', 'Aucune commande trouvée pour cet utilisateur.');
-        }
-
         // Calculer le montant total des commandes
         $total = $commandes->sum('total');
 
@@ -277,7 +343,7 @@ class AdminController extends Controller
         // Trier les mouvements par date
         $mouvements = $mouvements->sortBy('date');
 
-        // Retourner la vue avec les données
+        // Retourner la vue avec les données, même si aucune commande n'est trouvée
         return view('administrateur.comptabilite', compact(
             'commandes',
             'payments',

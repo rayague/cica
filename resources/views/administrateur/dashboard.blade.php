@@ -51,24 +51,22 @@
             <nav class="text-white bg-gray-800 sidebar">
                 <!-- Nav Item - Tableau de Bord -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('administration') }}">
+                    <a class="nav-link" href="
+                    {{ route('administration') }}
+                    ">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span class="font-weight-bold">TABLEAU DE BORD</span>
                     </a>
                 </li>
 
-
-
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 
                 <!-- Nav Item - Accueil -->
-                <li class="bg-yellow-500 nav-item">
+                <li class="nav-item">
                     <a class="nav-link"
                         href="
-
                     {{ route('administration') }}
-
                     ">
                         <i class="fas fa-fw fa-home"></i>
                         <span class="font-weight-bold">ACCUEIL</span>
@@ -76,13 +74,8 @@
                 </li>
 
                 <!-- Nav Item - Création d'Objets -->
-                <li class="nav-item ">
-                    <a class="nav-link"
-                        href="
-
-                    {{ route('creationObjets') }}
-
-                    ">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('creationObjets') }}">
                         <i class="fas fa-fw fa-plus-square"></i>
                         <span class="font-weight-bold">CRÉER OBJETS & PRIX</span>
                     </a>
@@ -92,70 +85,54 @@
                 <li class="nav-item">
                     <a class="nav-link"
                         href="
-
                     {{ route('commandesAdmin') }}
-
                     ">
                         <i class="fas fa-fw fa-shopping-cart"></i>
                         <span class="font-weight-bold">COMMANDES</span>
                     </a>
                 </li>
 
-                <!-- Nav Item - Profil -->
-                <li class="nav-item ">
+                <!-- Nav Item - Liste des Commandes -->
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('listeCommandesAdmin') }}">
                         <i class="fas fa-fw fa-list"></i>
                         <span class="font-weight-bold">LISTE DES COMMANDES</span>
                     </a>
                 </li>
 
-                <!-- Nav Item - Profil -->
-                <li class="nav-item ">
+                <!-- Nav Item - En Attente -->
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('pendingAdmin') }}">
                         <i class="fas fa-fw fa-clock"></i>
                         <span class="font-weight-bold">EN ATTENTE</span>
                     </a>
                 </li>
 
-
-
-                <!-- Nav Item - Profil -->
+                <!-- Nav Item - Comptabilité -->
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('comptabiliteAdmin') }}">
                         <i class="fas fa-fw fa-coins"></i>
                         <span class="font-weight-bold">COMPTABILITE</span>
                     </a>
                 </li>
-                <!-- Nav Item - Rappels -->
-                <li class="nav-item ">
+
+                <!-- Nav Item - Retraits -->
+                <li class="nav-item">
                     <a class="nav-link" href="
-
                     {{ route('rappelsAdmin') }}
-
                     ">
                         <i class="fas fa-fw fa-bell"></i>
                         <span class="font-weight-bold">RETRAITS</span>
                     </a>
                 </li>
 
-                <!-- Nav Item - Rappels -->
-                <li class="nav-item ">
+                <!-- Nav Item - Utilisateurs -->
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('utilisateursAdmin') }}">
                         <i class="fas fa-fw fa-users"></i>
                         <span class="font-weight-bold">UTILISATEURS</span>
                     </a>
                 </li>
-
-
-                <!-- Nav Item - Profil -->
-                {{-- <li class="nav-item ">
-                    <a class="nav-link" href="
-                    {{ route('profilAdmin') }}
-                    ">
-                        <i class="fas fa-fw fa-user"></i>
-                        <span class="font-weight-bold">PROFIL</span>
-                    </a>
-                </li> --}}
 
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
@@ -239,72 +216,192 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container flex flex-col gap-4 p-4 mx-auto rounded-lg ">
-                    <!-- Affichage des erreurs -->
-                    @if ($errors->any())
-                        <div class="p-4 text-red-700 bg-red-100 border-l-4 border-red-500 rounded alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    {{-- <div class="mt-4 ml-3">
-                        <a href="
-                        {{ route('commandes') }}
-                        "
-                            class="px-6 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
-
-                        </a>
-                    </div> --}}
-
-                    <!-- Informations de l'utilisateur -->
-                    @if (auth()->check())
-                        <div class="flex flex-col gap-3 p-5 rounded-lg shadow-md user-info bg-blue-50">
-                            <h5 class="text-2xl font-bold text-blue-600">Informations de l'utilisateur connecté</h5>
-                            <p class="p-3 mt-2 text-sm text-gray-700 bg-gray-200 rounded"><strong>Nom :</strong>
-                                {{ auth()->user()->name }}
-                            </p>
-                            <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded "><strong>Email :</strong>
-                                {{ auth()->user()->email }}</p>
-                        </div>
-                    @else
-                        <p class="p-2 mt-4 text-lg text-gray-600 bg-gray-200 rounded ">Utilisateur non connecté.</p>
-                    @endif
-
-                    <!-- Détails de l'agence de pressing -->
-                    <div class="flex flex-col gap-4 p-5 mt-4 rounded-lg shadow-md agence-info bg-green-50">
-                        <h5 class="text-2xl font-bold text-green-600">Détails de l'agence de pressing</h5>
-                        <p class="p-3 mt-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Nom de l'agence
-                                :</strong>
-                            CICA NOBLESSE PRESSING</p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Service :</strong> Nettoyage
-                            et lavage à sec</p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>RCCM :</strong>
-                            RC 13-A-17728 | <strong>IFU :</strong> 2201300990000
-                        </p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Adresse :</strong> Bureau
-                            situé à côté du dépôt de
-                            ciment Zogbo (annexe Godomey)</p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Boîte postale :</strong> 0272
-                            BP 81</p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Téléphone :</strong> (+229) 97
-                            89 36 99 / 99 10 70 93 / 96 44 67 50
-                        </p>
-                        <p class="p-3 text-sm text-gray-700 bg-gray-200 rounded"><strong>Localisation :</strong> Zogbo
-                            - Rép. Bénin</p>
+                <div class="container-fluid px-4">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Tableau de bord</h1>
                     </div>
 
+                    <!-- Cartes de statistiques -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <!-- Carte des commandes en cours -->
+                        <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                                    <i class="fas fa-shopping-cart text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">Commandes en cours</h3>
+                                    <p class="text-2xl font-bold text-blue-600">{{ $commandesEnCours }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carte des commandes du jour -->
+                        <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-100 text-green-500">
+                                    <i class="fas fa-calendar-day text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">Commandes du jour</h3>
+                                    <p class="text-2xl font-bold text-green-600">{{ $commandesDuJour }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carte des commandes à retirer -->
+                        <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
+                                    <i class="fas fa-box text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">À retirer</h3>
+                                    <p class="text-2xl font-bold text-yellow-600">{{ $commandesARetirer }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carte du chiffre d'affaires -->
+                        <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-500">
+                                    <i class="fas fa-money-bill-wave text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">Chiffre d'affaires</h3>
+                                    <p class="text-2xl font-bold text-purple-600">{{ number_format($chiffreAffaires, 2, ',', ' ') }} FCFA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dernières commandes -->
+                    <div class="bg-white rounded-lg shadow mb-4">
+                        <div class="p-4 border-b">
+                            <h3 class="text-lg font-semibold text-gray-700">Dernières commandes</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="overflow-x-auto">
+                                <table class="w-full border border-collapse table-auto">
+                                    <thead class="text-white bg-blue-500">
+                                        <tr>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Numéro</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Client</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Date de dépôt</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Date de retrait</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Total</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Statut</th>
+                                            <th class="px-2 md:px-4 py-2 border border-blue-400">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($dernieresCommandes as $commande)
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-2 md:px-4 py-2 border">{{ $commande->numero }}</td>
+                                                <td class="px-2 md:px-4 py-2 border">{{ $commande->client }}</td>
+                                                <td class="px-2 md:px-4 py-2 border">{{ $commande->created_at->format('d/m/Y') }}</td>
+                                                <td class="px-2 md:px-4 py-2 border">{{ $commande->date_retrait ? \Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y') : '-' }}</td>
+                                                <td class="px-2 md:px-4 py-2 border">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                                                <td class="px-2 md:px-4 py-2 border">
+                                                    <span class="px-2 py-1 text-sm font-semibold rounded-full
+                                                        @if($commande->statut === 'Non retirée') bg-yellow-100 text-yellow-800
+                                                        @elseif($commande->statut === 'Retirée') bg-green-100 text-green-800
+                                                        @elseif($commande->statut === 'Partiellement payé') bg-blue-100 text-blue-800
+                                                        @else bg-gray-100 text-gray-800
+                                                        @endif">
+                                                        {{ $commande->statut }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-2 md:px-4 py-2 border">
+                                                    <a href="{{ route('commandesAdmin.show', $commande->id) }}"
+                                                       class="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">
+                                                        Voir
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="px-4 py-2 text-center text-gray-500 border">
+                                                    Aucune commande récente
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations de l'utilisateur et de l'agence -->
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        <!-- Informations de l'utilisateur -->
+                        @if (auth()->check())
+                            <div class="p-6 bg-white rounded-lg shadow-lg">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="text-xl font-bold text-gray-800">Informations de l'utilisateur</h3>
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-blue-500 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-user-tag text-blue-500"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Nom</p>
+                                            <p class="text-lg font-semibold text-gray-800">{{ Auth::user()->name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-envelope text-blue-500"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Email</p>
+                                            <p class="text-lg font-semibold text-gray-800">{{ Auth::user()->email }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    @endif
+
+                        <!-- Détails de l'agence -->
+                        @if(auth()->user()->agence)
+                            <div class="p-6 bg-white rounded-lg shadow-lg">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="text-xl font-bold text-gray-800">Détails de l'agence</h3>
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-building text-green-500 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                                        <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-store text-green-500"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Nom de l'agence</p>
+                                            <p class="text-lg font-semibold text-gray-800">{{ auth()->user()->agence->nom }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                                        <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-map-marker-alt text-green-500"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Adresse</p>
+                                            <p class="text-lg font-semibold text-gray-800">{{ auth()->user()->agence->adresse }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-
-            </div>
-
-
-
-
-
+                <!-- /.container-fluid -->
 
             <!-- Footer -->
             <footer class="mt-56 bg-white sticky-footer">
@@ -317,6 +414,8 @@
                 </div>
             </footer>
             <!-- End of Footer -->
+
+            </div>
 
         </div>
         <!-- End of Content Wrapper -->

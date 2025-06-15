@@ -34,13 +34,13 @@ class AuthenticatedSessionController extends Controller
             // Récupérer l'utilisateur authentifié
             $user = Auth::user();
 
-            // Vérification par email pour redirection
-            if ($user->email === 'abdullah@laundgram.com') {
+            // Vérification du statut admin pour redirection
+            if ($user->is_admin) {
                 // Redirection vers le dashboard de l'admin
                 return redirect()->route('administration');
             }
 
-            // Si l'email est différent, redirection vers le tableau de bord par défaut
+            // Si l'utilisateur n'est pas admin, redirection vers le tableau de bord par défaut
             return redirect()->route('dashboard');
         }
 
