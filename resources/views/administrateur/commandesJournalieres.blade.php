@@ -257,6 +257,20 @@
                         </form>
                     </div>
 
+                    <!-- Formulaire de recherche -->
+                    <div class="mb-6">
+                        <form method="GET" action="{{ route('commandesAdmin.recherche') }}" class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="text" name="client" placeholder="Rechercher un client..."
+                                    class="px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value="{{ request('client') }}">
+                                <button type="submit"
+                                    class="px-4 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">
+                                    Rechercher
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
                     @if ($commandes->isEmpty())
                         <div class="p-6 mx-auto text-center rounded-lg shadow-sm bg-red-50">

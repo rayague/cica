@@ -290,7 +290,7 @@ class AdminController extends Controller
 
         // Récupérer les commandes de l'utilisateur connecté pour aujourd'hui
         $commandes = Commande::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+            ->whereDate('date_depot', $today)
             ->get();
 
         // Calculer le montant total des commandes
@@ -790,8 +790,13 @@ class AdminController extends Controller
     public function listeCommandes()
     {
         $user = Auth::user(); // Récupérer l'utilisateur connecté
+        $today = Carbon::today()->toDateString(); // Date d'aujourd'hui au format YYYY-MM-DD
 
-        $commandes = Commande::where('user_id', $user->id)->get(); // Filtrer par utilisateur
+        $commandes = Commande::where('user_id', $user->id)
+            ->whereDate('date_depot', $today) // Filtrer uniquement les commandes d'aujourd'hui
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $objets = Objets::all();
 
         return view('administrateur.listeCommandes', compact('commandes', 'objets'));
@@ -887,22 +892,27 @@ class AdminController extends Controller
     // Méthode pour afficher les commandes journalières
     public function journalieres(Request $request)
     {
-        $validated = $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date'
-        ]);
-
         $user = Auth::user(); // Récupérer l'utilisateur connecté
 
+        // Récupérer les dates de début et de fin de la requête, ou utiliser aujourd'hui par défaut
+        $start_date = $request->input('start_date', Carbon::today()->toDateString());
+        $end_date = $request->input('end_date', Carbon::today()->toDateString());
+
+        // Valider les dates
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
+
         $commandes = Commande::where('user_id', $user->id) // Filtrer par utilisateur
-            ->whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
+            ->whereBetween('date_depot', [$start_date, $end_date]) // Filtrer par période
             ->orderBy('date_depot')
             ->get();
 
         return view('administrateur.commandesJournalieres', [
             'commandes' => $commandes,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date']
+            'start_date' => $start_date,
+            'end_date' => $end_date
         ]);
     }
 

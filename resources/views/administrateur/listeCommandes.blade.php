@@ -267,7 +267,7 @@
                         </form>
                     </div>
                     <div class="mb-6">
-                        <form method="GET" action="{{ route('commandes.recherche') }}" class="mb-4">
+                        <form method="GET" action="{{ route('commandesAdmin.recherche') }}" class="mb-4">
                             <div class="flex items-center gap-2">
                                 <input type="text" name="client" placeholder="Rechercher un client..."
                                     class="px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -315,7 +315,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" class="px-4 py-6 text-center text-gray-500">
-                                            Aucune facture enregistrée aujourd’hui.
+                                            Aucune facture enregistrée aujourd'hui.
                                         </td>
                                     </tr>
                                 @endforelse

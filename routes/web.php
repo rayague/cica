@@ -54,13 +54,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/vue/objets/{id}', [AdminController::class, 'destroyObjets'])->name('objets.destroy');
 
     // Routes de gestion des commandes admin
+    Route::prefix('commandes')->group(function () {
+        // Routes spécifiques (sans paramètres) en premier
+        Route::get('recherche_administration', [AdminController::class, 'recherche'])->name('commandesAdmin.recherche');
+        Route::get('create', [AdminController::class, 'create'])->name('commandesAdmin.create');
+        Route::post('/', [AdminController::class, 'store'])->name('commandesAdmin.store');
+        Route::get('index', [AdminController::class, 'index'])->name('commandesAdmin.index');
+
+        // Routes avec paramètres ensuite
+        Route::get('{id}_administration', [AdminController::class, 'show'])->name('commandesAdmin.show');
+        Route::post('{commande}/objet/{objet}/retirer_administration', [AdminController::class, 'retirerObjet'])->name('commande.retirer');
+        Route::post('{commande}/retirer-plusieurs_administration', [AdminController::class, 'retirerPlusieursObjets'])->name('commandeAdmin.retirerPlusieurs');
+        Route::put('{id}/valider_administration', [AdminController::class, 'valider'])->name('commandesAdmin.valider');
+        Route::put('{id}/update-financial_administration', [AdminController::class, 'updateFinancial'])->name('commandeAdmin.updateFinancial');
+    });
+
     Route::get('/liste_des_commandes_administration', [AdminController::class, 'listeCommandes'])->name('listeCommandesAdmin');
-    Route::get('/commandes/{id}_administration', [AdminController::class, 'show'])->name('commandesAdmin.show');
-    Route::post('/commande/{commande}/objet/{objet}/retirer_administration', [AdminController::class, 'retirerObjet'])->name('commande.retirer');
-    Route::post('/commandes/{commande}/retirer-plusieurs_administration', [AdminController::class, 'retirerPlusieursObjets'])->name('commandeAdmin.retirerPlusieurs');
     Route::get('/journalieres_administration', [AdminController::class, 'journalieres'])->name('commandesAdmin.journalieres');
     Route::get('/factures/{commande}/imprimer_administration', [AdminController::class, 'print'])->name('facturesAdmin.print');
-    Route::put('/commande/{id}/update-financial_administration', [AdminController::class, 'updateFinancial'])->name('commandeAdmin.updateFinancial');
 
     // Routes de modification admin
     Route::get('/modification_agence_administration', [AdminController::class, 'modificationAgence'])->name('pageModificationAgence');
@@ -83,16 +94,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/facture/{commande}/notes_administration', [AdminController::class, 'storeNote'])->name('notesAdmin.store');
     Route::get('/factures/{id}/stream_administration', [AdminController::class, 'stream'])->name('facturesAdmin.stream');
     Route::get('/factures/{id}/download_administration', [AdminController::class, 'download'])->name('facturesAdmin.download');
-
-    // Routes de validation admin
-    Route::put('/commandes/{id}/valider_administration', [AdminController::class, 'valider'])->name('commandesAdmin.valider');
-
-    // Routes de commandes admin
-    Route::prefix('commandes')->group(function () {
-        Route::get('create', [AdminController::class, 'create'])->name('commandesAdmin.create');
-        Route::post('/', [AdminController::class, 'store'])->name('commandesAdmin.store');
-        Route::get('index', [AdminController::class, 'index'])->name('commandesAdmin.index');
-    });
 
     // Routes de gestion des utilisateurs admin
     Route::get('/users/create', [AdminController::class, 'create'])->name('admin.users.create');
@@ -163,7 +164,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Routes de recherche utilisateurs
     Route::get('/commandes/recherche', [CommandeController::class, 'recherche'])->name('commandes.recherche');
-    Route::get('/commandes/recherche_administration', [AdminController::class, 'recherche'])->name('commandesAdmin.recherche');
     Route::get('/commandes_retirees/recherche', [CommandeController::class, 'rechercheRetrait'])->name('commandesRetrait.recherche');
     Route::get('/commandes_retirees/recherche_administration', [AdminController::class, 'rechercheRetrait'])->name('commandesRetraitAdmin.recherche');
 
