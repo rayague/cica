@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            font-size: 9px;
+            font-size: 8px;
             margin: 0;
             padding: 0;
             color: #2d3748;
@@ -55,62 +54,117 @@
         .brand-section {
             width: 60%;
             display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        /* NOUVEAU: Styles pour le logo */
+        .logo-container {
+            flex-shrink: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            background: #f7fafc;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 2px;
         }
 
         .brand-text {
             flex: 1;
+            min-width: 0;
         }
 
         .brand-section h1 {
-            font-size: 11px;
+            font-size: 10px;
             margin: 0 0 1mm 0;
             color: #38a169;
         }
 
         .brand-section p {
             margin: 0;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .invoice-info {
             text-align: right;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .details-grid {
             display: flex;
             justify-content: space-between;
             background: #f0fdf4;
-            border: 1px solid #c6f6d5;
-            padding: 2mm;
+            border: 1px solid #86efac;
+            padding: 6px;
+            margin-bottom: 10px;
+            width: 97%;
+            box-sizing: border-box;
             border-radius: 3px;
-            margin-bottom: 2mm;
-            font-size: 9px;
-            page-break-inside: avoid;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .detail-block {
-            width: 48%;
-            font-size: 9px;
+        .detail-left, .detail-right {
+            flex: 0 0 48%;
         }
 
-        .detail-block h4 {
-            margin: 0 0 1mm 0;
-            font-size: 10px;
-            color: #38a169;
+        .detail-left {
+            border-right: 1px solid #86efac;
+            padding-right: 10px;
+        }
+
+        .detail-right {
+            padding-left: 10px;
+            padding-right: 10px;
+            text-align: right;
+        }
+
+        .detail-title {
+            font-weight: 600;
+            font-size: 9px;
+            color: #166534;
+            margin-bottom: 2px;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: #dcfce7;
+            padding: 1px 4px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .detail-info {
+            font-size: 8px;
+            color: #166534;
+            line-height: 1.1;
+            margin-bottom: 1px;
+            padding: 0;
+        }
+
+        .detail-info:last-child {
+            margin-bottom: 0;
+        }
+
+        .date-value {
+            color: #166534;
+            font-weight: 500;
         }
 
         .items-table {
             width: 100%;
-            font-size: 9px;
+            font-size: 8px;
             border-collapse: collapse;
             margin: 1mm 0;
             page-break-inside: avoid;
@@ -121,18 +175,18 @@
             color: white;
             padding: 1mm;
             text-align: left;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .items-table td {
             border-bottom: 1px solid #e2e8f0;
             padding: 1mm;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .total-section {
             margin-top: 2mm;
-            font-size: 9px;
+            font-size: 8px;
             page-break-inside: avoid;
         }
 
@@ -147,18 +201,18 @@
             background-color: #edf2f7;
             border-radius: 2px;
             font-weight: bold;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .historique-header {
             margin-top: 2mm;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
 
         .notes-table {
             width: 100%;
-            font-size: 8px;
+            font-size: 7px;
             border-collapse: collapse;
             margin-top: 1mm;
             page-break-inside: avoid;
@@ -168,13 +222,14 @@
             background-color: #38a169;
             color: white;
             padding: 1mm;
-            font-size: 8px;
+            text-align: left;
+            font-size: 7px;
         }
 
         .notes-table td {
-            padding: 1mm;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 8px;
+            padding: 1mm;
+            font-size: 7px;
         }
 
         .conditions {
@@ -214,6 +269,11 @@
             .sheet-table tr:last-child {
                 page-break-after: avoid;
             }
+
+            .logo-container {
+                background: transparent;
+                border: none;
+            }
         }
     </style>
 </head>
@@ -226,38 +286,51 @@
                     <div class="invoice-column">
                         <div class="header">
                             <div class="brand-section">
+                                {{-- NOUVEAU: Section du logo --}}
+                                @if(isset($logoBase64) && $logoBase64)
+                                    <div class="logo-container">
+                                        <img src="{{ $logoBase64 }}" alt="Logo CICA Noblesse Pressing" class="logo">
+                                    </div>
+                                @endif
+
                                 <div class="brand-text">
                                     <h1>CICA NOBLESSE PRESSING</h1>
                                     <p>Annexe Godomey, Zogbo - Bénin</p>
-                                    <p>0272 BP 81 • IFU : 2201300990000</p>
-                                    <p>Tél : (+229) 97 89 36 99 / 96 44 67 50</p>
+                                    <p>BP 0272 • IFU : 2201300990000</p>
+                                    <p>Tél : (+229) 01 97 89 36 99 / 01 96 44 67 50 / 01 99 10 70 93</p>
+                                    <p>Whatsapp : (+229) 01 57 08 31 60</p>
                                 </div>
                             </div>
                             <div class="invoice-info">
-                                <h2>Facture</h2>
+                                <h2>FACTURE</h2>
                                 <p><strong>N° :</strong> {{ $commande->numero }}</p>
-                                {{-- <p><strong>Date dépôt :</strong> {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p> --}}
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>
 
                         <div class="details-grid">
-                            <div class="detail-block">
-                                <strong>CLIENT :</strong>
-                                {{ $commande->client }}<br>
-                                Contact : {{ $commande->numero_whatsapp }}
+                            <div class="detail-left">
+                                <div class="detail-title">Informations Client</div>
+                                <div class="detail-info">Nom : {{ $commande->client }}</div>
+                                <div class="detail-info">Contact : <span class="date-value">{{ $commande->numero_whatsapp }}</span></div>
                             </div>
-                            <div class="detail-block">
-                                <strong>DATES</strong><br>
-                                Dépôt : {{ \Carbon\Carbon::parse($commande->date_depot)->isoFormat('LL') }}<br>
-                                Retrait : {{ \Carbon\Carbon::parse($commande->date_retrait)->isoFormat('LL') }}
+                            <div class="detail-right">
+                                <div class="detail-title">Dates de Service</div>
+                                <div class="detail-info">Dépôt : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->translatedFormat('l j F Y') }}</span></div>
+                                <div class="detail-info">Retrait : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->translatedFormat('l j F Y') }}</span></div>
                             </div>
+                        </div>
+
+                        <div class="details-grid">
                             <div class="detail-block">
-                                <strong>TYPE DE LAVAGE</strong><br>
-                                {{ $commande->type_lavage }}
-                                @if(strtolower($commande->type_lavage) === 'lavage express')
-                                    (Prix x 2)
-                                @endif
+                                <strong>Type de Lavage</strong>
+                                <span class="service-type">
+                                    <span class="icon"></span>
+                                    {{ $commande->type_lavage }}
+                                    @if(strtolower($commande->type_lavage) === 'lavage express')
+                                        <span style="color: #dc2626; font-weight: 500;">(Prix x 2)</span>
+                                    @endif
+                                </span>
                             </div>
                         </div>
 
@@ -365,5 +438,5 @@
         </tr>
     </table>
 </body>
-
 </html>
+

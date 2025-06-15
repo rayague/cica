@@ -300,23 +300,23 @@
                             <h3 class="text-xl md:text-2xl font-black mb-4">Commandes:</h3>
                             <div class="overflow-x-auto">
                                 <table class="w-full border border-collapse table-auto">
-                                    <thead class="text-white bg-blue-500">
-                                        <tr>
+                                <thead class="text-white bg-blue-500">
+                                    <tr>
                                             <th class="px-2 md:px-4 py-2 border border-blue-400">Objet</th>
                                             <th class="px-2 md:px-4 py-2 border border-blue-400">Quantité</th>
                                             <th class="px-2 md:px-4 py-2 border border-blue-400">Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($commande->objets as $objet)
-                                            <tr class="border-b">
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($commande->objets as $objet)
+                                        <tr class="border-b">
                                                 <td class="px-2 md:px-4 py-2 border border-blue-400">{{ $objet->nom }}</td>
                                                 <td class="px-2 md:px-4 py-2 border border-blue-400">{{ $objet->pivot->quantite }}</td>
                                                 <td class="px-2 md:px-4 py-2 border border-blue-400">{{ $objet->pivot->description }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                             </div>
                         </div>
                     </div>
@@ -326,26 +326,26 @@
                         <h3 class="mb-4 text-lg md:text-xl font-semibold">Historique des Retraits / Notes</h3>
                         @if ($notes->isNotEmpty())
                             <div class="overflow-x-auto">
-                                <table class="w-full border border-collapse table-auto">
-                                    <thead class="text-white bg-yellow-500">
-                                        <tr>
+                            <table class="w-full border border-collapse table-auto">
+                                <thead class="text-white bg-yellow-500">
+                                    <tr>
                                             <th class="px-2 md:px-4 py-2 border border-yellow-400">Numéro de Facture</th>
                                             <th class="px-2 md:px-4 py-2 border border-yellow-400">Utilisateur</th>
                                             <th class="px-2 md:px-4 py-2 border border-yellow-400">Note</th>
                                             <th class="px-2 md:px-4 py-2 border border-yellow-400">Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($notes as $note)
-                                            <tr class="hover:bg-blue-50">
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($notes as $note)
+                                        <tr class="hover:bg-blue-50">
                                                 <td class="px-2 md:px-4 py-2 border border-yellow-300">{{ $commande->numero }}</td>
                                                 <td class="px-2 md:px-4 py-2 border border-yellow-300">{{ $note->user->name ?? $note->user_id }}</td>
                                                 <td class="px-2 md:px-4 py-2 border border-yellow-300">{{ $note->note }}</td>
                                                 <td class="px-2 md:px-4 py-2 border border-yellow-300">{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                             </div>
                         @else
                             <p class="p-3 text-base md:text-lg font-black text-center text-white bg-orange-400 rounded">Aucune note enregistrée pour cette commande.</p>
@@ -358,35 +358,35 @@
                         <div class="space-y-2">
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Total sans réduction :</strong></span>
-                                <span>{{ number_format($originalTotal, 2, ',', ' ') }} FCFA</span>
-                            </div>
+                            <span>{{ number_format($originalTotal, 2, ',', ' ') }} FCFA</span>
+                        </div>
 
-                            @if ($remiseReduction > 0)
+                        @if ($remiseReduction > 0)
                                 <div class="flex flex-col md:flex-row justify-between gap-2">
                                     <span><strong>Réduction appliquée ({{ $remiseReduction }}%) :</strong></span>
-                                    <span>{{ number_format($discountAmount, 2, ',', ' ') }} FCFA</span>
-                                </div>
+                                <span>{{ number_format($discountAmount, 2, ',', ' ') }} FCFA</span>
+                            </div>
                                 <div class="flex flex-col md:flex-row justify-between gap-2">
-                                    <span><strong>Calcul :</strong></span>
-                                    <span class="p-1 text-white bg-green-500 rounded">
-                                        {{ number_format($originalTotal, 2, ',', ' ') }} FCFA x {{ $remiseReduction }}% =
-                                        {{ number_format($discountAmount, 2, ',', ' ') }} FCFA
-                                    </span>
-                                </div>
-                            @else
+                                <span><strong>Calcul :</strong></span>
+                                <span class="p-1 text-white bg-green-500 rounded">
+                                    {{ number_format($originalTotal, 2, ',', ' ') }} FCFA x {{ $remiseReduction }}% =
+                                    {{ number_format($discountAmount, 2, ',', ' ') }} FCFA
+                                </span>
+                            </div>
+                        @else
                                 <div class="flex flex-col md:flex-row justify-between gap-2">
                                     <span><strong>Réduction :</strong></span>
-                                    <span class="p-1 text-white bg-green-500 rounded">Aucune réduction appliquée</span>
-                                </div>
-                            @endif
+                                <span class="p-1 text-white bg-green-500 rounded">Aucune réduction appliquée</span>
+                            </div>
+                        @endif
 
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Total final :</strong></span>
-                                <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
-                            </div>
+                            <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
+                        </div>
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Avances cumulées :</strong></span>
-                                <span>{{ number_format($commande->avance_client, 2, ',', ' ') }} FCFA</span>
+                            <span>{{ number_format($commande->avance_client, 2, ',', ' ') }} FCFA</span>
                             </div>
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Solde restant :</strong></span>
@@ -420,12 +420,12 @@
                                     oninput="this.setCustomValidity('')">
                             </div>
                             <div class="w-full md:w-auto">
-                                <select name="payment_method" id="payment_method"
+                            <select name="payment_method" id="payment_method"
                                     class="w-full md:w-48 p-2 bg-white border rounded-md">
-                                    <option value="">Choisir</option>
-                                    <option value="Avance">Avance</option>
-                                    <option value="Retrait">Retrait</option>
-                                </select>
+                                <option value="">Choisir</option>
+                                <option value="Avance">Avance</option>
+                                <option value="Retrait">Retrait</option>
+                            </select>
                             </div>
                             <div class="w-full md:w-auto">
                                 <select name="payment_type" id="payment_type"
@@ -494,17 +494,17 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="editImageForm" enctype="multipart/form-data">
-                                        @csrf
+                                            @csrf
                                         <input type="hidden" id="editImageId" name="image_id">
                                         <div class="mb-3">
                                             <label for="editImageInput" class="form-label">Nouvelle image</label>
                                             <input type="file" class="form-control" id="editImageInput" name="image" accept="image/*" required>
-                                        </div>
+                                            </div>
                                         <div class="text-end">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                        </div>
-                                    </form>
+                                            </div>
+                                        </form>
                                 </div>
                             </div>
                         </div>
@@ -544,45 +544,45 @@
                         </a>
                     </div>
 
-                    <!-- Boutons de navigation -->
+                <!-- Boutons de navigation -->
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4 mx-2 md:mx-4 my-6 md:my-10">
-                        <a href="{{ route('listeCommandesAdmin') }}"
+                    <a href="{{ route('listeCommandesAdmin') }}"
                             class="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700">
                             <i class="mr-2 fas fa-arrow-left"></i>Retour
-                        </a>
+                    </a>
                         @if($commande->statut === 'Non retirée' || $commande->statut === 'Non retiré' || $commande->statut === 'Partiellement payé')
-                            <form action="{{ route('commandesAdmin.valider', $commande->id) }}" method="POST"
+                    <form action="{{ route('commandesAdmin.valider', $commande->id) }}" method="POST"
                                 onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');"
                                 class="w-full md:w-auto">
-                                @csrf
-                                @method('PUT')
+                        @csrf
+                        @method('PUT')
                                 <button type="submit" class="w-full p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
-                                    Valider la facture
-                                </button>
-                            </form>
+                            Valider la facture
+                        </button>
+                    </form>
                         @else
                             <div class="w-full md:w-auto p-2 text-white bg-red-500 rounded-md text-center">
                                 Cette commande est déjà validée et ne peut plus être modifiée
                             </div>
                         @endif
-                    </div>
-
                 </div>
-                <!-- /.container-fluid -->
 
-                <!-- End of Main Content -->
+            </div>
+            <!-- /.container-fluid -->
 
-                <!-- Footer -->
-                <footer class="bg-white sticky-footer">
-                    <div class="container my-auto">
-                        <div class="my-auto text-center copyright">
-                            Copyrignt © <span class="text-yellow-500"
-                                style="font-family: 'Dancing Script', cursive;">Cica</span> Ray
-                            Ague.
-                        </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="my-auto text-center copyright">
+                        Copyrignt © <span class="text-yellow-500"
+                            style="font-family: 'Dancing Script', cursive;">Cica</span> Ray
+                        Ague.
                     </div>
-                </footer>
-                <!-- End of Footer -->
+                </div>
+            </footer>
+            <!-- End of Footer -->
 
             </div>
             <!-- /.container-fluid -->

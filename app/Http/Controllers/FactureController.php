@@ -30,10 +30,15 @@ class FactureController extends Controller
         // Calculer le montant de la réduction
         $discountAmount = ($originalTotal * $remiseReduction) / 100;
 
+        // Convertir le logo en base64
+        $logoPath = public_path('images/Cica.png');
+        $logoBase64 = null;
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
 
-
-        // Générer le PDF en utilisant la vue 'utilisateurs.factures'
-        $pdf = Pdf::loadView('utilisateurs.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes'));
+        // Générer le PDF en utilisant la vue 'utilisateurs.preview'
+        $pdf = Pdf::loadView('utilisateurs.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes', 'logoBase64'));
 
         // Retourner le PDF pour affichage inline
         return $pdf->stream('facture_' . $commande->numero . '.pdf');
