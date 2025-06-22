@@ -58,6 +58,10 @@
             gap: 8px;
         }
 
+        .label {
+            font-weight: bold;
+        }
+
         /* NOUVEAU: Styles pour le logo */
         .logo-container {
             flex-shrink: 0;
@@ -186,7 +190,7 @@
 
         .total-section {
             margin-top: 2mm;
-            font-size: 8px;
+            font-size: 10px;
             page-break-inside: avoid;
         }
 
@@ -234,7 +238,7 @@
 
         .conditions {
             margin-top: 2mm;
-            font-size: 8px;
+            font-size: 6px;
             page-break-inside: avoid;
         }
 
@@ -337,8 +341,8 @@
                         <table class="items-table">
                             <thead>
                                 <tr>
-                                    <th>Objet</th>
                                     <th>Qté</th>
+                                    <th>Objet</th>
                                     <th>Description</th>
                                     <th>Prix U.</th>
                                     <th>Total</th>
@@ -347,8 +351,8 @@
                             <tbody>
                                 @foreach ($commande->objets as $objet)
                                     <tr>
-                                        <td>{{ $objet->nom }}</td>
                                         <td>{{ $objet->pivot->quantite }}</td>
+                                        <td>{{ $objet->nom }}</td>
                                         <td>{{ $objet->pivot->description }}</td>
                                         <td>{{ number_format($objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
                                         <td>{{ number_format($objet->pivot->quantite * $objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
@@ -385,7 +389,7 @@
                             @endif
                         </div>
 
-                        <div class="total-section">
+                        <div class="total-section" style="text-align: right;">
                             <h4 class="total-title">Récapitulatif de la commande</h4>
                             <div class="total-line">
                                 <span class="label">Total brut :</span>
@@ -432,11 +436,25 @@
                             </ul>
                         </div>
 
+                        <!-- Message de facture - Centré sur la même page -->
+                        @php
+                            $factureMessage = \App\Models\FactureMessage::getActiveMessage();
+                        @endphp
+                        @if($factureMessage)
+                            <div style="margin-top: 10px; padding: 8px; background: linear-gradient(135deg, #f0f9ff 0%, #fdf4ff 100%); border-radius: 6px; border: 1px solid #dbeafe; text-align: center; width: 100%;">
+                                <p style="text-align: center; color: #4b5563; font-style: italic; font-weight: 300; font-size: 8px; line-height: 1.4; margin: 0; font-family: 'Georgia', 'Times New Roman', serif;">
+                                    "{{ $factureMessage->message }}"
+                                </p>
+                            </div>
+                        @endif
+
                     </div>
                 </td>
             @endfor
         </tr>
+
     </table>
+
 </body>
 </html>
 

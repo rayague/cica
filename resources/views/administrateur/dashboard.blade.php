@@ -335,7 +335,7 @@
                     </div>
 
                     <!-- Informations de l'utilisateur et de l'agence -->
-                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-1">
                         <!-- Informations de l'utilisateur -->
                         @if (auth()->check())
                             <div class="p-6 bg-white rounded-lg shadow-lg">
@@ -366,7 +366,7 @@
                                     </div>
                                 </div>
                             </div>
-                    @endif
+                        @endif
 
                         <!-- Détails de l'agence -->
                         @if(auth()->user()->agence)
@@ -399,6 +399,49 @@
                                 </div>
                             </div>
                         @endif
+                    </div>
+
+                    <!-- Section Gestion du message de facture -->
+                    <div class="p-6 bg-white rounded-lg shadow-lg mt-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Message de facture</h3>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-file-invoice text-purple-500 text-xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Affichage du message actuel -->
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-2">Message actuel :</p>
+                                <p class="text-lg font-semibold text-gray-800">
+                                    @if(isset($factureMessage) && $factureMessage)
+                                        "{{ $factureMessage }}"
+                                    @else
+                                        <span class="text-gray-400 italic">Aucun message défini</span>
+                                    @endif
+                                </p>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="flex flex-wrap gap-3">
+                                @if(isset($factureMessage) && $factureMessage)
+                                    <button type="button" onclick="openEditModal()"
+                                            class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                                        <i class="fas fa-edit mr-2"></i>Modifier
+                                    </button>
+                                    <button type="button" onclick="deleteMessage()"
+                                            class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors">
+                                        <i class="fas fa-trash mr-2"></i>Supprimer
+                                    </button>
+                                @else
+                                    <button type="button" onclick="openAddModal()"
+                                            class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Ajouter un message
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
@@ -443,6 +486,78 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal pour ajouter/modifier le message de facture -->
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Gérer le message de facture</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="messageForm" method="POST" action="{{ route('admin.facture-message.store') }}">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="message" class="form-label">Message à afficher sur les factures :</label>
+                                <textarea class="form-control" id="message" name="message" rows="4"
+                                          placeholder="Entrez votre message ici...">{{ $factureMessage ?? '' }}</textarea>
+                                <small class="form-text text-muted">Ce message apparaîtra en bas de toutes les factures délivrées aux clients.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmation pour supprimer -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir supprimer le message de facture ?</p>
+                        <p class="text-muted">Cette action ne peut pas être annulée.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <form method="POST" action="{{ route('admin.facture-message.delete') }}" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openAddModal() {
+                $('#messageModalLabel').text('Ajouter un message de facture');
+                $('#message').val('');
+                $('#messageModal').modal('show');
+            }
+
+            function openEditModal() {
+                $('#messageModalLabel').text('Modifier le message de facture');
+                $('#messageModal').modal('show');
+            }
+
+            function deleteMessage() {
+                $('#deleteModal').modal('show');
+            }
+        </script>
 
     </div>
     <!-- End of Page Wrapper -->

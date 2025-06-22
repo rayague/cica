@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
         // Routes spécifiques (sans paramètres) en premier
         Route::get('recherche_administration', [AdminController::class, 'recherche'])->name('commandesAdmin.recherche');
         Route::get('create', [AdminController::class, 'create'])->name('commandesAdmin.create');
-        Route::post('/', [AdminController::class, 'store'])->name('commandesAdmin.store');
+        Route::post('/', [AdminController::class, 'storeCommandeAdmin'])->name('commandesAdmin.store');
         Route::get('index', [AdminController::class, 'index'])->name('commandesAdmin.index');
 
         // Routes avec paramètres ensuite
@@ -99,6 +99,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/create', [AdminController::class, 'create'])->name('admin.users.create');
     Route::post('/users', [AdminController::class, 'store'])->name('admin.users.store');
     Route::delete('/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+
+    // Routes de gestion du message de facture
+    Route::post('/admin/facture-message', [AdminController::class, 'storeFactureMessage'])->name('admin.facture-message.store');
+    Route::delete('/admin/facture-message', [AdminController::class, 'deleteFactureMessage'])->name('admin.facture-message.delete');
 });
 
 

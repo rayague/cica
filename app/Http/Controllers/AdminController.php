@@ -9,6 +9,7 @@ use App\Models\Commande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\CommandePayment;
+use App\Models\FactureMessage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -95,7 +96,7 @@ class AdminController extends Controller
         // Validation des données
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|string|unique:users,email',
             'password' => 'required|string|min:8|confirmed', // Assurez-vous que le mot de passe est confirmé
         ]);
 
@@ -156,12 +157,17 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
+        // Récupérer le message de facture actif
+        $factureMessage = FactureMessage::getActiveMessage();
+        $factureMessage = $factureMessage ? $factureMessage->message : null;
+
         return view('administrateur.dashboard', compact(
             'commandesEnCours',
             'commandesDuJour',
             'commandesARetirer',
             'chiffreAffaires',
-            'dernieresCommandes'
+            'dernieresCommandes',
+            'factureMessage'
         ));
     }
 
@@ -716,6 +722,24 @@ class AdminController extends Controller
             'remise_reduction' => $remiseReduction,
         ]);
 
+        // Si une avance client est fournie, créer un enregistrement de paiement
+        if ($avanceClient > 0) {
+            CommandePayment::create([
+                'commande_id' => $commande->id,
+                'user_id' => Auth::id(),
+                'amount' => $avanceClient,
+                'payment_method' => 'Avance initiale',
+                'payment_type' => 'Espèce',
+            ]);
+
+            // Mettre à jour le statut de la commande selon les nouvelles règles
+            if ($soldeRestant == 0) {
+                $commande->update(['statut' => 'Payé - Non retiré']);
+            } elseif ($avanceClient > 0) {
+                $commande->update(['statut' => 'Partiellement payé']);
+            }
+        }
+
         // Redirection vers la page de détail de la commande en passant les données de réduction
         return redirect()->route('commandesAdmin.show', $commande->id)
             ->with('success', 'Commande validée avec succès!')
@@ -1197,27 +1221,41 @@ class AdminController extends Controller
 
     public function destroyCommande($id)
     {
-        // Récupérer la commande
         $commande = Commande::findOrFail($id);
-
-        // Vérifier si l'utilisateur est un administrateur
-        if (!Auth::user()->is_admin) {
-            return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à supprimer cette commande.');
-        }
-
-        // Supprimer les paiements associés
-        CommandePayment::where('commande_id', $id)->delete();
-
-        // Supprimer les notes associées
-        Note::where('commande_id', $id)->delete();
-
-        // Supprimer les relations avec les objets
-        $commande->objets()->detach();
-
-        // Supprimer la commande
         $commande->delete();
 
-        return redirect()->back()->with('success', 'La commande a été supprimée avec succès.');
+        return redirect()->back()->with('success', 'Commande supprimée avec succès.');
+    }
+
+    /**
+     * Gérer le message de facture
+     */
+    public function storeFactureMessage(Request $request)
+    {
+        $request->validate([
+            'message' => 'required|string|max:500',
+        ]);
+
+        // Désactiver tous les messages existants
+        FactureMessage::where('is_active', true)->update(['is_active' => false]);
+
+        // Créer le nouveau message
+        FactureMessage::create([
+            'message' => $request->message,
+            'is_active' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Message de facture enregistré avec succès.');
+    }
+
+    /**
+     * Supprimer le message de facture
+     */
+    public function deleteFactureMessage()
+    {
+        FactureMessage::where('is_active', true)->update(['is_active' => false]);
+
+        return redirect()->back()->with('success', 'Message de facture supprimé avec succès.');
     }
 
 }

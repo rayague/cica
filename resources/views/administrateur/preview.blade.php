@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            font-size: 9px;
+            font-size: 8px;
             margin: 0;
             padding: 0;
             color: #2d3748;
@@ -55,33 +54,58 @@
         .brand-section {
             width: 60%;
             display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        /* NOUVEAU: Styles pour le logo */
+        .logo-container {
+            flex-shrink: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            background: #f7fafc;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 2px;
         }
 
         .brand-text {
             flex: 1;
+            min-width: 0;
         }
 
         .brand-section h1 {
-            font-size: 11px;
+            font-size: 10px;
             margin: 0 0 1mm 0;
             color: #38a169;
         }
 
         .brand-section p {
             margin: 0;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .invoice-info {
             text-align: right;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .details-grid {
@@ -94,6 +118,7 @@
             width: 97%;
             box-sizing: border-box;
             border-radius: 3px;
+            font-family: 'Poppins', sans-serif;
         }
 
         .detail-left, .detail-right {
@@ -113,7 +138,7 @@
 
         .detail-title {
             font-weight: 600;
-            font-size: 10px;
+            font-size: 9px;
             color: #166534;
             margin-bottom: 2px;
             text-transform: uppercase;
@@ -125,7 +150,7 @@
         }
 
         .detail-info {
-            font-size: 9px;
+            font-size: 8px;
             color: #166534;
             line-height: 1.1;
             margin-bottom: 1px;
@@ -143,7 +168,7 @@
 
         .items-table {
             width: 100%;
-            font-size: 9px;
+            font-size: 8px;
             border-collapse: collapse;
             margin: 1mm 0;
             page-break-inside: avoid;
@@ -154,18 +179,18 @@
             color: white;
             padding: 1mm;
             text-align: left;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .items-table td {
             border-bottom: 1px solid #e2e8f0;
             padding: 1mm;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .total-section {
             margin-top: 2mm;
-            font-size: 9px;
+            font-size: 10px;
             page-break-inside: avoid;
         }
 
@@ -180,18 +205,18 @@
             background-color: #edf2f7;
             border-radius: 2px;
             font-weight: bold;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .historique-header {
             margin-top: 2mm;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
 
         .notes-table {
             width: 100%;
-            font-size: 8px;
+            font-size: 7px;
             border-collapse: collapse;
             margin-top: 1mm;
             page-break-inside: avoid;
@@ -201,18 +226,19 @@
             background-color: #38a169;
             color: white;
             padding: 1mm;
-            font-size: 8px;
+            text-align: left;
+            font-size: 7px;
         }
 
         .notes-table td {
-            padding: 1mm;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 8px;
+            padding: 1mm;
+            font-size: 7px;
         }
 
         .conditions {
             margin-top: 2mm;
-            font-size: 8px;
+            font-size: 6px;
             page-break-inside: avoid;
         }
 
@@ -247,6 +273,11 @@
             .sheet-table tr:last-child {
                 page-break-after: avoid;
             }
+
+            .logo-container {
+                background: transparent;
+                border: none;
+            }
         }
     </style>
 </head>
@@ -259,18 +290,24 @@
                     <div class="invoice-column">
                         <div class="header">
                             <div class="brand-section">
+                                {{-- NOUVEAU: Section du logo --}}
+                                @if(isset($logoBase64) && $logoBase64)
+                                    <div class="logo-container">
+                                        <img src="{{ $logoBase64 }}" alt="Logo CICA Noblesse Pressing" class="logo">
+                                    </div>
+                                @endif
+
                                 <div class="brand-text">
                                     <h1>CICA NOBLESSE PRESSING</h1>
                                     <p>Annexe Godomey, Zogbo - Bénin</p>
                                     <p>BP 0272 • IFU : 2201300990000</p>
-                                    <p>Tél : (+229) 01 97 89 36 99 / 01 96 44 67 50</p>
-                                    <p>Whatsapp : (+229) 01 57 08 31 60 / 01 99 10 70 93</p>
+                                    <p>Tél : (+229) 01 97 89 36 99 / 01 96 44 67 50 / 01 99 10 70 93</p>
+                                    <p>Whatsapp : (+229) 01 57 08 31 60</p>
                                 </div>
                             </div>
                             <div class="invoice-info">
-                                <h2>Facture</h2>
+                                <h2>FACTURE</h2>
                                 <p><strong>N° :</strong> {{ $commande->numero }}</p>
-                                {{-- <p><strong>Date dépôt :</strong> {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p> --}}
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>
@@ -278,19 +315,19 @@
                         <div class="details-grid">
                             <div class="detail-left">
                                 <div class="detail-title">Informations Client</div>
-                                <div class="detail-info">{{ $commande->client }}</div>
+                                <div class="detail-info">Nom : {{ $commande->client }}</div>
                                 <div class="detail-info">Contact : <span class="date-value">{{ $commande->numero_whatsapp }}</span></div>
                             </div>
                             <div class="detail-right">
-                                <div class="detail-title">DATES DE SERVICE</div>
-                                <div class="detail-info">Dépôt : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</span></div>
-                                <div class="detail-info">Retrait : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL') }}</span></div>
+                                <div class="detail-title">Dates de Service</div>
+                                <div class="detail-info">Dépôt : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->translatedFormat('l j F Y') }}</span></div>
+                                <div class="detail-info">Retrait : <span class="date-value">{{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->translatedFormat('l j F Y') }}</span></div>
                             </div>
                         </div>
 
                         <div class="details-grid">
                             <div class="detail-block">
-                                <strong> Type de Service</strong>
+                                <strong>Type de Lavage</strong>
                                 <span class="service-type">
                                     <span class="icon"></span>
                                     {{ $commande->type_lavage }}
@@ -304,8 +341,8 @@
                         <table class="items-table">
                             <thead>
                                 <tr>
-                                    <th>Objet</th>
                                     <th>Qté</th>
+                                    <th>Objet</th>
                                     <th>Description</th>
                                     <th>Prix U.</th>
                                     <th>Total</th>
@@ -314,8 +351,8 @@
                             <tbody>
                                 @foreach ($commande->objets as $objet)
                                     <tr>
-                                        <td>{{ $objet->nom }}</td>
                                         <td>{{ $objet->pivot->quantite }}</td>
+                                        <td>{{ $objet->nom }}</td>
                                         <td>{{ $objet->pivot->description }}</td>
                                         <td>{{ number_format($objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
                                         <td>{{ number_format($objet->pivot->quantite * $objet->prix_unitaire, 2, ',', ' ') }} FCFA</td>
@@ -352,7 +389,7 @@
                             @endif
                         </div>
 
-                        <div class="total-section">
+                        <div class="total-section" style="text-align: right;">
                             <h4 class="total-title">Récapitulatif de la commande</h4>
                             <div class="total-line">
                                 <span class="label">Total brut :</span>
@@ -399,11 +436,25 @@
                             </ul>
                         </div>
 
+                        <!-- Message de facture - Centré sur la même page -->
+                        @php
+                            $factureMessage = \App\Models\FactureMessage::getActiveMessage();
+                        @endphp
+                        @if($factureMessage)
+                            <div style="margin-top: 10px; padding: 8px; background: linear-gradient(135deg, #f0f9ff 0%, #fdf4ff 100%); border-radius: 6px; border: 1px solid #dbeafe; text-align: center; width: 100%;">
+                                <p style="text-align: center; color: #4b5563; font-style: italic; font-weight: 300; font-size: 8px; line-height: 1.4; margin: 0; font-family: 'Georgia', 'Times New Roman', serif;">
+                                    "{{ $factureMessage->message }}"
+                                </p>
+                            </div>
+                        @endif
+
                     </div>
                 </td>
             @endfor
         </tr>
-    </table>
-</body>
 
+    </table>
+
+</body>
 </html>
+

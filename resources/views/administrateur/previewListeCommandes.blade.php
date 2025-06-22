@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 1cm;
+            margin: 1px;
             background: white;
             color: #333;
         }
@@ -120,18 +120,6 @@
 </head>
 
 <body>
-    <!-- En-tête -->
-    <div class="header">
-        <div class="header">
-            <div class="brand-section">
-                <h1>CICA NOBLESSE PRESSING</h1>
-                <p>Bureau situé à côté du dépôt de ciment Zogbo (annexe Godomey).</p>
-                <p>0272 BP 81</p>
-                <p>Tél. (+229) 97 89 36 99 / 99 10 70 93 / 96 44 67 50</p>
-                <p>Zogbo - Rép. Bénin</p>
-                <p>RC 13-A-17728 | IFU : 2201300990000</p>
-            </div>
-        </div>
 
 
         <div class="header-info">
@@ -160,7 +148,7 @@
                 <th>Client</th>
                 <th>Téléphone</th>
                 <th>Date Retrait</th>
-                <th>Montant</th>
+                {{-- <th>Montant</th> --}}
                 <th>Agent</th>
             </tr>
         </thead>
@@ -173,7 +161,7 @@
                     <td>{{ $commande->client }}</td>
                     <td>{{ $commande->numero_whatsapp }}</td>
                     <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->translatedFormat('d/m/Y H:i') }}</td>
-                    <td style="font-weight: 500;">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                    {{-- <td style="font-weight: 500;">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td> --}}
                     <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <span class="user-initial">{{ strtoupper(substr($commande->user->name, 0, 1)) }}</span>
@@ -183,14 +171,14 @@
                 </tr>
             @endforeach
         </tbody>
-        <tfoot>
+        {{-- <tfoot>
             <tr>
                 <td colspan="4"></td>
                 <td style="font-weight: bold; border-top: 2px solid #000;">
                     Total : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA
                 </td>
             </tr>
-        </tfoot>
+        </tfoot> --}}
     </table>
 
     <!-- Total -->
@@ -198,32 +186,6 @@
         Nombre total de commandes : <strong>{{ $commandes->count() }}</strong>
     </div>
 
-
-    <div style="page-break-inside: avoid; margin-top: 2rem;">
-        <!-- Ton bloc footer ici -->
-        <div class="container footer">
-            <h2>Conditions Générales de Pressing</h2>
-            <ul>
-                <li><strong>1.</strong> 10 Frs par jour pour frais de magasinage seront perçus à partir du
-                    10<sup>ème</sup>
-                    jour après dépôt.</li>
-                <li><strong>2.</strong> Après deux (02) mois, la maison n'est plus responsable des pertes ou avaries
-                    (<strong>60 jours</strong>).</li>
-                <li><strong>3.</strong> En cas de dommages causés aux effets, la responsabilité du pressing est limitée
-                    à :
-                    <ul class="sub-list">
-                        <li>Huit (8) fois le prix du blanchissage pour tout effet non griffé.</li>
-                        <li>Dix (10) fois pour les linges griffés.</li>
-                        <li>Une (1) fois le prix du blanchissage pour les draps.</li>
-                    </ul>
-                </li>
-                <li><strong>4.</strong> Les synthétiques, boucles, boutons, fermetures, broderies de fil sur Bazin ne
-                    sont
-                    pas pris en compte.</li>
-                <li><strong>5.</strong> Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
-            </ul>
-        </div>
-    </div>
 
 </body>
 

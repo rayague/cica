@@ -224,6 +224,18 @@
                 <li><strong>5.</strong> Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
             </ul>
         </div>
+
+        <!-- Message de facture -->
+        @php
+            $factureMessage = \App\Models\FactureMessage::getActiveMessage();
+        @endphp
+        @if($factureMessage)
+            <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #fdf4ff 100%); border-radius: 8px; border: 1px solid #dbeafe; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <p style="text-align: center; color: #4b5563; font-style: italic; font-weight: 300; font-size: 16px; line-height: 1.6; margin: 0; font-family: 'Georgia', 'Times New Roman', serif;">
+                    "{{ $factureMessage->message }}"
+                </p>
+            </div>
+        @endif
     </div>
 </body>
 

@@ -118,8 +118,8 @@
                 <th>N° Commande</th>
                 <th>Client</th>
                 <th>Heure de Retrait</th>
-                <th>Montant</th>
-                <th>Statut</th>
+                {{-- <th>Montant</th>
+                <th>Statut</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -131,16 +131,16 @@
                         <td>{{ $commande->numero }}</td>
                         <td>{{ $commande->client }}</td>
                         <td>{{ $commande->heure_retrait }}</td>
-                        <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
-                        <td>{{ $commande->statut }}</td>
+                            {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
+                            <td>{{ $commande->statut }}</td> --}}
                     </tr>
                 @endif
             @endforeach
-            <tr class="total">
+            {{-- <tr class="total">
                 <td colspan="3">Total :</td>
                 <td>{{ number_format($total, 2, ',', ' ') }} FCFA</td>
                 <td></td>
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
 
