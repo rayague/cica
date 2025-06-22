@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Comptabilité - CICA NOBLESSE PRESSING</title>
+    <title>Cica</title>
     <link rel="shortcut icon" href="{{ asset('images/Cica.png') }}" type="image/x-icon">
 
 
@@ -25,47 +25,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
 
-    <style>
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .p-6, .p-6 * {
-                visibility: visible;
-            }
-            .p-6 {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-            .flex.justify-between {
-                display: none !important;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th, td {
-                border: 1px solid #000;
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f0f0f0 !important;
-                color: #000 !important;
-            }
-            .bg-green-500 {
-                background-color: #f0f0f0 !important;
-            }
-            .text-white {
-                color: #000 !important;
-            }
-            .hover\:bg-green-50:hover {
-                background-color: transparent !important;
-            }
-        }
-    </style>
+
 
 </head>
 
@@ -269,7 +229,7 @@
 
                     <!-- Formulaire de filtre -->
                     <form method="GET" action="{{ route('commandes.filtrerComptabilite') }}"
-                        class="p-4 mb-6 bg-white rounded-lg shadow no-print">
+                        class="p-4 mb-6 bg-white rounded-lg shadow">
                         <div class="flex items-center space-x-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Date de début</label>
@@ -322,14 +282,9 @@
                         @endif
                     </div>
 
-                    <!-- Section des paiements filtrés -->
-                    <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-semibold text-gray-700">Historique des Paiements</h2>
-                            <button onclick="window.print()" class="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700">
-                                <i class="fas fa-print mr-2"></i>Imprimer
-                            </button>
-                        </div>
+                                        <!-- Section des paiements filtrés -->
+                                        <div class="p-6 mb-8 bg-white rounded-lg shadow-md">
+                        <h2 class="mb-4 text-2xl font-semibold text-gray-700">Historique des Paiements</h2>
                         @if ($payments->isNotEmpty())
                             <table class="min-w-full border-collapse bg-gray-50">
                                 <thead>

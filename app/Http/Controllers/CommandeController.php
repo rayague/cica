@@ -23,7 +23,7 @@ class CommandeController extends Controller
 
         // Générer un numéro de commande unique
         $annee = Carbon::now()->year;
-        $prefixe = "ETS-NKPA-" . $annee . "-";
+        $prefixe = " " . $annee . "-";
 
         // Trouver le dernier numéro de commande
         $dernierNumero = Commande::where('numero', 'like', $prefixe . '%')
@@ -32,10 +32,10 @@ class CommandeController extends Controller
 
         // Générer le prochain numéro de commande
         if ($dernierNumero) {
-            $dernierNum = (int) substr($dernierNumero->numero, -3);
-            $nouveauNum = str_pad($dernierNum + 1, 3, '0', STR_PAD_LEFT);
+            $dernierNum = (int) substr($dernierNumero->numero, -4);
+            $nouveauNum = str_pad($dernierNum + 1, 4, '0', STR_PAD_LEFT);
         } else {
-            $nouveauNum = '001';
+            $nouveauNum = '0001';
         }
 
         // Combiné pour avoir le numéro complet de la commande
@@ -70,7 +70,7 @@ class CommandeController extends Controller
 
             // Générer un numéro de commande unique
             $annee = Carbon::now()->year;
-            $prefixe = "ETS-NKPA-" . $annee . "-";
+            $prefixe = " " . $annee . "-";
 
             // Trouver le dernier numéro de commande
             $dernierNumero = Commande::where('numero', 'like', $prefixe . '%')
@@ -79,10 +79,10 @@ class CommandeController extends Controller
 
             // Générer le prochain numéro de commande
             if ($dernierNumero) {
-                $dernierNum = (int) substr($dernierNumero->numero, -3);
-                $nouveauNum = str_pad($dernierNum + 1, 3, '0', STR_PAD_LEFT);
+                $dernierNum = (int) substr($dernierNumero->numero, -4);
+                $nouveauNum = str_pad($dernierNum + 1, 4, '0', STR_PAD_LEFT);
             } else {
-                $nouveauNum = '001';
+                $nouveauNum = '0001';
             }
 
             // Combiné pour avoir le numéro complet de la commande
@@ -147,6 +147,24 @@ class CommandeController extends Controller
                 'discount_amount' => $discountAmount,
                 'remise_reduction' => $remiseReduction,
             ]);
+
+            // Si une avance client est fournie, créer un enregistrement de paiement
+            if ($avanceClient > 0) {
+                CommandePayment::create([
+                    'commande_id' => $commande->id,
+                    'user_id' => Auth::id(),
+                    'amount' => $avanceClient,
+                    'payment_method' => 'Avance initiale',
+                    'payment_type' => 'Espèce',
+                ]);
+
+                // Mettre à jour le statut de la commande selon les nouvelles règles
+                if ($soldeRestant == 0) {
+                    $commande->update(['statut' => 'Payé - Non retiré']);
+                } elseif ($avanceClient > 0) {
+                    $commande->update(['statut' => 'Partiellement payé']);
+                }
+            }
 
             return redirect()->route('commandes.show', $commande->id)
                 ->with('success', 'Commande validée avec succès!')
@@ -262,10 +280,10 @@ class CommandeController extends Controller
 
         // Générer le prochain numéro de commande
         if ($dernierNumero) {
-            $dernierNum = (int) substr($dernierNumero->numero, -3);
-            $nouveauNum = str_pad($dernierNum + 1, 3, '0', STR_PAD_LEFT);
+            $dernierNum = (int) substr($dernierNumero->numero, -4);
+            $nouveauNum = str_pad($dernierNum + 1, 4, '0', STR_PAD_LEFT);
         } else {
-            $nouveauNum = '001';
+            $nouveauNum = '0001';
         }
 
         // Combiné pour avoir le numéro complet de la commande
@@ -527,8 +545,9 @@ class CommandeController extends Controller
 
     public function ComptabiliteFiltrer(Request $request)
     {
-        // Récupérer l'ID de l'utilisateur connecté
-        $userId = Auth::id();
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+        $userId = $user->id;
 
         // Récupérer la période demandée dans la requête
         $date_debut = $request->input('date_debut');
@@ -602,7 +621,8 @@ class CommandeController extends Controller
             'montant_total',
             'objets',
             'montant_total_paiements',
-            'mouvements'
+            'mouvements',
+            'user'
         ));
     }
 
@@ -679,7 +699,7 @@ class CommandeController extends Controller
 
         $note = new Note();
         $note->commande_id = $commande->id;
-        $note->user_id = auth()->id();
+        $note->user_id = Auth::id();
         $note->note = $request->note;
         $note->save();
 
