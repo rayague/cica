@@ -205,6 +205,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+
+
+    Route::prefix('commandes')->group(function () {
+    // Route pour afficher le formulaire de création de commande
+    Route::get('create', [CommandeController::class, 'create'])->name('commandes.create');
+
+    // Route pour stocker la commande
+    Route::post('store', [CommandeController::class, 'store'])->name('commandes.store');
+
+    // Route pour afficher la liste des commandes (si nécessaire)
+    Route::get('index', [CommandeController::class, 'index'])->name('commandes.index');
+});
+
+Route::post('/commandes/{commande}/images', [CommandeImageController::class, 'store'])->name('commande.images.store');
+Route::delete('/commande-images/{image}', [CommandeImageController::class, 'destroy'])->name('commande.images.destroy');
+Route::post('/commande-images/{image}', [CommandeImageController::class, 'update'])->name('commande.images.update');
+
+// Routes pour la gestion des images
+Route::post('/commandes/images', [CommandeController::class, 'storeImage'])->name('images.store');
+Route::post('/commandes/images/{id}', [CommandeController::class, 'updateImage'])->name('images.update');
+Route::delete('/commandes/images/{id}', [CommandeController::class, 'deleteImage'])->name('images.delete');
 });
 
 
@@ -230,24 +254,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::prefix('commandes')->group(function () {
-    // Route pour afficher le formulaire de création de commande
-    Route::get('create', [CommandeController::class, 'create'])->name('commandes.create');
 
-    // Route pour stocker la commande
-    Route::post('store', [CommandeController::class, 'store'])->name('commandes.store');
-
-    // Route pour afficher la liste des commandes (si nécessaire)
-    Route::get('index', [CommandeController::class, 'index'])->name('commandes.index');
-});
-
-Route::post('/commandes/{commande}/images', [CommandeImageController::class, 'store'])->name('commande.images.store');
-Route::delete('/commande-images/{image}', [CommandeImageController::class, 'destroy'])->name('commande.images.destroy');
-Route::post('/commande-images/{image}', [CommandeImageController::class, 'update'])->name('commande.images.update');
-
-// Routes pour la gestion des images
-Route::post('/commandes/images', [CommandeController::class, 'storeImage'])->name('images.store');
-Route::post('/commandes/images/{id}', [CommandeController::class, 'updateImage'])->name('images.update');
-Route::delete('/commandes/images/{id}', [CommandeController::class, 'deleteImage'])->name('images.delete');
 
 require __DIR__ . '/auth.php';

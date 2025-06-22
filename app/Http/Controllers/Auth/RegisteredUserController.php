@@ -46,7 +46,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
            // Redirection personnalisée selon l'adresse email
-    if ($user->email === 'abdullah@laundgram.com') {
+    if ($user->email === 'avakh10@gmail.com') {
         return redirect()->route('administration');
     }
 
