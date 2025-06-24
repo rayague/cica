@@ -245,7 +245,7 @@
                 <!-- Bouton pour voir la liste des commandes -->
                 <div class="mt-4 ml-3">
                     <a href="
-                    {{ route('listeCommandes') }}
+                    {{ route('listeCommandesAdmin') }}
                     "
                         class="px-6 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
                         Voir la liste des commandes
@@ -698,10 +698,10 @@
                     total += lineTotal;
                 });
                 document.getElementById('total-display').textContent =
-                    `Total : ${total.toFixed(2)} TND`;
+                    `Total : ${total.toFixed(2)} FCFA`;
             }
 
-            // 3) Ajout d'une nouvelle ligne d’objet
+            // 3) Ajout d'une nouvelle ligne d'objet
             function addObjectField() {
                 const index = container.children.length;
                 const wrapper = document.createElement('div');
@@ -737,7 +737,7 @@
                 }
             });
 
-            // 5) Liaison du bouton “+ Ajouter un article”
+            // 5) Liaison du bouton "+"
             const addBtn = document.getElementById('add-object-btn');
             if (addBtn) addBtn.addEventListener('click', addObjectField);
             else console.error('Bouton + Ajouter un article introuvable');

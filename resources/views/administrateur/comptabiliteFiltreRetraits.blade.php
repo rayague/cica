@@ -64,14 +64,14 @@
                 <hr class="sidebar-divider">
 
                 <!-- Nav Item - Accueil -->
-                <li class=" nav-item"> <!-- Nav Item - Création d'Objets -->
+                 <!-- Nav Item - Création d'Objets -->
                 <li class=" nav-item">
                     <a class="nav-link" href="{{ route('creationObjets') }}">
                         <i class="fas fa-fw fa-plus-square"></i>
                         <span class="font-weight-bold">CRÉER OBJETS & PRIX</span>
                     </a>
                 </li>
-
+                <li class=" nav-item">
                 <a class="nav-link" href="
 
                     {{ route('administration') }}
@@ -282,6 +282,13 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+
+                    <!-- Bouton Imprimer (ADMIN) -->
+                    <div class="mb-8">
+                        <a href="{{ route('comptabilite.print', ['date_debut' => request('date_debut'), 'date_fin' => request('date_fin')]) }}" target="_blank" class="px-4 py-2 text-white bg-gray-800 rounded hover:bg-gray-900">
+                            🖨️ Imprimer le Rapport
+                        </a>
                     </div>
 
                     <!-- Section des paiements filtrés -->

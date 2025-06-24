@@ -1040,20 +1040,40 @@ class AdminController extends Controller
 
     public function printListeCommandesRetraits(Request $request)
     {
-        $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
+        $query = Commande::whereIn('statut', ['Retirée', 'Retiré']);
 
-        $user = Auth::user(); // Récupérer l'utilisateur connecté
+        if ($request->filled('date_debut')) {
+            $query->whereDate('date_retrait', '>=', $request->date_debut);
+        }
 
-        $commandes = Commande::where('user_id', $user->id) // Filtrer par utilisateur
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'non retirée')
-            ->orderBy('date_retrait')
-            ->get();
+        if ($request->filled('date_fin')) {
+            $query->whereDate('date_retrait', '<=', $request->date_fin);
+        }
 
-        $pdf = Pdf::loadView('administrateur.previewListeRetraits', compact('commandes', 'date_debut', 'date_fin'));
+        $commandes = $query->get();
+        $date_debut = $request->date_debut;
+        $date_fin = $request->date_fin;
 
-        return $pdf->stream('liste_commandes_retraits.pdf');
+        return view('administrateur.previewListeRetraits', compact('commandes', 'date_debut', 'date_fin'));
+    }
+
+    public function printComptabilite(Request $request)
+    {
+        $date_debut = $request->input('date_debut', Carbon::now()->startOfDay());
+        $date_fin = $request->input('date_fin', Carbon::now()->endOfDay());
+
+        $payments = CommandePayment::whereBetween('created_at', [$date_debut, $date_fin])->get();
+        $montant_total_paiements = $payments->sum('amount');
+
+        $notes = Note::whereBetween('created_at', [$date_debut, $date_fin])->get();
+
+        return view('administrateur.previewComptabilite', compact(
+            'payments',
+            'montant_total_paiements',
+            'notes',
+            'date_debut',
+            'date_fin'
+        ));
     }
 
     public function ComptabiliteFiltrer(Request $request)

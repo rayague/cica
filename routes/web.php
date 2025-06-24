@@ -261,3 +261,9 @@ Route::delete('/commandes/images/{id}', [CommandeController::class, 'deleteImage
 
 
 require __DIR__ . '/auth.php';
+
+Route::get('/imprimer_comptabilite', [AdminController::class, 'printComptabilite'])->name('comptabilite.print');
+
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    Route::get('/profile-admin', [AdminController::class, 'profilAdmin'])->name('profilAdmin');
+});
