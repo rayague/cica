@@ -824,6 +824,52 @@
             const editModal = new bootstrap.Modal(document.getElementById('editImageModal'));
             editModal.show();
         }
+
+        function sendWhatsAppMessage() {
+            @php
+                $clientName = $commande->client;
+                $orderNumber = $commande->numero;
+                $totalAmount = number_format($commande->total, 2, ',', ' ') . ' FCFA';
+                $depositDate = \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL');
+                $pickupDate = \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL');
+                $whatsAppNumber = $commande->numero_whatsapp;
+                $baseUrl = config('app.url');
+            @endphp
+
+            const clientName = @json($clientName);
+            const orderNumber = @json($orderNumber);
+            const totalAmount = @json($totalAmount);
+            const depositDate = @json($depositDate);
+            const pickupDate = @json($pickupDate);
+
+            // 1. Correction du format du numéro WhatsApp
+            let whatsAppNumber = @json($whatsAppNumber);
+            whatsAppNumber = whatsAppNumber.replace(/\D/g, ''); // Garder seulement les chiffres
+            if (whatsAppNumber.length === 8) {
+                whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent (ajustez si besoin)
+            }
+
+            // 2. Correction de l'URL pour qu'elle soit publique (assurez-vous que APP_URL est bien configuré dans votre .env)
+            const baseUrl = @json($baseUrl);
+            const previewUrl = `${baseUrl}/preview/{{ $commande->id }}`;
+
+            const message = `Bonjour ${clientName},
+Votre reçu pour la commande *${orderNumber}* est prêt.
+- *Montant Total:* ${totalAmount}
+- *Date de Dépôt:* ${depositDate}
+- *Date de Retrait:* ${pickupDate}
+Vous pouvez consulter les détails et télécharger votre reçu ici : ${previewUrl}
+Merci d'avoir choisi CICA !`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function openPaymentModal() {
+            $('#paymentModal').modal('show');
+        }
     </script>
 
     <!-- Modal pour faire un retrait / ajouter une note -->

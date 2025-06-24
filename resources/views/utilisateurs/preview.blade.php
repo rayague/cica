@@ -45,7 +45,7 @@
         .header {
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid #38a169;
+            border-bottom: 1px solid #0084ff;
             margin-bottom: 2mm;
             padding-bottom: 1mm;
             page-break-inside: avoid;
@@ -90,7 +90,7 @@
         .brand-section h1 {
             font-size: 10px;
             margin: 0 0 1mm 0;
-            color: #38a169;
+            color: #0084ff;
         }
 
         .brand-section p {
@@ -111,8 +111,8 @@
         .details-grid {
             display: flex;
             justify-content: space-between;
-            background: #f0fdf4;
-            border: 1px solid #86efac;
+            background: #f0f7fd;
+            border: 1px solid #53b2ff;
             padding: 6px;
             margin-bottom: 10px;
             width: 97%;
@@ -126,7 +126,7 @@
         }
 
         .detail-left {
-            border-right: 1px solid #86efac;
+            border-right: 1px solid #0084ff;
             padding-right: 10px;
         }
 
@@ -139,11 +139,11 @@
         .detail-title {
             font-weight: 600;
             font-size: 9px;
-            color: #166534;
+            color: #0084ff;
             margin-bottom: 2px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            background: #dcfce7;
+            background: #c9dcff;
             padding: 1px 4px;
             border-radius: 2px;
             display: inline-block;
@@ -151,7 +151,7 @@
 
         .detail-info {
             font-size: 8px;
-            color: #166534;
+            color: #0084ff;
             line-height: 1.1;
             margin-bottom: 1px;
             padding: 0;
@@ -162,7 +162,7 @@
         }
 
         .date-value {
-            color: #166534;
+            color: #0084ff;
             font-weight: 500;
         }
 
@@ -175,7 +175,7 @@
         }
 
         .items-table th {
-            background-color: #38a169;
+            background-color: #0084ff;
             color: white;
             padding: 1mm;
             text-align: left;
@@ -223,7 +223,7 @@
         }
 
         .notes-table th {
-            background-color: #38a169;
+            background-color: #0084ff;
             color: white;
             padding: 1mm;
             text-align: left;

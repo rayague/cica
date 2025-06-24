@@ -270,7 +270,7 @@
                                     <i class="fas fa-money-bill-wave text-2xl"></i>
                                 </div>
                                 <div class="ml-4">
-                                    <h3 class="text-lg font-semibold text-gray-700">Chiffre d'affaires</h3>
+                                    <h3 class="text-lg font-semibold text-gray-700">Journée</h3>
                                     <p class="text-2xl font-bold text-purple-600">{{ number_format($chiffreAffaires, 2, ',', ' ') }} FCFA</p>
                                 </div>
                             </div>

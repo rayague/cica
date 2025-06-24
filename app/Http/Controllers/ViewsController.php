@@ -178,12 +178,8 @@ class ViewsController extends Controller
 
     public function enAttente()
     {
-        // Récupérer l'utilisateur connecté
-        $user = Auth::user();
-
-        // Récupérer toutes les commandes de l'utilisateur qui sont en attente
-        $commandes = Commande::where('user_id', $user->id)
-            ->where(function($query) {
+        // Récupérer toutes les commandes qui sont en attente
+        $commandes = Commande::where(function($query) {
                 $query->where('statut', 'Non retirée')
                       ->orWhere('statut', 'Non retiré')
                       ->orWhere('statut', 'Partiellement payé')
@@ -198,12 +194,8 @@ class ViewsController extends Controller
 
     public function comptabilite()
     {
-        // 1) Récupérer l'ID de l'utilisateur connecté
-        $user = Auth::user();
-
         // 2) Récupérer les commandes
-        $commandes = Commande::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
+        $commandes = Commande::orderBy('created_at', 'desc')
             ->get();
 
         // 3) Calculer les totaux des commandes
@@ -218,14 +210,12 @@ class ViewsController extends Controller
         $soldeTotal = $totalVentes - $totalAvances;
 
         // 4) Récupérer les notes (retraits) pour aujourd'hui uniquement
-        $notes = Note::where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())
+        $notes = Note::whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
             ->get();
 
         // 5) Récupérer les paiements pour aujourd'hui uniquement
-        $payments = CommandePayment::where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())
+        $payments = CommandePayment::whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -295,17 +295,14 @@ class CommandeController extends Controller
 
     public function listeCommandes()
     {
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
-        $today = Carbon::today()->format('Y-m-d'); // Format YYYY-MM-DD
+        // Récupérer toutes les commandes sans filtrer par utilisateur
+        $commandes = Commande::with(['objets', 'payments']) // Charger les relations pour l'affichage
+            ->orderBy('created_at', 'desc') // Trier par date de création
+            ->paginate(20); // Paginer les résultats pour de meilleures performances
 
-        $commandes = Commande::where('user_id', $userId)
-            ->whereRaw('DATE(date_depot) = ?', [$today]) // Filtre strict sur la date
-            ->orderBy('created_at', 'desc') // Trier par date de création décroissante
-            ->paginate(10); // Utiliser paginate au lieu de get
-
-        $objets = Objets::all();
-
-        return view('utilisateurs.listeCommandes', compact('commandes', 'objets'));
+        return view('utilisateurs.listeCommandes', [
+            'commandes' => $commandes
+        ]);
     }
 
     public function show($id)
@@ -392,15 +389,12 @@ class CommandeController extends Controller
     // Méthode pour afficher les commandes journalières
     public function journalieres(Request $request)
     {
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
-
         $validated = $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
 
-        $commandes = Commande::where('user_id', $userId) // Filtrer par utilisateur
-            ->whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
+        $commandes = Commande::whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
             ->orderBy('date_depot')
             ->get();
 
@@ -443,13 +437,10 @@ class CommandeController extends Controller
 
     public function printListeCommandes(Request $request)
     {
-        $userId = Auth::id(); // 🔐 Utilisateur connecté
-
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date') ?? now()->format('Y-m-d');
 
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_depot', [$start_date, $end_date]) // 👈 ici !
+        $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date]) // 👈 ici !
             ->orderBy('date_depot')
             ->get();
 
@@ -460,16 +451,28 @@ class CommandeController extends Controller
         return $pdf->stream('liste_commandes.pdf');
     }
 
+    public function filtrerPending(Request $request)
+    {
+        $date_debut = $request->input('date_debut');
+        $date_fin = $request->input('date_fin', today()->toDateString());
+
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
+            ->get();
+
+        $montant_total = $commandes->sum('total');
+        $objets = Objets::all();
+
+        return view('utilisateurs.listeCommandesFiltrePending', compact('commandes', 'date_debut', 'date_fin', 'montant_total', 'objets'));
+    }
+
     public function printListeCommandesPending(Request $request)
     {
-        $userId = Auth::id();
-
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
 
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'non retirée')
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
             ->orderBy('date_retrait')
             ->get();
 
@@ -478,33 +481,13 @@ class CommandeController extends Controller
         return $pdf->stream('liste_commandes_pending.pdf');
     }
 
-    public function filtrerPending(Request $request)
-    {
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur connecté
-        $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin', today()->toDateString());
-
-        $commandes = Commande::where('user_id', $userId) // Filtrer par utilisateur
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->get();
-
-        $montant_total = $commandes->sum('total');
-
-        // Si $objets est nécessaire, ajoute-le ici (remplace par la bonne requête)
-        $objets = Objets::all();
-
-        return view('utilisateurs.listeCommandesFiltrePending', compact('commandes', 'date_debut', 'date_fin', 'montant_total', 'objets'));
-    }
-
     public function retraitsFiltrer(Request $request)
     {
-        $userId = Auth::id();
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
         // Requête de base pour les commandes de l'utilisateur
-        $query = Commande::where('user_id', $userId)
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
+        $query = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
             ->where(function($q) {
                 $q->where('statut', 'Retiré')
                   ->orWhere('statut', 'retirée');
@@ -545,17 +528,12 @@ class CommandeController extends Controller
 
     public function ComptabiliteFiltrer(Request $request)
     {
-        // Récupérer l'utilisateur connecté
-        $user = Auth::user();
-        $userId = $user->id;
-
         // Récupérer la période demandée dans la requête
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
         // Récupérer les commandes de l'utilisateur filtrées par la période
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
             ->where('statut', 'retirée')
             ->get();
 
@@ -563,12 +541,10 @@ class CommandeController extends Controller
         $montant_total = $commandes->sum('total');
 
         // Récupérer les paiements et les notes de l'utilisateur
-        $payments = CommandePayment::where('user_id', $userId)
-            ->whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les paiements dans la période
+        $payments = CommandePayment::whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les paiements dans la période
             ->get();
 
-        $notes = Note::where('user_id', $userId)
-            ->whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les notes dans la période
+        $notes = Note::whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les notes dans la période
             ->get();
 
         // Récupérer tous les mouvements d'argent (paiements et retraits)
@@ -615,14 +591,12 @@ class CommandeController extends Controller
             'commandes',
             'payments',
             'notes',
-            'userId',
             'date_debut',
             'date_fin',
             'montant_total',
             'objets',
             'montant_total_paiements',
-            'mouvements',
-            'user'
+            'mouvements'
         ));
     }
 
@@ -657,12 +631,10 @@ class CommandeController extends Controller
 
     public function rechercheRetrait(Request $request)
     {
-        $userId = Auth::id();
         $search = $request->input('client');
 
         // Requête de base pour les commandes de l'utilisateur avec statut "Retiré" ou "retirée"
-        $query = Commande::where('user_id', $userId)
-            ->where(function($q) {
+        $query = Commande::where(function($q) {
                 $q->where('statut', 'Retiré')
                   ->orWhere('statut', 'retirée');
             });

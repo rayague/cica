@@ -513,12 +513,12 @@
                     <!-- Boutons d'action -->
                     <div class="flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 mt-6 md:mt-8">
                         <!-- Bouton WhatsApp -->
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $commande->numero_whatsapp) }}"
-                           target="_blank"
+                        <button type="button"
+                           onclick="sendWhatsAppMessage()"
                            class="w-full md:w-auto flex items-center justify-center px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600">
                             <i class="fab fa-whatsapp mr-2"></i>
                             Envoyer par WhatsApp
-                        </a>
+                        </button>
 
                         <!-- Bouton Retrait -->
                         @if($commande->statut === 'Validée' || $commande->statut === 'Payé' || $commande->statut === 'retiré' || $commande->statut === 'Retiré' || $commande->solde_restant == 0)
@@ -828,6 +828,44 @@
             const editModal = new bootstrap.Modal(document.getElementById('editImageModal'));
             editModal.show();
         }
+
+        // --- Ajout de la fonction WhatsApp pour l'administration ---
+        function sendWhatsAppMessage() {
+            @php
+                $clientName = $commande->client;
+                $orderNumber = $commande->numero;
+                $totalAmount = number_format($commande->total, 2, ',', ' ') . ' FCFA';
+                $depositDate = \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL');
+                $pickupDate = \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL');
+                $whatsAppNumber = $commande->numero_whatsapp;
+                $baseUrl = config('app.url');
+            @endphp
+
+            const clientName = @json($clientName);
+            const orderNumber = @json($orderNumber);
+            const totalAmount = @json($totalAmount);
+            const depositDate = @json($depositDate);
+            const pickupDate = @json($pickupDate);
+
+            // 1. Correction du format du numéro WhatsApp
+            let whatsAppNumber = @json($whatsAppNumber);
+            whatsAppNumber = whatsAppNumber.replace(/\D/g, ''); // Garder seulement les chiffres
+            if (whatsAppNumber.length === 8) {
+                whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent
+            }
+
+            // 2. Correction de l'URL pour qu'elle soit publique
+            const baseUrl = @json($baseUrl);
+            const previewUrl = `${baseUrl}/preview/{{ $commande->id }}`;
+
+            const message = `Bonjour ${clientName},\nVotre reçu pour la commande *${orderNumber}* est prêt.\n- *Montant Total:* ${totalAmount}\n- *Date de Dépôt:* ${depositDate}\n- *Date de Retrait:* ${pickupDate}\nVous pouvez consulter les détails et télécharger votre reçu ici : ${previewUrl}\nMerci d'avoir choisi CICA !`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+        // --- Fin ajout WhatsApp ---
     </script>
 
     <!-- Modal pour faire un retrait / ajouter une note -->

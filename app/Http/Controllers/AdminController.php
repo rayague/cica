@@ -267,15 +267,11 @@ class AdminController extends Controller
 
     public function enAttente()
     {
-        // Récupérer l'utilisateur connecté
-        $user = Auth::user();
-
         // Définir la date d'aujourd'hui au format 'YYYY-MM-DD'
         $today = Carbon::today()->toDateString();
 
         // Récupérer toutes les commandes de l'utilisateur dont la date de retrait est aujourd'hui
-        $commandes = Commande::where('user_id', $user->id)
-            ->whereDate('date_retrait', $today)
+        $commandes = Commande::whereDate('date_retrait', $today)
             ->get();
 
         // Passer les commandes à la vue 'administrateur.pending'
@@ -288,31 +284,25 @@ class AdminController extends Controller
 
     public function comptabilite()
     {
-        // Récupérer l'ID de l'utilisateur connecté
-        $userId = Auth::id();
-
         // Définir la date d'aujourd'hui
         $today = Carbon::today()->toDateString();
 
         // Récupérer les commandes de l'utilisateur connecté pour aujourd'hui
-        $commandes = Commande::where('user_id', $userId)
-            ->whereDate('date_depot', $today)
+        $commandes = Commande::whereDate('date_depot', $today)
             ->get();
 
         // Calculer le montant total des commandes
         $total = $commandes->sum('total');
 
         // Récupérer les paiements associés à cet utilisateur pour aujourd'hui
-        $payments = CommandePayment::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+        $payments = CommandePayment::whereDate('created_at', $today)
             ->get();
 
         // Calculer le montant total des paiements
         $montant_total_paiements = $payments->sum('amount');
 
         // Récupérer les notes associées à cet utilisateur pour aujourd'hui
-        $notes = Note::where('user_id', $userId)
-            ->whereDate('created_at', $today)
+        $notes = Note::whereDate('created_at', $today)
             ->get();
 
         // Récupérer tous les mouvements d'argent (paiements et retraits)
@@ -354,7 +344,6 @@ class AdminController extends Controller
             'commandes',
             'payments',
             'notes',
-            'userId',
             'total',
             'montant_total_paiements',
             'mouvements'
@@ -807,8 +796,6 @@ class AdminController extends Controller
 
 
 
-
-
     // il faut trier par utilisateur
 
     public function listeCommandes()
@@ -916,27 +903,22 @@ class AdminController extends Controller
     // Méthode pour afficher les commandes journalières
     public function journalieres(Request $request)
     {
-        $user = Auth::user(); // Récupérer l'utilisateur connecté
-
-        // Récupérer les dates de début et de fin de la requête, ou utiliser aujourd'hui par défaut
-        $start_date = $request->input('start_date', Carbon::today()->toDateString());
-        $end_date = $request->input('end_date', Carbon::today()->toDateString());
-
-        // Valider les dates
-        $request->validate([
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date'
+        // Valider la requête
+        $validated = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date'
         ]);
 
-        $commandes = Commande::where('user_id', $user->id) // Filtrer par utilisateur
-            ->whereBetween('date_depot', [$start_date, $end_date]) // Filtrer par période
+        // Récupérer toutes les commandes (sans filtre par utilisateur)
+        $commandes = Commande::whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
             ->orderBy('date_depot')
             ->get();
 
+        // Retourner la vue avec les commandes filtrées
         return view('administrateur.commandesJournalieres', [
             'commandes' => $commandes,
-            'start_date' => $start_date,
-            'end_date' => $end_date
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date']
         ]);
     }
 
@@ -975,56 +957,24 @@ class AdminController extends Controller
 
     public function printListeCommandes(Request $request)
     {
-        $userId = Auth::id(); // 🔐 Utilisateur connecté
-
+        // Récupérer les dates de la requête
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date') ?? now()->format('Y-m-d');
 
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_depot', [$start_date, $end_date]) // 👈 ici !
+        // Récupérer les commandes sans filtre par utilisateur
+        $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date])
             ->orderBy('date_depot')
             ->get();
 
+        // Calculer le montant total
         $totalMontant = $commandes->sum('total');
 
-        // Générer le PDF
+        // Charger la vue PDF avec les données
         $pdf = Pdf::loadView('administrateur.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant'));
 
-        // Télécharger ou afficher dans le navigateur
-        return $pdf->stream('liste_commandes.pdf'); // Pour télécharger
-        // return $pdf->stream('liste_commandes.pdf'); // Pour afficher directement
+        // Retourner le PDF pour l'afficher ou le télécharger
+        return $pdf->stream('liste_commandes.pdf');
     }
-
-
-    // il faut trier par utilisateur
-
-    public function printListeCommandesPending(Request $request)
-    {
-        $userId = Auth::id();
-
-        $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
-
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'non retirée')
-            ->orderBy('date_retrait')
-            ->get();
-
-        // Générer le PDF
-        $pdf = Pdf::loadView('administrateur.previewListePending', compact('commandes', 'date_debut', 'date_fin'));
-
-        // Télécharger ou afficher dans le navigateur
-        return $pdf->stream('liste_commandes_pending.pdf'); // Pour afficher directement
-        // return $pdf->download('liste_commandes_pending.pdf'); // Pour télécharger
-    }
-
-
-
-
-
-
-
 
 
     // il faut trier par utilisateur
@@ -1034,10 +984,8 @@ class AdminController extends Controller
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
-        $user = Auth::user(); // Récupérer l'utilisateur connecté
-
-        $commandes = Commande::where('user_id', $user->id) // Filtrer par utilisateur
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
             ->get();
 
         $montant_total = $commandes->sum('total');
@@ -1046,17 +994,43 @@ class AdminController extends Controller
         return view('administrateur.listeCommandesFiltrePending', compact('commandes', 'date_debut', 'date_fin', 'montant_total', 'objets'));
     }
 
+    public function printListeCommandesPending(Request $request)
+    {
+        $date_debut = $request->input('date_debut');
+        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
+
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
+            ->orderBy('date_retrait')
+            ->get();
+
+        $pdf = Pdf::loadView('administrateur.previewListePending', compact('commandes', 'date_debut', 'date_fin'));
+
+        return $pdf->stream('liste_commandes_pending.pdf');
+    }
+
+
+
+
+
+
+
+
+
+    // il faut trier par utilisateur
+
     public function retraitsFiltrer(Request $request)
     {
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
-        $user = Auth::user(); // Récupérer l'utilisateur connecté
+        $query = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            ->where(function($q) {
+                $q->where('statut', 'Retiré')
+                  ->orWhere('statut', 'retirée');
+            });
 
-        $commandes = Commande::where('user_id', $user->id) // Filtrer par utilisateur
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'retirée')
-            ->get();
+        $commandes = $query->get();
 
         $montant_total = $commandes->sum('total');
         $objets = Objets::all();
@@ -1084,24 +1058,19 @@ class AdminController extends Controller
 
     public function ComptabiliteFiltrer(Request $request)
     {
-        $userId = Auth::id();
-
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
-        $commandes = Commande::where('user_id', $userId)
-            ->whereBetween('date_retrait', [$date_debut, $date_fin])
+        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
             ->where('statut', 'retirée')
             ->get();
 
         $montant_total = $commandes->sum('total');
 
-        $payments = CommandePayment::where('user_id', $userId)
-            ->whereBetween('created_at', [$date_debut, $date_fin])
+        $payments = CommandePayment::whereBetween('created_at', [$date_debut, $date_fin])
             ->get();
 
-        $notes = Note::where('user_id', $userId)
-            ->whereBetween('created_at', [$date_debut, $date_fin])
+        $notes = Note::whereBetween('created_at', [$date_debut, $date_fin])
             ->get();
 
         // Récupérer tous les mouvements d'argent (paiements et retraits)
@@ -1146,7 +1115,6 @@ class AdminController extends Controller
             'commandes',
             'payments',
             'notes',
-            'userId',
             'date_debut',
             'date_fin',
             'montant_total',
@@ -1192,16 +1160,12 @@ class AdminController extends Controller
 
     public function rechercheRetrait(Request $request)
     {
-        $userId = Auth::id();
-
         // on récupère la chaîne tapée
         // (si vous gardez name="client", remplacez 'search' par 'client' ici)
         $search = $request->input('client');
 
         // on commence la requête : commandes de l'utilisateur
-        $commandes = Commande::where('user_id', $userId)
-            // si search n'est pas vide, on ajoute le filtre multi-colonnes
-            ->when($search, function ($query, $search) {
+        $commandes = Commande::when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('client', 'like', "%{$search}%")
                         ->orWhere('numero_whatsapp', 'like', "%{$search}%")
