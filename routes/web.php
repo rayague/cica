@@ -267,3 +267,10 @@ Route::get('/imprimer_comptabilite', [AdminController::class, 'printComptabilite
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/profile-admin', [AdminController::class, 'profilAdmin'])->name('profilAdmin');
 });
+
+// Route publique pour les factures PDF (accessible sans authentification)
+Route::get('/factures/{commande}/pdf', [FactureController::class, 'publicPrint'])->name('factures.public');
+
+Route::get('/rappels/imprimer', [\App\Http\Controllers\ViewsController::class, 'rappelsImpression'])->name('rappels.imprimer');
+
+Route::get('/admin/rappels/imprimer', [\App\Http\Controllers\AdminController::class, 'rappelsImpressionAdmin'])->name('admin.rappels.imprimer');

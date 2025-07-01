@@ -173,7 +173,12 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <h3 class="text-xl font-bold text-gray-800">Rappels </h3>
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center justify-between">
+                        Rappels
+                        <a href="{{ route('admin.rappels.imprimer') }}" target="_blank" class="ml-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                            🖨️ Imprimer les retraits du jour
+                        </a>
+                    </h3>
                     <!-- Topbar Navbar -->
                     <ul class="ml-auto navbar-nav">
 

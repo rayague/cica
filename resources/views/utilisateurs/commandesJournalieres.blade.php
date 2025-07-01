@@ -269,7 +269,7 @@
                                 </div>
                             @endif
 
-                            <div class="overflow-hidden bg-white rounded-lg shadow-md ring-1 ring-gray-200">
+                            <div class="overflow-auto bg-white rounded-lg shadow-md ring-1 ring-gray-200">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-blue-600">
                                         <tr>
@@ -337,6 +337,7 @@
                                                         </svg>
                                                         Détails
                                                     </a>
+                                                    <a href="{{ route('factures.print', $commande->id) }}" target="_blank" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold ml-2">Voir la facture</a>
                                                 </td>
                                             </tr>
                                         @endforeach

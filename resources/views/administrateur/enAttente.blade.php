@@ -255,7 +255,12 @@
 
 
 
-                    <h1 class="mb-6 text-3xl font-bold text-gray-800">Commandes en attente pour aujourd'hui</h1>
+                    <h1 class="mb-6 text-3xl font-bold text-gray-800 flex items-center justify-between">
+                        Commandes en attente pour aujourd'hui
+                        <a href="{{ route('listeCommandesPendingAdmin.print', ['date_debut' => today()->toDateString(), 'date_fin' => today()->toDateString()]) }}" target="_blank" class="ml-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                            🖨️ Imprimer les factures en attente
+                        </a>
+                    </h1>
                     <div class="space-y-8">
                         <!-- Formulaire de filtre -->
                         <form method="GET" action="{{ route('commandesAdmin.filtrerPending') }}"
@@ -316,6 +321,9 @@
                                                         Statut</th>
                                                     <th
                                                         class="px-4 py-3 text-sm font-semibold text-center text-white uppercase">
+                                                        Rappeler</th>
+                                                    <th
+                                                        class="px-4 py-3 text-sm font-semibold text-center text-white uppercase">
                                                         Actions</th>
                                                 </tr>
                                             </thead>
@@ -342,6 +350,21 @@
                                                                     : 'bg-gray-100 text-gray-800') }}">
                                                                 {{ $commande->statut }}
                                                             </span>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-center">
+                                                            @php
+                                                                $whatsappNumber = $commande->numero_whatsapp;
+                                                                $message = rawurlencode(
+                                                                    "Bonjour M/Mme " . ($commande->client ?? '') . ", votre commande (facture n° " . ($commande->numero ?? '') . ") doit être retirée aujourd'hui. N'oubliez pas de passer la chercher !"
+                                                                );
+                                                            @endphp
+                                                            @if ($whatsappNumber)
+                                                                <a href="https://api.whatsapp.com/send?phone={{ $whatsappNumber }}&text={{ $message }}" target="_blank" class="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700">
+                                                                    Rappeler
+                                                                </a>
+                                                            @else
+                                                                <span class="text-gray-500">Pas de Numéro</span>
+                                                            @endif
                                                         </td>
                                                         <td class="px-4 py-3 text-center">
                                                             <a href="{{ route('commandesAdmin.show', $commande->id) }}"

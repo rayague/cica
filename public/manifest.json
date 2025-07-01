@@ -1,0 +1,23 @@
+{
+  "name": "CICA Noblesse Pressing",
+  "short_name": "CICA Pressing",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0084ff",
+  "description": "Application web de gestion pour CICA Noblesse Pressing.",
+  "icons": [
+    {
+      "src": "/images/Cica.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/Cica.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "portrait",
+  "lang": "fr"
+}

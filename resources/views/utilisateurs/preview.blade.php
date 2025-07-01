@@ -90,7 +90,7 @@
         .brand-section h1 {
             font-size: 10px;
             margin: 0 0 1mm 0;
-            color: #0084ff;
+            color: rgb(255, 213, 0);
         }
 
         .brand-section p {
@@ -143,15 +143,16 @@
             margin-bottom: 2px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            background: #c9dcff;
-            padding: 1px 4px;
+            /* background: #c9dcff; */
+            padding: 1px 0px;
             border-radius: 2px;
             display: inline-block;
         }
 
         .detail-info {
             font-size: 8px;
-            color: #0084ff;
+            /* color: #0084ff; */
+            font-weight: bold;
             line-height: 1.1;
             margin-bottom: 1px;
             padding: 0;
@@ -162,7 +163,7 @@
         }
 
         .date-value {
-            color: #0084ff;
+            /* color: #0084ff; */
             font-weight: 500;
         }
 

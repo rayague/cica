@@ -509,12 +509,12 @@
                     <!-- Boutons d'action -->
                     <div class="flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 mt-6 md:mt-8">
                         <!-- Bouton WhatsApp -->
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $commande->numero_whatsapp) }}"
-                           target="_blank"
+                        {{-- <button type="button"
+                           onclick="sendWhatsAppMessage()"
                            class="w-full md:w-auto flex items-center justify-center px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600">
                             <i class="fab fa-whatsapp mr-2"></i>
-                            Envoyer par WhatsApp
-                        </a>
+                            Envoyer par WhatsAppzz
+                        </button> --}}
 
                         <!-- Bouton Retrait -->
                         @if($commande->statut === 'Validée' || $commande->statut === 'Payé' || $commande->statut === 'retiré' || $commande->statut === 'Retiré' || $commande->solde_restant == 0)
@@ -561,6 +561,23 @@
                                 Cette commande est déjà validée et ne peut plus être modifiée
                             </div>
                         @endif
+                    </div>
+
+                    <div class="flex gap-2 my-4">
+                        <a href="{{ route('factures.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
+                            Télécharger la facture PDF
+                        </a>
+                        <a href="https://wa.me/?text={{
+                            rawurlencode(
+                                'Bonjour M/Mme ' . ($commande->client ?? '') . ",\nVotre facture pour la commande " . ($commande->numero ?? '') .
+                                ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) .
+                                " est bien enregistrée.\n\nLa date de retrait est pour le " . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) .
+                                " !\n\nMerci d'avoir choisi CICA NOBLESSE !"
+                            )
+                        }}"
+                        target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
+                            Envoyer par WhatsApp
+                        </a>
                     </div>
 
                 </div>
@@ -827,38 +844,23 @@
 
         function sendWhatsAppMessage() {
             @php
-                $clientName = $commande->client;
-                $orderNumber = $commande->numero;
-                $totalAmount = number_format($commande->total, 2, ',', ' ') . ' FCFA';
-                $depositDate = \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL');
-                $pickupDate = \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL');
                 $whatsAppNumber = $commande->numero_whatsapp;
-                $baseUrl = config('app.url');
             @endphp
-
-            const clientName = @json($clientName);
-            const orderNumber = @json($orderNumber);
-            const totalAmount = @json($totalAmount);
-            const depositDate = @json($depositDate);
-            const pickupDate = @json($pickupDate);
 
             // 1. Correction du format du numéro WhatsApp
             let whatsAppNumber = @json($whatsAppNumber);
             whatsAppNumber = whatsAppNumber.replace(/\D/g, ''); // Garder seulement les chiffres
             if (whatsAppNumber.length === 8) {
-                whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent (ajustez si besoin)
+                whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent
             }
 
-            // 2. Correction de l'URL pour qu'elle soit publique (assurez-vous que APP_URL est bien configuré dans votre .env)
-            const baseUrl = @json($baseUrl);
-            const previewUrl = `${baseUrl}/preview/{{ $commande->id }}`;
+            // 2. Générer le PDF de la facture (éviter le double slash)
+            const pdfUrl = `{{ url('/factures/' . $commande->id . '/pdf') }}`;
 
-            const message = `Bonjour ${clientName},
-Votre reçu pour la commande *${orderNumber}* est prêt.
-- *Montant Total:* ${totalAmount}
-- *Date de Dépôt:* ${depositDate}
-- *Date de Retrait:* ${pickupDate}
-Vous pouvez consulter les détails et télécharger votre reçu ici : ${previewUrl}
+            // 3. Message avec lien vers le PDF
+            const message = `Bonjour {{ $commande->client }},
+Votre facture pour la commande *{{ $commande->numero }}* est prête.
+Vous pouvez la télécharger ici : ${pdfUrl}
 Merci d'avoir choisi CICA !`;
 
             const encodedMessage = encodeURIComponent(message);

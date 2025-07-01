@@ -13,9 +13,10 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="manifest" href="/manifest.json">
 </head>
 
 <body class="font-sans antialiased">
@@ -36,6 +37,22 @@
             {{ $slot }}
         </main>
     </div>
+
+    @if (request()->is('/'))
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(function(registration) {
+                            // Registration successful
+                        })
+                        .catch(function(error) {
+                            // Registration failed
+                        });
+                });
+            }
+        </script>
+    @endif
 </body>
 
 </html>

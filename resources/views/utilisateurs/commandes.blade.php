@@ -348,7 +348,7 @@
                                     <div class="flex items-start gap-3" id="objets-container-0">
                                         <select name="objets[0][id]"
                                             class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                            onchange="updatePrice(this)">
+                                            onchange="updateTotalPrice(this)">
                                             @foreach ($objets as $objet)
                                                 <option value="{{ $objet->id }}"
                                                     data-price="{{ $objet->prix_unitaire }}">
@@ -401,11 +401,12 @@
                                         <div>
                                             <label class="text-sm font-medium text-gray-700">Avance client</label>
                                             <div class="relative mt-1">
-                                                <input type="number" name="avance_client"
+                                                <input type="number" name="avance_client" id="avance_client"
                                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                                    placeholder="00.00" step="0.01">
+                                                    placeholder="00.00" step="0.01" oninput="validateAvance(this)">
                                                 <span class="absolute text-gray-500 right-3 top-3">FCFA</span>
                                             </div>
+                                            <div id="avance_error" class="text-red-600 text-sm mt-1 hidden"></div>
                                         </div>
 
 
@@ -654,10 +655,10 @@
                     total += lineTotal;
                 });
                 document.getElementById('total-display').textContent =
-                    `Total : ${total.toFixed(2)} TND`;
+                    `Total : ${total.toFixed(2)} FCFA`;
             }
 
-            // 3) Ajout d'une nouvelle ligne d’objet
+            // 3) Ajout d'une nouvelle ligne d'objet
             function addObjectField() {
                 const index = container.children.length;
                 const wrapper = document.createElement('div');
@@ -693,7 +694,7 @@
                 }
             });
 
-            // 5) Liaison du bouton “+ Ajouter un article”
+            // 5) Liaison du bouton "+" Ajouter un article
             const addBtn = document.getElementById('add-object-btn');
             if (addBtn) addBtn.addEventListener('click', addObjectField);
             else console.error('Bouton + Ajouter un article introuvable');
@@ -819,6 +820,42 @@
                 `Total : ${!isNaN(total) ? total.toFixed(2) : '0.00'} FCFA`;
 
             // document.querySelector('input[name="avance_client"]').value = !isNaN(total) ? total.toFixed(2) : '0';
+        }
+
+        // Fonction de validation en temps réel de l'avance client
+        function validateAvance(input) {
+            const avance = parseFloat(input.value) || 0;
+            const totalText = document.getElementById('total-display').textContent;
+            const total = parseFloat(totalText.match(/[\d,]+\.?\d*/)[0].replace(',', '')) || 0;
+            const errorDiv = document.getElementById('avance_error');
+            const submitBtn = document.getElementById('submitButton');
+
+            // Masquer l'erreur par défaut
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+
+            // Validation de l'avance
+            if (avance < 0) {
+                errorDiv.textContent = 'L\'avance ne peut pas être négative';
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                return false;
+            }
+
+            if (avance > total) {
+                errorDiv.textContent = `L'avance ne peut pas dépasser le total de ${total.toFixed(2)} FCFA`;
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                return false;
+            }
+
+            return true;
         }
 
         // Fonction d'ajout d'objet (version corrigée)

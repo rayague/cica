@@ -800,15 +800,13 @@ class AdminController extends Controller
 
     public function listeCommandes()
     {
-        $user = Auth::user(); // Récupérer l'utilisateur connecté
-        $today = Carbon::today()->toDateString(); // Date d'aujourd'hui au format YYYY-MM-DD
+        $today = \Carbon\Carbon::today()->toDateString();
 
-        $commandes = Commande::where('user_id', $user->id)
-            ->whereDate('date_depot', $today) // Filtrer uniquement les commandes d'aujourd'hui
+        $commandes = \App\Models\Commande::whereDate('date_depot', $today)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $objets = Objets::all();
+        $objets = \App\Models\Objets::all();
 
         return view('administrateur.listeCommandes', compact('commandes', 'objets'));
     }
@@ -1240,6 +1238,33 @@ class AdminController extends Controller
         FactureMessage::where('is_active', true)->update(['is_active' => false]);
 
         return redirect()->back()->with('success', 'Message de facture supprimé avec succès.');
+    }
+
+    public function rappelsImpressionAdmin()
+    {
+        $date_debut = request('date_debut');
+        $date_fin = request('date_fin');
+        if ($date_debut && $date_fin) {
+            $commandes = \App\Models\Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+                ->where(function($q) {
+                    $q->where('statut', 'Retiré')
+                      ->orWhere('statut', 'retirée');
+                })
+                ->orderBy('date_retrait')
+                ->get();
+            $periode = $date_debut . ' au ' . $date_fin;
+        } else {
+            $today = \Carbon\Carbon::today()->toDateString();
+            $commandes = \App\Models\Commande::whereDate('date_retrait', $today)
+                ->where(function($q) {
+                    $q->where('statut', 'Retiré')
+                      ->orWhere('statut', 'retirée');
+                })
+                ->orderBy('date_retrait')
+                ->get();
+            $periode = $today;
+        }
+        return view('administrateur.rappelsImpression', compact('commandes', 'periode'));
     }
 
 }

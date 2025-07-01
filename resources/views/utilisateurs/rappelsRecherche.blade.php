@@ -153,6 +153,9 @@
                     </button>
 
                     <h3 class="text-xl font-bold text-gray-800">Rappels </h3>
+                    <a href="{{ route('rappels.imprimer', ['date_debut' => request('date_debut'), 'date_fin' => request('date_fin')]) }}" target="_blank" class="ml-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                        Imprimer la liste des retraits filtrés
+                    </a>
                     <!-- Topbar Navbar -->
                     <ul class="ml-auto navbar-nav">
 

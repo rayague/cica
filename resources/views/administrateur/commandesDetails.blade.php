@@ -405,6 +405,17 @@
                     @if($commande->solde_restant > 0)
                     <div class="p-4 mt-6 md:mt-8 bg-gray-200 rounded">
                         <h3 class="mb-4 text-lg md:text-xl font-semibold">Mettre à jour les entrées d'argent</h3>
+
+                        <!-- Affichage du total en temps réel -->
+                        <div class="mb-4 p-3 bg-blue-100 rounded-md">
+                            <p class="text-sm font-medium text-blue-800">
+                                Total de la commande : <span class="font-bold">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
+                            </p>
+                            <p class="text-sm text-blue-600">
+                                Solde restant : <span class="font-bold">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</span>
+                            </p>
+                        </div>
+
                         <form action="{{ route('commande.updateFinancial', $commande->id) }}" method="POST"
                             class="flex flex-col md:flex-row items-start md:items-center gap-4">
                             @csrf
@@ -416,8 +427,8 @@
                                 <input type="number" name="montant_paye" id="montant_paye" step="0.01"
                                     min="0" max="{{ $commande->solde_restant }}"
                                     class="w-full md:w-32 p-2 border rounded-md" required placeholder="montant"
-                                    oninvalid="this.setCustomValidity('Le montant ne peut pas dépasser {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA')"
-                                    oninput="this.setCustomValidity('')">
+                                    oninput="validateMontant(this, {{ $commande->total }}, {{ $commande->solde_restant }})">
+                                <div id="montant_error" class="text-red-600 text-sm mt-1 hidden"></div>
                             </div>
                             <div class="w-full md:w-auto">
                             <select name="payment_method" id="payment_method"
@@ -435,7 +446,7 @@
                                     <option value="Mobile Money">Mobile Money</option>
                                 </select>
                             </div>
-                            <button type="submit"
+                            <button type="submit" id="submit_btn"
                                 class="w-full md:w-auto px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
                                 Mettre à jour
                             </button>
@@ -513,12 +524,12 @@
                     <!-- Boutons d'action -->
                     <div class="flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 mt-6 md:mt-8">
                         <!-- Bouton WhatsApp -->
-                        <button type="button"
+                        {{-- <button type="button"
                            onclick="sendWhatsAppMessage()"
                            class="w-full md:w-auto flex items-center justify-center px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600">
                             <i class="fab fa-whatsapp mr-2"></i>
                             Envoyer par WhatsApp
-                        </button>
+                        </button> --}}
 
                         <!-- Bouton Retrait -->
                         @if($commande->statut === 'Validée' || $commande->statut === 'Payé' || $commande->statut === 'retiré' || $commande->statut === 'Retiré' || $commande->solde_restant == 0)
@@ -565,6 +576,23 @@
                                 Cette commande est déjà validée et ne peut plus être modifiée
                             </div>
                         @endif
+                </div>
+
+                <div class="flex gap-2 my-4">
+                    <a href="{{ route('facturesAdmin.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
+                        Télécharger la facture PDF
+                    </a>
+                    <a href="https://wa.me/?text={{
+                        rawurlencode(
+                            'Bonjour M/Mme ' . ($commande->client ?? '') . ",\nVotre facture pour la commande " . ($commande->numero ?? '') .
+                            ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) .
+                            " est bien enregistrée.\n\nLa date de retrait est pour le " . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) .
+                            " !\n\nMerci d'avoir choisi CICA NOBLESSE !"
+                        )
+                    }}"
+                    target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
+                        Envoyer par WhatsApp
+                    </a>
                 </div>
 
             </div>
@@ -660,11 +688,49 @@
 
     <!-- Scripts pour la gestion des images -->
     <script>
+        // Fonction de validation en temps réel du montant
+        function validateMontant(input, total, soldeRestant) {
+            const montant = parseFloat(input.value) || 0;
+            const errorDiv = document.getElementById('montant_error');
+            const submitBtn = document.getElementById('submit_btn');
+
+            // Masquer l'erreur par défaut
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            submitBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+
+            // Validation du montant
+            if (montant <= 0) {
+                errorDiv.textContent = 'Le montant doit être supérieur à 0';
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                return false;
+            }
+
+            if (montant > soldeRestant) {
+                errorDiv.textContent = `Le montant ne peut pas dépasser le solde restant de ${new Intl.NumberFormat('fr-FR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(soldeRestant)} FCFA`;
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                return false;
+            }
+
+            return true;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Gestion du formulaire de mise à jour financière
             const form = document.querySelector('form[action*="updateFinancial"]');
             const montantInput = document.getElementById('montant_paye');
             const soldeRestant = {{ $commande->solde_restant }};
+            const total = {{ $commande->total }};
 
             if (form && montantInput) {
                 form.setAttribute('novalidate', true);
@@ -674,16 +740,8 @@
 
                     const montant = parseFloat(montantInput.value);
 
-                    if (montant > soldeRestant) {
-                        alert('Le montant ne peut pas dépasser ' + new Intl.NumberFormat('fr-FR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }).format(soldeRestant) + ' FCFA');
-                        return;
-                    }
-
-                    if (montant <= 0) {
-                        alert('Le montant doit être supérieur à 0');
+                    // Utiliser la fonction de validation
+                    if (!validateMontant(montantInput, total, soldeRestant)) {
                         return;
                     }
 
@@ -694,6 +752,8 @@
                     if (this.value < 0) {
                         this.value = 0;
                     }
+                    // Validation en temps réel
+                    validateMontant(this, total, soldeRestant);
                 });
             }
 
@@ -832,20 +892,8 @@
         // --- Ajout de la fonction WhatsApp pour l'administration ---
         function sendWhatsAppMessage() {
             @php
-                $clientName = $commande->client;
-                $orderNumber = $commande->numero;
-                $totalAmount = number_format($commande->total, 2, ',', ' ') . ' FCFA';
-                $depositDate = \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL');
-                $pickupDate = \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL');
                 $whatsAppNumber = $commande->numero_whatsapp;
-                $baseUrl = config('app.url');
             @endphp
-
-            const clientName = @json($clientName);
-            const orderNumber = @json($orderNumber);
-            const totalAmount = @json($totalAmount);
-            const depositDate = @json($depositDate);
-            const pickupDate = @json($pickupDate);
 
             // 1. Correction du format du numéro WhatsApp
             let whatsAppNumber = @json($whatsAppNumber);
@@ -854,11 +902,14 @@
                 whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent
             }
 
-            // 2. Correction de l'URL pour qu'elle soit publique
-            const baseUrl = @json($baseUrl);
-            const previewUrl = `${baseUrl}/preview/{{ $commande->id }}`;
+            // 2. Générer le PDF de la facture (éviter le double slash)
+            const pdfUrl = `{{ url('/factures/' . $commande->id . '/pdf') }}`;
 
-            const message = `Bonjour ${clientName},\nVotre reçu pour la commande *${orderNumber}* est prêt.\n- *Montant Total:* ${totalAmount}\n- *Date de Dépôt:* ${depositDate}\n- *Date de Retrait:* ${pickupDate}\nVous pouvez consulter les détails et télécharger votre reçu ici : ${previewUrl}\nMerci d'avoir choisi CICA !`;
+            // 3. Message avec lien vers le PDF
+            const message = `Bonjour {{ $commande->client }},
+Votre facture pour la commande *{{ $commande->numero }}* est prête.
+Vous pouvez la télécharger ici : ${pdfUrl}
+Merci d'avoir choisi CICA !`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${encodedMessage}`;

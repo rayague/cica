@@ -346,6 +346,33 @@ class ViewsController extends Controller
         ]);
     }
 
+    public function rappelsImpression()
+    {
+        $date_debut = request('date_debut');
+        $date_fin = request('date_fin');
+        if ($date_debut && $date_fin) {
+            $commandes = \App\Models\Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+                ->where(function($q) {
+                    $q->where('statut', 'Retiré')
+                      ->orWhere('statut', 'retirée');
+                })
+                ->orderBy('date_retrait')
+                ->get();
+            $periode = $date_debut . ' au ' . $date_fin;
+        } else {
+            $today = \Carbon\Carbon::today()->toDateString();
+            $commandes = \App\Models\Commande::whereDate('date_retrait', $today)
+                ->where(function($q) {
+                    $q->where('statut', 'Retiré')
+                      ->orWhere('statut', 'retirée');
+                })
+                ->orderBy('date_retrait')
+                ->get();
+            $periode = $today;
+        }
+        return view('utilisateurs.rappelsImpression', compact('commandes', 'periode'));
+    }
+
 
 
 

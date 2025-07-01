@@ -295,13 +295,17 @@ class CommandeController extends Controller
 
     public function listeCommandes()
     {
-        // Récupérer toutes les commandes sans filtrer par utilisateur
-        $commandes = Commande::with(['objets', 'payments']) // Charger les relations pour l'affichage
-            ->orderBy('created_at', 'desc') // Trier par date de création
-            ->paginate(20); // Paginer les résultats pour de meilleures performances
+        // Récupérer uniquement les commandes du jour
+        $commandes = Commande::with(['objets', 'payments'])
+            ->whereDate('date_depot', now()->toDateString())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $objets = \App\Models\Objets::all();
 
         return view('utilisateurs.listeCommandes', [
-            'commandes' => $commandes
+            'commandes' => $commandes,
+            'objets' => $objets
         ]);
     }
 
