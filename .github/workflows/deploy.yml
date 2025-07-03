@@ -16,8 +16,8 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: 37.44.246.216
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          username: ${{ secrets.u397987894 }}
+          password: ${{ secrets.Cicapressing00@ }}
           port: 21
           protocol: ftp
-          server-dir: public_html/
+          server-dir: cica/
