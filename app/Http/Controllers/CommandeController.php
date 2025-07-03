@@ -452,7 +452,9 @@ class CommandeController extends Controller
 
         // Récupérer les paiements et les notes sur la période
         $payments = \App\Models\CommandePayment::whereBetween('created_at', [$start_date, $end_date])->get();
-        $notes = \App\Models\Note::whereBetween('created_at', [$start_date, $end_date])->get();
+        $notes = \App\Models\Note::whereHas('commande', function($q) use ($start_date, $end_date) {
+            $q->whereBetween('date_retrait', [$start_date, $end_date]);
+        })->get();
 
         $pdf = Pdf::loadView('utilisateurs.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'payments', 'notes'));
 

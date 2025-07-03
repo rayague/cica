@@ -51,10 +51,12 @@
         <thead>
             <tr>
                 <th>N° Commande</th>
-                <th>Client</th>
+                <th>Nom du Client</th>
+                <th>Numéro de Téléphone</th>
+                <th>Date de Retrait</th>
                 <th>Heure de Retrait</th>
-                <th>Montant</th>
-                {{-- <th>Statut</th> --}}
+                <th>Montant de la Facture</th>
+                <th>Statut</th>
             </tr>
         </thead>
         <tbody>
@@ -64,16 +66,13 @@
                 <tr>
                     <td>{{ $commande->numero }}</td>
                     <td>{{ $commande->client }}</td>
+                    <td>{{ $commande->numero_whatsapp }}</td>
+                    <td>{{ $commande->date_retrait }}</td>
                     <td>{{ $commande->heure_retrait }}</td>
-                    <td>{{ $commande->numero_whatsapp }} </td>
-                    {{-- <td>{{ $commande->statut }}</td> --}}
+                    <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                    <td>{{ $commande->statut }}</td>
                 </tr>
             @endforeach
-            {{-- <tr class="total">
-                <td colspan="3">Total :</td>
-                <td>{{ number_format($total, 2, ',', ' ') }} FCFA</td>
-                <td></td>
-            </tr> --}}
         </tbody>
     </table>
 

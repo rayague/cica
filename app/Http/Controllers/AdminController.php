@@ -967,8 +967,14 @@ class AdminController extends Controller
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
 
+        // Récupérer les paiements et les notes sur la période
+        $payments = \App\Models\CommandePayment::whereBetween('created_at', [$start_date, $end_date])->get();
+        $notes = \App\Models\Note::whereHas('commande', function($q) use ($start_date, $end_date) {
+            $q->whereBetween('date_retrait', [$start_date, $end_date]);
+        })->get();
+
         // Charger la vue PDF avec les données
-        $pdf = Pdf::loadView('administrateur.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant'));
+        $pdf = Pdf::loadView('administrateur.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'payments', 'notes'));
 
         // Retourner le PDF pour l'afficher ou le télécharger
         return $pdf->stream('liste_commandes.pdf');
@@ -1145,6 +1151,29 @@ class AdminController extends Controller
 
     // ---------------------------------- Fin de tout ce qui se trouve dans le controller Commande Controller -----------------------------------------------------------------------//
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ---------------------------------- Tout ce qui se trouve dans le controller Commande Controller -----------------------------------------------------------------------//
 
 
     public function recherche(Request $request)
