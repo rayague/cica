@@ -143,20 +143,20 @@
     <!-- Historique des Paiements -->
     @if(isset($payments) && count($payments))
         <h3 style="margin-top:2rem; color:#1a365d;">Historique des Paiements</h3>
-        <table>
-            <thead>
-                <tr>
+    <table>
+        <thead>
+            <tr>
                     <th>Numéro de Facture</th>
                     <th>Utilisateur</th>
                     <th>Montant</th>
                     <th>Action</th>
                     <th>Date</th>
-                    <th>Client</th>
-                </tr>
-            </thead>
-            <tbody>
+                <th>Client</th>
+            </tr>
+        </thead>
+        <tbody>
                 @foreach ($payments as $payment)
-                    <tr>
+                <tr>
                         <td>{{ $payment->commande->numero ?? $payment->commande_id }}</td>
                         <td>{{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
                         <td>{{ number_format($payment->amount, 2, ',', ' ') }} F</td>
@@ -190,10 +190,10 @@
                         <td>{{ $note->note }}</td>
                         <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
                         <td>{{ $note->commande->client ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
     @endif
 
 </body>

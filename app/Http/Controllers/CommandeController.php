@@ -448,13 +448,13 @@ class CommandeController extends Controller
                 ->where('payment_method', 'Avance initiale')
                 ->exists();
             if (!$avanceExistante) {
-                CommandePayment::create([
-                    'commande_id' => $commande->id,
-                    'user_id' => Auth::id(),
-                    'amount' => $soldeRestant,
+            CommandePayment::create([
+                'commande_id' => $commande->id,
+                'user_id' => Auth::id(),
+                'amount' => $soldeRestant,
                     'payment_method' => 'Validation',
                     'payment_type' => 'Validation',
-                ]);
+            ]);
             }
         }
 
