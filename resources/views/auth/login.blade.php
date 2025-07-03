@@ -45,6 +45,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -145,17 +146,9 @@
         </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full p-4 text-sm font-bold text-center text-white bg-sky-600 backdrop-blur-md shadow-lg">
-        <p>
-            Copyright © <a class="italic text-white hover:text-sky-300 transition-colors" href="/">Cica</a>
-            <a href="https://portfolio-cnkp.vercel.app" target="_blank" class="hover:text-sky-300 transition-colors">Ray Ague</a>
-            2025
-        </p>
+    <footer class="fixed bottom-0 w-full p-2 text-xs font-semibold text-center text-white bg-sky-700 backdrop-blur-md shadow-lg tracking-wide" style="font-family: 'Montserrat', sans-serif;">
+        Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.
     </footer>
-
-    <div class="text-center mt-8 mb-4">
-        <small>Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.</small>
-    </div>
 
 </body>
 
