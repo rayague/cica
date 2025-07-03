@@ -371,9 +371,8 @@
                                                         @if ($hour == 18) selected @endif>
                                                         {{ $hour }}:00
                                                     </option>
-                                                    <option value="{{ str_pad($hour, 2, '0', STR_PAD_LEFT) }}:30"
-                                                        @if ($hour == 18) selected @endif>
-                                                        {{ $hour }}:00
+                                                    <option value="{{ str_pad($hour, 2, '0', STR_PAD_LEFT) }}:30">
+                                                        {{ $hour }}:30
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -427,8 +426,8 @@
 
                                     <select name="type_lavage"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                                        <option value="simple">Lavage simple</option>
                                         <option value="pressing">Pressing</option>
+                                        <option value="simple">Lavage simple</option>
                                         <option value="lavage express">Lavage express</option>
                                         <option value="délicat">Lavage délicat</option>
                                     </select>
@@ -453,7 +452,13 @@
                                             <div id="avance_error" class="text-red-600 text-sm mt-1 hidden"></div>
                                         </div>
 
-
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-700">Mode de paiement de l'avance</label>
+                                            <select name="payment_type" id="payment_type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                                <option value="Espèce">Espèce</option>
+                                                <option value="Mobile Money">Mobile Money</option>
+                                            </select>
+                                        </div>
 
                                         <div>
                                             <label class="text-sm font-medium text-gray-700">Remise</label>

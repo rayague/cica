@@ -198,8 +198,12 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    <div class="flex justify-end mb-4">
+                        <a href="{{ route('listeCommandesPending.print') }}" target="_blank" class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-900 font-semibold shadow">
+                            🖨️ Imprimer les factures non validées
+                        </a>
+                    </div>
 
                     @if (session('success'))
                         <div class="alert alert-success">
@@ -260,33 +264,34 @@
                         </form>
                     </div>
                     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-                        <table class="w-full border border-collapse table-auto">
+                        <table class="w-full border border-blue-400 rounded-lg overflow-hidden">
                             <thead class="text-white bg-blue-600">
                                 <tr>
-                                    <th class="px-4 py-2 border border-blue-400">Numéro</th>
-                                    <th class="px-4 py-2 border border-blue-400">Client</th>
-                                    <th class="px-4 py-2 border border-blue-400">Date de Dépôt</th>
-                                    <th class="px-4 py-2 border border-blue-400">Date de Retrait</th>
-                                    <th class="px-4 py-2 border border-blue-400">Total</th>
-                                    <th class="px-4 py-2 border border-blue-400">Statut</th>
-                                    <th class="px-4 py-2 border border-blue-400">Actions</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Numéro</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Client</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Dépôt</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Retrait</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Total</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Statut</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Voir</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Notifier</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($commandes as $commande)
-                                    <tr class="{{ $commande->statut === 'En route' ? 'bg-yellow-100' : ($commande->statut === 'Retiré' ? 'bg-red-200' : '') }}">
-                                        <td class="px-4 py-2 border border-blue-400">{{ $commande->numero }}</td>
-                                        <td class="px-4 py-2 border border-blue-400">{{ $commande->client }}</td>
-                                        <td class="px-4 py-2 border border-blue-400">
+                                    <tr class="{{ $loop->even ? 'bg-blue-50' : 'bg-white' }} hover:bg-blue-100 transition-colors">
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->numero }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->client }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">
                                             {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}
                                         </td>
-                                        <td class="px-4 py-2 border border-blue-400">
+                                        <td class="px-6 py-3 border-b border-blue-200">
                                             {{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL') }}
                                         </td>
-                                        <td class="px-4 py-2 border border-blue-400">
+                                        <td class="px-6 py-3 border-b border-blue-200">
                                             {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                         </td>
-                                        <td class="px-4 py-2 border border-blue-400">
+                                        <td class="px-6 py-3 border-b border-blue-200">
                                             <span class="px-2 items-center justify-center flex py-1 text-white rounded-md {{
                                                 $commande->statut === 'En route' ? 'bg-yellow-500' :
                                                 ($commande->statut === 'Retiré' ? 'bg-red-500' : 'bg-green-500')
@@ -294,16 +299,24 @@
                                                 {{ $commande->statut }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-2 border border-blue-400">
+                                        <td class="px-6 py-3 border-b border-blue-200 text-center">
                                             <a href="{{ route('commandes.show', $commande->id) }}"
                                                 class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
                                                 Voir
                                             </a>
                                         </td>
+                                        <td class="px-6 py-3 border-b border-blue-200 text-center">
+                                            <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ",\nVotre commande N°" . $commande->numero . " est déjà prête et vous attend chez CICA NOBLESSE PRESSING. Vous pouvez passer la retirer dès maintenant. Merci et à bientôt !") }}"
+                                                target="_blank"
+                                                class="p-2 font-semibold text-white bg-orange-500 rounded hover:bg-orange-700"
+                                                title="Notifier le client sur WhatsApp">
+                                                Notifier
+                                            </a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+                                        <td colspan="8" class="px-4 py-6 text-center text-gray-500">
                                             Aucune facture enregistrée aujourd'hui.
                                         </td>
                                     </tr>

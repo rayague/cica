@@ -646,7 +646,7 @@ class AdminController extends Controller
             'objets' => 'required|array',
             'objets.*.id' => 'required|exists:objets,id',
             'objets.*.quantite' => 'required|integer|min:1',
-            'objets.*.description' => 'required|string',
+            'objets.*.description' => 'nullable|string',
             'avance_client' => 'nullable|numeric|min:0',
             'remise_reduction' => 'nullable|in:0,5,10,15,20,25,30',
         ]);
@@ -718,7 +718,7 @@ class AdminController extends Controller
                 'user_id' => Auth::id(),
                 'amount' => $avanceClient,
                 'payment_method' => 'Avance initiale',
-                'payment_type' => 'Espèce',
+                'payment_type' => $request->input('payment_type', 'Espèce'),
             ]);
 
             // Mettre à jour le statut de la commande selon les nouvelles règles
@@ -909,7 +909,7 @@ class AdminController extends Controller
 
         // Récupérer toutes les commandes (sans filtre par utilisateur)
         $commandes = Commande::whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
-            ->orderBy('date_depot')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Retourner la vue avec les commandes filtrées
@@ -925,10 +925,32 @@ class AdminController extends Controller
         // Récupérer la commande
         $commande = Commande::findOrFail($id);
 
+        // Calculer le solde restant
+        $soldeRestant = $commande->solde_restant;
+
         // Mettre à jour le statut de la commande
         $commande->update([
             'statut' => 'Validée', // Vous pouvez changer cette valeur selon vos besoins
+            'solde_restant' => 0,
+            'avance_client' => $commande->total,
         ]);
+
+        // Si il y a un solde restant, l'enregistrer comme paiement de validation
+        if ($soldeRestant > 0) {
+            // Vérifier s'il existe déjà une avance pour cette commande
+            $avanceExistante = \App\Models\CommandePayment::where('commande_id', $commande->id)
+                ->where('payment_method', 'Avance initiale')
+                ->exists();
+            if (!$avanceExistante) {
+                CommandePayment::create([
+                    'commande_id' => $commande->id,
+                    'user_id' => Auth::id(),
+                    'amount' => $soldeRestant,
+                    'payment_method' => 'Validation',
+                    'payment_type' => 'Validation',
+                ]);
+            }
+        }
 
         // Rediriger vers la page précédente avec un message de succès
         return redirect()->back()->with('success', 'La facture a été validée avec succès.');
@@ -961,7 +983,7 @@ class AdminController extends Controller
 
         // Récupérer les commandes sans filtre par utilisateur
         $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date])
-            ->orderBy('date_depot')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Calculer le montant total
@@ -1001,12 +1023,16 @@ class AdminController extends Controller
     public function printListeCommandesPending(Request $request)
     {
         $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
+        $date_fin = $request->input('date_fin');
 
-        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
-            ->orderBy('date_retrait')
-            ->get();
+        $query = Commande::query()
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré']);
+
+        if ($date_debut && $date_fin) {
+            $query->whereBetween('date_retrait', [$date_debut, $date_fin]);
+        }
+
+        $commandes = $query->orderBy('created_at', 'desc')->get();
 
         $pdf = Pdf::loadView('administrateur.previewListePending', compact('commandes', 'date_debut', 'date_fin'));
 
@@ -1279,7 +1305,7 @@ class AdminController extends Controller
                     $q->where('statut', 'Retiré')
                       ->orWhere('statut', 'retirée');
                 })
-                ->orderBy('date_retrait')
+                ->orderBy('created_at', 'desc')
                 ->get();
             $periode = $date_debut . ' au ' . $date_fin;
         } else {
@@ -1289,7 +1315,7 @@ class AdminController extends Controller
                     $q->where('statut', 'Retiré')
                       ->orWhere('statut', 'retirée');
                 })
-                ->orderBy('date_retrait')
+                ->orderBy('created_at', 'desc')
                 ->get();
             $periode = $today;
         }

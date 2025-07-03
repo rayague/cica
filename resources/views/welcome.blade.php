@@ -171,10 +171,12 @@
 
     <footer class="fixed bottom-0 w-full p-4 text-sm font-bold text-center text-white bg-sky-600 backdrop-blur-md shadow-lg">
         <p>
-            Copyright © <a class="italic text-white hover:text-sky-300 transition-colors" href="/">Cica</a>
-            <a href="https://portfolio-cnkp.vercel.app" target="_blank" class="hover:text-sky-300 transition-colors">Ray Ague</a>
-            2025
+            Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.
         </p>
+    </footer>
+
+    <footer class="text-center mt-8 mb-4">
+        <small>Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.</small>
     </footer>
 
     <script>

@@ -63,14 +63,14 @@ class CommandeController extends Controller
                 'objets' => 'required|array',
                 'objets.*.id' => 'required|exists:objets,id',
                 'objets.*.quantite' => 'required|integer|min:1',
-                'objets.*.description' => 'required|string',
+                'objets.*.description' => 'nullable|string',
                 'avance_client' => 'nullable|numeric|min:0',
                 'remise_reduction' => 'nullable|in:0,5,10,15,20,25,30',
             ]);
 
             // Générer un numéro de commande unique
             $annee = Carbon::now()->year;
-            $prefixe = " " . $annee . "-";
+            $prefixe = " ";
 
             // Trouver le dernier numéro de commande
             $dernierNumero = Commande::where('numero', 'like', $prefixe . '%')
@@ -155,7 +155,7 @@ class CommandeController extends Controller
                     'user_id' => Auth::id(),
                     'amount' => $avanceClient,
                     'payment_method' => 'Avance initiale',
-                    'payment_type' => 'Espèce',
+                    'payment_type' => $request->input('payment_type', 'Espèce'),
                 ]);
 
                 // Mettre à jour le statut de la commande selon les nouvelles règles
@@ -163,6 +163,22 @@ class CommandeController extends Controller
                     $commande->update(['statut' => 'Payé - Non retiré']);
                 } elseif ($avanceClient > 0) {
                     $commande->update(['statut' => 'Partiellement payé']);
+                }
+            }
+
+            if ($soldeRestant > 0) {
+                // Vérifier s'il existe déjà une avance pour cette commande
+                $avanceExistante = \App\Models\CommandePayment::where('commande_id', $commande->id)
+                    ->where('payment_method', 'Avance initiale')
+                    ->exists();
+                if (!$avanceExistante) {
+                    CommandePayment::create([
+                        'commande_id' => $commande->id,
+                        'user_id' => Auth::id(),
+                        'amount' => $soldeRestant,
+                        'payment_method' => 'Validation',
+                        'payment_type' => 'Validation',
+                    ]);
                 }
             }
 
@@ -399,7 +415,7 @@ class CommandeController extends Controller
         ]);
 
         $commandes = Commande::whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
-            ->orderBy('date_depot')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Retourner la vue avec les commandes filtrées
@@ -427,12 +443,19 @@ class CommandeController extends Controller
 
         // Si il y a un solde restant, l'enregistrer comme paiement
         if ($soldeRestant > 0) {
-            CommandePayment::create([
-                'commande_id' => $commande->id,
-                'user_id' => Auth::id(),
-                'amount' => $soldeRestant,
-                'payment_method' => 'Validation'
-            ]);
+            // Vérifier s'il existe déjà une avance pour cette commande
+            $avanceExistante = \App\Models\CommandePayment::where('commande_id', $commande->id)
+                ->where('payment_method', 'Avance initiale')
+                ->exists();
+            if (!$avanceExistante) {
+                CommandePayment::create([
+                    'commande_id' => $commande->id,
+                    'user_id' => Auth::id(),
+                    'amount' => $soldeRestant,
+                    'payment_method' => 'Validation',
+                    'payment_type' => 'Validation',
+                ]);
+            }
         }
 
         // Rediriger vers la page précédente avec un message de succès
@@ -445,7 +468,7 @@ class CommandeController extends Controller
         $end_date = $request->input('end_date') ?? now()->format('Y-m-d');
 
         $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date])
-            ->orderBy('date_depot')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $totalMontant = $commandes->sum('total');
@@ -479,12 +502,16 @@ class CommandeController extends Controller
     public function printListeCommandesPending(Request $request)
     {
         $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
+        $date_fin = $request->input('date_fin');
 
-        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré'])
-            ->orderBy('date_retrait')
-            ->get();
+        $query = Commande::query()
+            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré']);
+
+        if ($date_debut && $date_fin) {
+            $query->whereBetween('date_retrait', [$date_debut, $date_fin]);
+        }
+
+        $commandes = $query->orderBy('created_at', 'desc')->get();
 
         $pdf = Pdf::loadView('utilisateurs.previewListePending', compact('commandes', 'date_debut', 'date_fin'));
 
@@ -525,7 +552,7 @@ class CommandeController extends Controller
 
         $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
             ->where('statut', 'non retirée')
-            ->orderBy('date_retrait')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Générer le PDF

@@ -265,45 +265,46 @@
                     </form>
 
                     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-                        <table class="w-full border border-collapse table-auto">
+                        <table class="w-full border border-blue-400 rounded-lg overflow-hidden" style="table-layout: fixed; min-width: 1200px;">
                             <thead class="text-white bg-blue-600">
                                 <tr>
-                                    <th class="px-4 py-3 text-left border border-blue-400">N° Commande</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Nom du Client</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Numéro de Téléphone</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Date de Retrait</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Heure de Retrait</th>
-                                    <!-- Nouvelle colonne -->
-                                    <th class="px-4 py-3 text-left border border-blue-400">Montant de la Facture</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Statut</th>
-                                    <!-- Nouvelle colonne -->
-                                    <th class="px-4 py-3 text-left border border-blue-400">Utilisateur</th>
-                                    <th class="px-4 py-3 text-center border border-blue-400">Action</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">N° Commande</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Nom du Client</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Numéro de Téléphone</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Date de Retrait</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Heure de Retrait</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Montant de la Facture</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Statut</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Utilisateur</th>
+                                    <th class="px-6 py-3 text-center border-b-2 border-blue-400">Voir</th>
+                                    <th class="px-6 py-3 text-center border-b-2 border-blue-400">Notifier</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $total = 0; @endphp
                                 @foreach ($commandes as $commande)
                                     @php $total += $commande->total; @endphp
-                                    <tr class="hover:bg-blue-50">
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->client }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero_whatsapp }}
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->date_retrait }}
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->heure_retrait }}
-                                        </td> <!-- Nouvelle colonne -->
-                                        <td class="px-4 py-3 border border-blue-300">
-                                            {{ number_format($commande->total, 2, ',', ' ') }} FCFA
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->statut }}</td>
-                                        <!-- Nouvelle colonne -->
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>
-                                        <td class="px-4 py-3 text-center border border-blue-300">
+                                    <tr class="{{ $loop->even ? 'bg-blue-50' : 'bg-white' }} hover:bg-blue-100 transition-colors">
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->numero }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->client }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->numero_whatsapp }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->date_retrait }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->heure_retrait }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->statut }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->user->name }}</td>
+                                        <td class="px-6 py-3 text-center border-b border-blue-200">
                                             <a href="{{ route('commandesAdmin.show', $commande->id) }}"
                                                 class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
                                                 Voir
+                                            </a>
+                                        </td>
+                                        <td class="px-6 py-3 text-center border-b border-blue-200">
+                                            <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ",\nVotre commande N°" . $commande->numero . " est déjà prête et vous attend chez CICA NOBLESSE PRESSING. Vous pouvez passer la retirer dès maintenant. Merci et à bientôt !") }}"
+                                                target="_blank"
+                                                class="p-2 font-semibold text-white bg-orange-500 rounded hover:bg-orange-700"
+                                                title="Notifier le client sur WhatsApp">
+                                                Notifier
                                             </a>
                                         </td>
                                     </tr>

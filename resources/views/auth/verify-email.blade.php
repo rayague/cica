@@ -29,4 +29,8 @@
             </button>
         </form>
     </div>
+
+    <div class="text-center mt-8 mb-4">
+        <small>Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.</small>
+    </div>
 </x-guest-layout>

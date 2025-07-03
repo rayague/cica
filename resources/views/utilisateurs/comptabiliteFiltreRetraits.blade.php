@@ -263,25 +263,38 @@
                                         <th class="px-4 py-2 border border-green-400">Numéro de Facture</th>
                                         <th class="px-4 py-2 border border-green-400">Utilisateur</th>
                                         <th class="px-4 py-2 border border-green-400">Montant</th>
+                                        <th class="px-4 py-2 border border-green-400">Moyen de Paiement</th>
+                                        <th class="px-4 py-2 border border-green-400">Client</th>
                                         <th class="px-4 py-2 border border-green-400">Action</th>
                                         <th class="px-4 py-2 border border-green-400">Date</th>
-                                        <th class="px-4 py-2 border border-green-400">Client</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr class="hover:bg-green-50">
                                             <td class="px-4 py-2 border border-green-300">{{ $payment->commande->numero ?? $payment->commande_id }}</td>
+                                            <td class="px-4 py-2 border border-green-300">{{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">{{ number_format($payment->amount, 2, ',', ' ') }} F</td>
                                             <td class="px-4 py-2 border border-green-300">
-                                                {{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
-                                            <td class="px-4 py-2 border border-green-300">
-                                                {{ number_format($payment->amount, 2, ',', ' ') }} F</td>
-                                            <td class="px-4 py-2 border border-green-300">
-                                                {{ $payment->payment_method ?? 'Non spécifié' }}</td>
-                                            <td class="px-4 py-2 border border-green-300">
-                                                {{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}
+                                                @if($payment->payment_method === 'Validation')
+                                                    Validation
+                                                @elseif($payment->payment_method === 'Avance initiale')
+                                                    {{ $payment->payment_type ?? 'Non spécifié' }}
+                                                @elseif(!empty($payment->payment_type))
+                                                    {{ $payment->payment_type }}
+                                                @else
+                                                    Non spécifié
+                                                @endif
                                             </td>
                                             <td class="px-4 py-2 border border-green-300">{{ $payment->commande->client ?? '' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">
+                                                @if($payment->payment_method === 'Avance initiale')
+                                                    Avance
+                                                @else
+                                                    {{ $payment->payment_method ?? 'Non spécifié' }}
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-2 border border-green-300">{{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
