@@ -172,6 +172,9 @@
                     </button>
 
                     <h3 class="text-xl font-bold text-gray-800">Comptabilité </h3>
+                    <a href="{{ route('listeCommandes.print', ['start_date' => request('date_debut', $date_debut ?? now()->toDateString()), 'end_date' => request('date_fin', $date_fin ?? now()->toDateString())]) }}" target="_blank" class="ml-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                        Imprimer la liste filtrée
+                    </a>
                     <!-- Topbar Navbar -->
                     <ul class="ml-auto navbar-nav">
 
@@ -262,13 +265,13 @@
                                         <th class="px-4 py-2 border border-green-400">Montant</th>
                                         <th class="px-4 py-2 border border-green-400">Action</th>
                                         <th class="px-4 py-2 border border-green-400">Date</th>
+                                        <th class="px-4 py-2 border border-green-400">Client</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr class="hover:bg-green-50">
-                                            <td class="px-4 py-2 border border-green-300">{{ $payment->commande_id }}
-                                            </td>
+                                            <td class="px-4 py-2 border border-green-300">{{ $payment->commande->numero ?? $payment->commande_id }}</td>
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
                                             <td class="px-4 py-2 border border-green-300">
@@ -278,6 +281,7 @@
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}
                                             </td>
+                                            <td class="px-4 py-2 border border-green-300">{{ $payment->commande->client ?? '' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -307,15 +311,17 @@
                                         <th class="px-4 py-2 border border-yellow-400">Utilisateur</th>
                                         <th class="px-4 py-2 border border-yellow-400">Note</th>
                                         <th class="px-4 py-2 border border-yellow-400">Date</th>
+                                        <th class="px-4 py-2 border border-yellow-400">Client</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($notes as $note)
                                         <tr class="hover:bg-yellow-50">
-                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->commande_id }}</td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->commande->numero ?? $note->commande_id }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->user->name ?? 'Utilisateur Inconnu' }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->note }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ $note->commande->client ?? '' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

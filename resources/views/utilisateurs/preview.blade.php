@@ -90,7 +90,7 @@
         .brand-section h1 {
             font-size: 10px;
             margin: 0 0 1mm 0;
-            color: rgb(255, 213, 0);
+            color: #0084ff;
         }
 
         .brand-section p {
@@ -105,7 +105,17 @@
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 9px;
+            font-size: 14px;
+            color: #000;
+            letter-spacing: 1px;
+        }
+
+        .invoice-info p strong {
+            font-size: 13px;
+        }
+
+        .invoice-info p {
+            font-size: 13px;
         }
 
         .details-grid {
@@ -280,6 +290,13 @@
                 border: none;
             }
         }
+
+        .total-line.solde .badge {
+            font-size: 12px !important;
+            color: #dc2626;
+            background: #fff0f0;
+            border: 1px solid #dc2626;
+        }
     </style>
 </head>
 
@@ -420,7 +437,7 @@
                             </div>
                         </div>
 
-                        <div class="conditions">
+                        {{-- <div class="conditions">
                             <strong>Conditions :</strong>
                             <ul>
                                 <li>1. 10 FCFA par jour pour frais de magasinage seront perçus à partir du 10<sup>e</sup> jour après le dépôt.</li>
@@ -435,7 +452,7 @@
                                 <li>4. Les synthétiques, boucles, boutons, fermetures, broderies de fil sur Bazin ne sont pas pris en compte.</li>
                                 <li>5. Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
                             </ul>
-                        </div>
+                        </div> --}}
 
                         <!-- Message de facture - Centré sur la même page -->
                         @php

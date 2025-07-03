@@ -105,7 +105,17 @@
 
         .invoice-info h2 {
             margin: 0 0 1mm 0;
-            font-size: 9px;
+            font-size: 14px;
+            color: #000;
+            letter-spacing: 1px;
+        }
+
+        .invoice-info p strong {
+            font-size: 13px;
+        }
+
+        .invoice-info p {
+            font-size: 13px;
         }
 
         .details-grid {
@@ -143,15 +153,16 @@
             margin-bottom: 2px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            background: #c9dcff;
-            padding: 1px 4px;
+            /* background: #c9dcff; */
+            padding: 1px 0px;
             border-radius: 2px;
             display: inline-block;
         }
 
         .detail-info {
             font-size: 8px;
-            color: #0084ff;
+            /* color: #0084ff; */
+            font-weight: bold;
             line-height: 1.1;
             margin-bottom: 1px;
             padding: 0;
@@ -162,7 +173,7 @@
         }
 
         .date-value {
-            color: #0084ff;
+            /* color: #0084ff; */
             font-weight: 500;
         }
 
@@ -278,6 +289,13 @@
                 background: transparent;
                 border: none;
             }
+        }
+
+        .total-line.solde .badge {
+            font-size: 12px !important;
+            color: #dc2626;
+            background: #fff0f0;
+            border: 1px solid #dc2626;
         }
     </style>
 </head>
@@ -419,7 +437,7 @@
                             </div>
                         </div>
 
-                        <div class="conditions">
+                        {{-- <div class="conditions">
                             <strong>Conditions :</strong>
                             <ul>
                                 <li>1. 10 FCFA par jour pour frais de magasinage seront perçus à partir du 10<sup>e</sup> jour après le dépôt.</li>
@@ -434,7 +452,7 @@
                                 <li>4. Les synthétiques, boucles, boutons, fermetures, broderies de fil sur Bazin ne sont pas pris en compte.</li>
                                 <li>5. Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
                             </ul>
-                        </div>
+                        </div> --}}
 
                         <!-- Message de facture - Centré sur la même page -->
                         @php

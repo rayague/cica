@@ -22,4 +22,9 @@ class Note extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function commande()
+    {
+        return $this->belongsTo(Commande::class);
+    }
 }

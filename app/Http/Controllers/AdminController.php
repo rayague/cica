@@ -224,7 +224,7 @@ class AdminController extends Controller
 
         // Générer un numéro de commande unique
         $annee = Carbon::now()->year;
-        $prefixe = "ETS-NKPA-" . $annee . "-";
+        $prefixe = " " . $annee . "-";
 
         // Trouver le dernier numéro de commande
         $dernierNumero = Commande::where('numero', 'like', $prefixe . '%')
@@ -652,7 +652,7 @@ class AdminController extends Controller
         ]);
 
         // Générer automatiquement le numéro de facture
-        $numeroCommande = 'FC-' . str_pad(Commande::count() + 1, 5, '0', STR_PAD_LEFT);
+        $numeroCommande = ' ' . str_pad(Commande::count() + 1, 5, '0', STR_PAD_LEFT);
 
         // Création de la commande
         $commande = Commande::create([

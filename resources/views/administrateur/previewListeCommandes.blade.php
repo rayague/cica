@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relevé des Commandes - ETS N'KPA PRESSING</title>
+    <title>Relevé de Comptabilité - CICA NOBLESSE PRESSING</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -129,7 +129,7 @@
 
     <!-- Titre principal -->
     <div class="title-section">
-        <h2>RELEVÉ DES COMMANDES</h2>
+        <h2>RELEVÉ DE COMPTABILITÉ</h2>
         <div class="period">
             @if (isset($start_date) && isset($end_date))
                 Période du {{ \Carbon\Carbon::parse($start_date)->translatedFormat('d/m/Y') }}
@@ -140,52 +140,61 @@
         </div>
     </div>
 
-    <!-- Tableau -->
-    <table>
-        <thead>
-            <tr>
-                <th>N° Facture</th>
-                <th>Client</th>
-                <th>Téléphone</th>
-                <th>Date Retrait</th>
-                {{-- <th>Montant</th> --}}
-                <th>Agent</th>
-            </tr>
-        </thead>
-
-
-        <tbody>
-            @foreach ($commandes as $commande)
+    <!-- Historique des Paiements -->
+    @if(isset($payments) && count($payments))
+        <h3 style="margin-top:2rem; color:#1a365d;">Historique des Paiements</h3>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $commande->numero }}</td>
-                    <td>{{ $commande->client }}</td>
-                    <td>{{ $commande->numero_whatsapp }}</td>
-                    <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->translatedFormat('d/m/Y H:i') }}</td>
-                    {{-- <td style="font-weight: 500;">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td> --}}
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="user-initial">{{ strtoupper(substr($commande->user->name, 0, 1)) }}</span>
-                            {{ $commande->user->name }}
-                        </div>
-                    </td>
+                    <th>Numéro de Facture</th>
+                    <th>Utilisateur</th>
+                    <th>Montant</th>
+                    <th>Action</th>
+                    <th>Date</th>
+                    <th>Client</th>
                 </tr>
-            @endforeach
-        </tbody>
-        {{-- <tfoot>
-            <tr>
-                <td colspan="4"></td>
-                <td style="font-weight: bold; border-top: 2px solid #000;">
-                    Total : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA
-                </td>
-            </tr>
-        </tfoot> --}}
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($payments as $payment)
+                    <tr>
+                        <td>{{ $payment->commande->numero ?? $payment->commande_id }}</td>
+                        <td>{{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
+                        <td>{{ number_format($payment->amount, 2, ',', ' ') }} F</td>
+                        <td>{{ $payment->payment_method ?? 'Non spécifié' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}</td>
+                        <td>{{ $payment->commande->client ?? '' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
-    <!-- Total -->
-    <div style="text-align: right; margin-top: 1rem; font-size: 0.95em;">
-        Nombre total de commandes : <strong>{{ $commandes->count() }}</strong>
-    </div>
-
+    <!-- Historique des Retraits / Notes -->
+    @if(isset($notes) && count($notes))
+        <h3 style="margin-top:2rem; color:#1a365d;">Historique des Retraits / Notes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Numéro de Facture</th>
+                    <th>Utilisateur</th>
+                    <th>Note</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($notes as $note)
+                    <tr>
+                        <td>{{ $note->commande->numero ?? $note->commande_id }}</td>
+                        <td>{{ $note->user->name ?? 'Utilisateur Inconnu' }}</td>
+                        <td>{{ $note->note }}</td>
+                        <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
+                        <td>{{ $note->commande->client ?? '' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
 </body>
 

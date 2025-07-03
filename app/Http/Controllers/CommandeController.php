@@ -23,7 +23,7 @@ class CommandeController extends Controller
 
         // Générer un numéro de commande unique
         $annee = Carbon::now()->year;
-        $prefixe = " " . $annee . "-";
+        $prefixe = " ";
 
         // Trouver le dernier numéro de commande
         $dernierNumero = Commande::where('numero', 'like', $prefixe . '%')
@@ -444,13 +444,17 @@ class CommandeController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date') ?? now()->format('Y-m-d');
 
-        $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date]) // 👈 ici !
+        $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date])
             ->orderBy('date_depot')
             ->get();
 
         $totalMontant = $commandes->sum('total');
 
-        $pdf = Pdf::loadView('utilisateurs.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant'));
+        // Récupérer les paiements et les notes sur la période
+        $payments = \App\Models\CommandePayment::whereBetween('created_at', [$start_date, $end_date])->get();
+        $notes = \App\Models\Note::whereBetween('created_at', [$start_date, $end_date])->get();
+
+        $pdf = Pdf::loadView('utilisateurs.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'payments', 'notes'));
 
         return $pdf->stream('liste_commandes.pdf');
     }

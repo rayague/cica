@@ -220,8 +220,8 @@
                 <div class="container p-6 mx-auto">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
                         <h1 class="text-3xl font-bold text-gray-800 text-center md:text-left m-0">
-                            Commandes validées pour aujourd'hui
-                        </h1>
+                        Commandes validées pour aujourd'hui
+                    </h1>
                         <a href="{{ route('listeCommandesRetraitsAdmin.print', ['date_debut' => request('date_debut', today()->toDateString()), 'date_fin' => request('date_fin', today()->toDateString())]) }}" target="_blank" class="inline-block px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700 font-semibold shadow text-center">
                             Imprimer la liste des retraits du jour
                         </a>
