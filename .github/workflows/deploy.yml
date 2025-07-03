@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: 37.44.246.216
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          server-dir: cica
+          server-dir: public_html/
