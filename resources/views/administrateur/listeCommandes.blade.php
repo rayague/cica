@@ -285,12 +285,12 @@
                                 <tr>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Numéro</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Client</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Téléphone</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Dépôt</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Retrait</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Total</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Statut</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Voir</th>
-                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Notifier</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -298,6 +298,7 @@
                                     <tr class="{{ $loop->even ? 'bg-blue-50' : 'bg-white' }} hover:bg-blue-100 transition-colors">
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->numero }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->client }}</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->numero_whatsapp }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200">
                                             {{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}
                                         </td>
@@ -317,16 +318,8 @@
                                         </td>
                                         <td class="px-6 py-3 border-b border-blue-200 text-center">
                                             <a href="{{ route('commandesAdmin.show', $commande->id) }}"
-                                                class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
-                                                Voir
-                                            </a>
-                                        </td>
-                                        <td class="px-6 py-3 border-b border-blue-200 text-center">
-                                            <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ",\nVotre commande N°" . $commande->numero . " est déjà prête et vous attend chez CICA NOBLESSE PRESSING. Vous pouvez passer la retirer dès maintenant. Merci et à bientôt !") }}"
-                                                target="_blank"
-                                                class="p-2 font-semibold text-white bg-orange-500 rounded hover:bg-orange-700"
-                                                title="Notifier le client sur WhatsApp">
-                                                Notifier
+                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 shadow-sm">
+                                                <i class="fas fa-eye mr-2"></i> Voir
                                             </a>
                                         </td>
                                     </tr>

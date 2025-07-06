@@ -60,9 +60,7 @@
             </tr>
         </thead>
         <tbody>
-            @php $total = 0; @endphp
             @foreach ($commandes as $commande)
-                @php $total += $commande->total; @endphp
                 <tr>
                     <td>{{ $commande->numero }}</td>
                     <td>{{ $commande->client }}</td>

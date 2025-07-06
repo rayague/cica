@@ -336,7 +336,10 @@ class CommandeController extends Controller
         $discountAmount = $commande->discount_amount ?? 0;
         $remiseReduction = $commande->remise_reduction ?? 0;
 
-        return view('utilisateurs.commandesDetails', compact('commande', 'originalTotal', 'discountAmount', 'remiseReduction'));
+        // Récupérer les notes associées à cette commande
+        $notes = Note::where('commande_id', $id)->orderBy('created_at', 'desc')->get();
+
+        return view('utilisateurs.commandesDetails', compact('commande', 'originalTotal', 'discountAmount', 'remiseReduction', 'notes'));
     }
 
     public function edit($id)
@@ -626,7 +629,7 @@ class CommandeController extends Controller
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin');
 
-        $query = Commande::query()
+        $query = Commande::with('user')
             ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré']);
 
         if ($date_debut && $date_fin) {

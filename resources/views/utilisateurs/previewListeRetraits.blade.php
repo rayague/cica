@@ -117,6 +117,7 @@
             <tr>
                 <th>N° Commande</th>
                 <th>Client</th>
+                <th>Numéro de Téléphone</th>
                 <th>Heure de Retrait</th>
                 {{-- <th>Montant</th>
                 <th>Statut</th> --}}
@@ -130,6 +131,7 @@
                     <tr>
                         <td>{{ $commande->numero }}</td>
                         <td>{{ $commande->client }}</td>
+                        <td>{{ $commande->numero_whatsapp }}</td>
                         <td>{{ $commande->heure_retrait }}</td>
                             {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
                             <td>{{ $commande->statut }}</td> --}}

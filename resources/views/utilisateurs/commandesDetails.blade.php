@@ -576,7 +576,7 @@
                             )
                         }}"
                         target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
-                            Envoyer par WhatsApp
+                            <i class="fab fa-whatsapp mr-2"></i> Informer/Notifier le dépôt via WhatsApp
                         </a>
                     </div>
 

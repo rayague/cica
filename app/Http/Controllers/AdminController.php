@@ -367,7 +367,7 @@ class AdminController extends Controller
                       ->orWhere('statut', 'Non retiré');
             })
             ->orderBy('date_retrait', 'asc')
-            ->get();
+                ->get();
 
         // Si un ID de commande est spécifié, récupérer cette commande spécifique
         $commandeSpecifique = null;
@@ -413,8 +413,8 @@ class AdminController extends Controller
     {
         // Récupérer toutes les notifications de toutes les factures
         $notifications = \App\Models\Notification::with(['commande.user', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+                ->orderBy('created_at', 'desc')
+                ->get();
 
         return view('administrateur.notifications', compact('notifications'));
     }
@@ -1148,7 +1148,7 @@ class AdminController extends Controller
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin');
 
-        $query = Commande::query()
+        $query = Commande::with('user')
             ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré']);
 
         if ($date_debut && $date_fin) {
