@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facture {{ $commande->numero }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         @page {
             size: A4 landscape;
@@ -12,7 +11,7 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', 'Helvetica', sans-serif;
             font-size: 8px;
             margin: 0;
             padding: 0;
@@ -128,7 +127,7 @@
             width: 97%;
             box-sizing: border-box;
             border-radius: 3px;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', 'Helvetica', sans-serif;
         }
 
         .detail-left, .detail-right {
@@ -264,7 +263,7 @@
 
         @media print {
             body {
-                font-size: 9px;
+                font-size: 12px;
             }
 
             .invoice-column {
@@ -324,8 +323,8 @@
                                 </div>
                             </div>
                             <div class="invoice-info">
-                                <h2>FACTURE</h2>
-                                <p><strong>N° :</strong> {{ $commande->numero }}</p>
+                                <h2>FACTURE <strong>N° :</strong> {{ $commande->numero }}</h2>
+    
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>

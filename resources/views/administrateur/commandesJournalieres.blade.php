@@ -116,6 +116,22 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Factures -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('facturesAdmin') }}">
+                                        <i class="fas fa-fw fa-file-invoice"></i>
+                                        <span class="font-weight-bold">FACTURES</span>
+                                    </a>
+                                </li>
+                
+                                <!-- Nav Item - Notifications -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('notificationsAdmin') }}">
+                                        <i class="fas fa-fw fa-history"></i>
+                                        <span class="font-weight-bold">NOTIFICATIONS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Utilisateurs -->
                 <li class=" nav-item">
                     <a class="nav-link" href="{{ route('utilisateursAdmin') }}">
@@ -320,6 +336,9 @@
                                                 Montant</th>
                                             <th
                                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase">
+                                                Statut</th>
+                                            <th
+                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase">
                                                 Créée par</th>
                                             <th
                                                 class="px-6 py-3 text-xs font-medium tracking-wider text-center text-white uppercase">
@@ -346,6 +365,34 @@
                                                     class="px-6 py-4 text-sm font-semibold text-blue-600 whitespace-nowrap">
                                                     {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                                 </td>
+                                                <td class="px-6 py-4 text-sm whitespace-nowrap">
+                                                    @if($commande->statut === 'Retiré' || $commande->statut === 'retirée')
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            Retiré
+                                                        </span>
+                                                    @elseif($commande->statut === 'Non retirée' || $commande->statut === 'Non retiré')
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            En attente
+                                                        </span>
+                                                    @elseif($commande->statut === 'Partiellement payé')
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            Partiellement payé
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            {{ $commande->statut }}
+                                                        </span>
+                                                    @endif
+                                                </td>
                                                 <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
                                                     <div class="flex items-center">
                                                         <span class="mr-2">👤</span>
@@ -367,7 +414,6 @@
                                                         </svg>
                                                         Détails
                                                     </a>
-                                                    <a href="{{ route('facturesAdmin.print', $commande->id) }}" target="_blank" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold ml-2">Voir la facture</a>
                                                 </td>
                                             </tr>
                                         @endforeach

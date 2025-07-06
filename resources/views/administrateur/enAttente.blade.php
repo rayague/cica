@@ -136,6 +136,22 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Factures -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('facturesAdmin') }}">
+                                        <i class="fas fa-fw fa-file-invoice"></i>
+                                        <span class="font-weight-bold">FACTURES</span>
+                                    </a>
+                                </li>
+                
+                                <!-- Nav Item - Notifications -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('notificationsAdmin') }}">
+                                        <i class="fas fa-fw fa-history"></i>
+                                        <span class="font-weight-bold">NOTIFICATIONS</span>
+                                    </a>
+                                </li>
+
 
                 <!-- Nav Item - Utilisateurs -->
                 <li class=" nav-item">
@@ -355,7 +371,7 @@
                                                             @php
                                                                 $whatsappNumber = $commande->numero_whatsapp;
                                                                 $message = rawurlencode(
-                                                                    "Bonjour M/Mme " . ($commande->client ?? '') . ", votre commande (facture n° " . ($commande->numero ?? '') . ") doit être retirée aujourd'hui. N'oubliez pas de passer la chercher !"
+                                                                    "Bonjour M/Mme " . ($commande->client ?? '') . ", Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " Facture n° " . ($commande->numero ?? '') . " est déjà prête ! Vous pouvez passer pour le retrait !\n\nMerci d'avoir choisi CICA NOBLESSE PRESSING ! Nous restons disponibles pour toute demande complémentaire !"
                                                                 );
                                                             @endphp
                                                             @if ($whatsappNumber)

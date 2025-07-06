@@ -107,6 +107,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Factures -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('factures') }}">
+                                        <i class="fas fa-fw fa-file-invoice"></i>
+                                        <span class="font-weight-bold">FACTURES</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Profil -->
                 {{-- <li class="bg-yellow-500 nav-item">
                     <a class="nav-link" href="{{ route('profil') }}">

@@ -353,7 +353,7 @@
 
                                                                 // Préparation du message, bien encodé pour l'URL
 $message = urlencode(
-    "Bonjour 👋, votre commande de lavage d'habits doit être retirée aujourd'hui. N'oubliez pas de passer la chercher 😊!",
+    "Bonjour M/Mme " . ($commande->client ?? '') . ", Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " Facture n° " . ($commande->numero ?? '') . " est déjà prête ! Vous pouvez passer pour le retrait !\n\nMerci d'avoir choisi CICA NOBLESSE PRESSING ! Nous restons disponibles pour toute demande complémentaire !"
                                                                 );
                                                             @endphp
                                                             @if ($whatsappNumber)

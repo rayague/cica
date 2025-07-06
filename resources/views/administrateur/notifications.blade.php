@@ -111,7 +111,7 @@
                 </li>
 
                 <!-- Nav Item - Notifications -->
-                <li class="nav-item bg-yellow-500">
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
                         <i class="fas fa-fw fa-history"></i>
                         <span class="font-weight-bold">NOTIFICATIONS</span>

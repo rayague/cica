@@ -127,6 +127,22 @@
                         <span class="font-weight-bold">RETRAITS</span>
                     </a>
                 </li>
+
+                                <!-- Nav Item - Factures -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('facturesAdmin') }}">
+                                        <i class="fas fa-fw fa-file-invoice"></i>
+                                        <span class="font-weight-bold">FACTURES</span>
+                                    </a>
+                                </li>
+                
+                                <!-- Nav Item - Notifications -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('notificationsAdmin') }}">
+                                        <i class="fas fa-fw fa-history"></i>
+                                        <span class="font-weight-bold">NOTIFICATIONS</span>
+                                    </a>
+                                </li>
                 <!-- Nav Item - Statistiques -->
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('utilisateursAdmin') }}">
