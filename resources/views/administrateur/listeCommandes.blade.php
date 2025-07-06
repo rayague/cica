@@ -295,6 +295,16 @@
                             </div>
                         </form>
                     </div>
+                    
+                    <!-- Bouton d'impression des factures en attente -->
+                    <div class="mb-4 flex justify-end">
+                        <a href="{{ route('commandesAdmin.printEnAttente') }}" target="_blank"
+                            class="inline-flex items-center px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 transition-colors">
+                            <i class="fas fa-print mr-2"></i>
+                            🖨️ Imprimer les factures en attente
+                        </a>
+                    </div>
+                    
                     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
                         <table class="w-full border border-blue-400 rounded-lg overflow-hidden">
                             <thead class="text-white bg-blue-600">

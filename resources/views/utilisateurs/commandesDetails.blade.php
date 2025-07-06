@@ -383,10 +383,14 @@
                                 </div>
                             @endif
 
-                            <div class="flex flex-col md:flex-row justify-between gap-2">
+                                                        <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Total final :</strong></span>
-                                <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
-                            </div>
+                            <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA
+                                @if(strtolower($commande->type_lavage) === 'lavage express')
+                                    <span class="ml-2 px-2 py-1 text-xs text-white bg-yellow-500 rounded">EXPRESS</span>
+                                @endif
+                            </span>
+                        </div>
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Avances cumulées :</strong></span>
                                 <span>{{ number_format($commande->avance_client, 2, ',', ' ') }} FCFA</span>
@@ -408,6 +412,17 @@
                     @if($commande->solde_restant > 0)
                     <div class="p-4 mt-6 md:mt-8 bg-gray-200 rounded">
                         <h3 class="mb-4 text-lg md:text-xl font-semibold">Mettre à jour les entrées d'argent</h3>
+
+                        <!-- Affichage du total en temps réel -->
+                        <div class="mb-4 p-3 bg-blue-100 rounded-md">
+                            <p class="text-sm font-medium text-blue-800">
+                                Total de la commande : <span class="font-bold">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
+                            </p>
+                            <p class="text-sm text-blue-600">
+                                Solde restant : <span class="font-bold">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</span>
+                            </p>
+                        </div>
+
                         <form action="{{ route('commande.updateFinancial', $commande->id) }}" method="POST"
                             class="flex flex-col md:flex-row items-start md:items-center gap-4">
                             @csrf

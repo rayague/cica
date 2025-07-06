@@ -124,7 +124,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -281,61 +281,44 @@
                         </div>
                     </form>
 
-                    <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-                        <table class="w-full border border-collapse table-auto">
-                            <thead class="text-white bg-blue-600">
-                                <tr>
-                                    <th class="px-4 py-3 text-left border border-blue-400">N° Commande</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Nom du Client</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Numéro de Téléphone</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Date de Retrait</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Heure de Retrait</th>
-                                    <!-- Nouvelle colonne -->
-                                    <th class="px-4 py-3 text-left border border-blue-400">Montant de la Facture</th>
-                                    <th class="px-4 py-3 text-left border border-blue-400">Statut</th>
-                                    <!-- Nouvelle colonne -->
-                                    <th class="px-4 py-3 text-left border border-blue-400">Utilisateur</th>
-                                    <th class="px-4 py-3 text-center border border-blue-400">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php $total = 0; @endphp
-                                @foreach ($commandes as $commande)
-                                    @php $total += $commande->total; @endphp
-                                    <tr class="hover:bg-blue-50">
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->client }}</td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->numero_whatsapp }}
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->date_retrait }}
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->heure_retrait }}
-                                        </td> <!-- Nouvelle colonne -->
-                                        <td class="px-4 py-3 border border-blue-300">
-                                            {{ number_format($commande->total, 2, ',', ' ') }} FCFA
-                                        </td>
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->statut }}</td>
-                                        <!-- Nouvelle colonne -->
-                                        <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>
-                                        <td class="px-4 py-3 text-center border border-blue-300">
-                                            <a href="{{ route('commandesAdmin.show', $commande->id) }}"
-                                                class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
-                                                Voir
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                <!-- Ligne Total -->
-                                <tr class="font-bold bg-gray-100">
-                                    <td colspan="5" class="px-4 py-3 text-right border border-blue-400">Total :
-                                    </td>
-                                    <td class="px-4 py-3 border border-blue-400">
-                                        {{ number_format($total, 2, ',', ' ') }} FCFA</td>
-                                    <td colspan="3" class="border border-blue-400"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    @if ($commandes->isEmpty())
+                        <div class="p-6 text-center text-gray-600 bg-gray-100 rounded-lg shadow">
+                            <p>Aucune commande validée/retirée trouvée pour la période sélectionnée.</p>
+                        </div>
+                    @else
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($commandes as $commande)
+                                <div class="p-6 transition duration-200 bg-white rounded-lg shadow-md hover:shadow-xl">
+                                    <h2 class="mb-3 text-xl font-semibold text-gray-700">
+                                        Commande #{{ $commande->numero }}
+                                    </h2>
+                                    <p class="mb-1 text-gray-600">
+                                        <span class="font-medium">Client :</span> {{ $commande->client }}
+                                    </p>
+                                    <p class="mb-1 text-gray-600">
+                                        <span class="font-medium">Date de retrait :</span>
+                                        {{ \Carbon\Carbon::parse($commande->date_retrait)->locale('fr')->isoFormat('LL') }}
+                                    </p>
+                                    <p class="mb-4 text-gray-600">
+                                        <span class="font-medium">Total :</span>
+                                        {{ number_format($commande->total, 2, ',', ' ') }} FCFA
+                                    </p>
+                                    <div class="text-center space-y-2">
+                                        <a href="{{ route('commandesAdmin.show', $commande->id) }}"
+                                            class="inline-block px-6 py-2 text-white transition duration-200 bg-blue-500 rounded-md hover:bg-blue-600">
+                                            Voir les détails
+                                        </a>
+                                        <br>
+                                        <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ', merci pour votre confiance ! Votre commande #' . $commande->numero . ' a été retirée avec succès. À bientôt chez CICA NOBLESSE PRESSING !') }}"
+                                            target="_blank"
+                                            class="inline-block px-6 py-2 text-white transition duration-200 bg-green-500 rounded-md hover:bg-green-600">
+                                            <i class="fab fa-whatsapp mr-2"></i> Remercier
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                     <div class="flex items-center justify-between my-6">
                         <a href="{{ route('rappelsAdmin') }}"

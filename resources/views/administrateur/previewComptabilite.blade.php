@@ -26,18 +26,22 @@
             <thead>
                 <tr>
                     <th>Numéro de Facture</th>
+                    <th>Client</th>
                     <th>Utilisateur</th>
                     <th>Montant</th>
-                    <th>Méthode de Paiement</th>
+                    <th>Moyen de Paiement</th>
+                    <th>Action</th>
                     <th>Date</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($payments as $payment)
                     <tr>
-                        <td>{{ $payment->commande_id }}</td>
+                        <td>{{ $payment->commande->numero ?? 'N/A' }}</td>
+                        <td>{{ $payment->commande->client ?? 'N/A' }}</td>
                         <td>{{ $payment->user->name ?? 'N/A' }}</td>
                         <td>{{ number_format($payment->amount, 0, ',', ' ') }} F</td>
+                        <td>{{ $payment->payment_type ?? 'N/A' }}</td>
                         <td>{{ $payment->payment_method ?? 'N/A' }}</td>
                         <td>{{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}</td>
                     </tr>
@@ -57,17 +61,23 @@
             <thead>
                 <tr>
                     <th>Numéro de Facture</th>
+                    <th>Client</th>
                     <th>Utilisateur</th>
-                    <th>Note</th>
+                    <th>Montant</th>
+                    <th>Moyen de Paiement</th>
+                    <th>Action</th>
                     <th>Date</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($notes as $note)
                     <tr>
-                        <td>{{ $note->commande_id }}</td>
+                        <td>{{ $note->commande->numero ?? 'N/A' }}</td>
+                        <td>{{ $note->commande->client ?? 'N/A' }}</td>
                         <td>{{ $note->user->name ?? 'N/A' }}</td>
                         <td>{{ $note->note }}</td>
+                        <td>Retrait</td>
+                        <td>Retrait</td>
                         <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
                     </tr>
                 @endforeach

@@ -239,7 +239,17 @@
 
 
 
-                    <h1 class="mb-6 text-3xl font-bold text-gray-800">Commandes en attente pour aujourd'hui</h1>
+                    <h1 class="mb-6 text-3xl font-bold text-gray-800 flex items-center justify-between">
+                        @php
+                            $date_debut = request('date_debut', today()->toDateString());
+                            $date_fin = request('date_fin', today()->toDateString());
+                            $periode = $date_debut === $date_fin ? "pour le " . \Carbon\Carbon::parse($date_debut)->format('d/m/Y') : "du " . \Carbon\Carbon::parse($date_debut)->format('d/m/Y') . " au " . \Carbon\Carbon::parse($date_fin)->format('d/m/Y');
+                        @endphp
+                        Commandes en attente {{ $periode }}
+                        <a href="{{ route('listeCommandesPending.print', ['date_debut' => $date_debut, 'date_fin' => $date_fin]) }}" target="_blank" class="ml-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                            🖨️ Imprimer les factures en attente
+                        </a>
+                    </h1>
                     <div class="space-y-8">
                         <!-- Formulaire de filtre -->
                         <form method="GET" action="{{ route('commandes.filtrerPending') }}"
@@ -269,14 +279,12 @@
                             <!-- Tableau des retraits d'aujourd'hui -->
                             <div class="p-6 rounded-lg shadow-sm bg-blue-50">
                                 <h2 class="pb-2 mb-4 text-2xl font-bold text-blue-800 border-b-2 border-blue-300">
-                                    📅 Retraits prévus aujourd'hui
-                                    <span
-                                        class="text-lg text-blue-600">({{ now()->translatedFormat('d F Y') }})</span>
+                                    📅 Retraits prévus {{ $periode }}
                                 </h2>
 
-                                @if ($commandes->where('date_retrait', today()->toDateString())->isEmpty())
+                                @if ($commandes->whereBetween('date_retrait', [$date_debut, $date_fin])->isEmpty())
                                     <div class="p-4 text-center bg-white rounded-md">
-                                        <p class="text-gray-600">Aucun retrait prévu pour aujourd'hui</p>
+                                        <p class="text-gray-600">Aucun retrait prévu {{ $periode }}</p>
                                     </div>
                                 @else
                                     <div class="overflow-x-auto rounded-lg shadow">
@@ -308,7 +316,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white divide-y divide-gray-200">
-                                                @foreach ($commandes->where('date_retrait', today()->toDateString()) as $commande)
+                                                @foreach ($commandes->whereBetween('date_retrait', [$date_debut, $date_fin]) as $commande)
                                                     <tr class="transition-colors hover:bg-blue-50">
                                                         <td class="px-4 py-3 text-sm font-medium text-gray-900">
                                                             {{ $commande->numero }}

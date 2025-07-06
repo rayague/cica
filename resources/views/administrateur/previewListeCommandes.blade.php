@@ -128,7 +128,7 @@
 
     <!-- Titre principal -->
     <div class="title-section">
-        <h2>RELEVÉ DE COMPTABILITÉ</h2>
+        <h2>LISTE DES FACTURES EN ATTENTE</h2>
         <div class="period">
             @if (isset($start_date) && isset($end_date))
                 Période du {{ \Carbon\Carbon::parse($start_date)->translatedFormat('d/m/Y') }}
@@ -138,6 +138,41 @@
             @endif
         </div>
     </div>
+
+    <!-- Liste des Factures en Attente -->
+    @if(isset($commandes) && count($commandes))
+        <h3 style="margin-top:2rem; color:#1a365d;">Factures en Attente</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Numéro de Facture</th>
+                    <th>Client</th>
+                    <th>Téléphone</th>
+                    <th>Date Retrait</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Créée par</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($commandes as $commande)
+                    <tr>
+                        <td>{{ $commande->numero }}</td>
+                        <td>{{ $commande->client }}</td>
+                        <td>{{ $commande->numero_whatsapp }}</td>
+                        <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y H:i') }}</td>
+                        <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                        <td>{{ $commande->statut }}</td>
+                        <td>{{ $commande->user->name ?? 'N/A' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 1rem; padding: 0.5rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
+            <strong>Total des factures en attente : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA</strong>
+        </div>
+    @endif
 
     <!-- Historique des Paiements -->
     @if(isset($payments) && count($payments))

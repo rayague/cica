@@ -244,7 +244,9 @@
                     @endif
 
 
-                    <h2 class="mb-4 text-2xl font-bold text-blue-700">Liste des Factures Journalières</h2>
+                    <h2 class="mb-4 text-2xl font-bold text-blue-700">Liste des Factures en Attente (Journalières)</h2>
+                    
+                    <p class="mb-4 text-gray-600">Affiche uniquement les factures qui ne sont pas encore retirées ou validées</p>
 
                     <!-- Filtre par date -->
                     <div class="mb-6">

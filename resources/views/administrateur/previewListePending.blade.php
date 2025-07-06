@@ -47,37 +47,48 @@
     <h2 style="text-align: center; color: #007bff;">Liste des Commandes en Attente</h2>
     <p><strong>Période :</strong> {{ $date_debut }} au {{ $date_fin }}</p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>N° Commande</th>
-                <th>Nom du Client</th>
-                <th>Numéro de Téléphone</th>
-                <th>Date de Retrait</th>
-                <th>Heure de Retrait</th>
-                <th>Montant de la Facture</th>
-                <th>Statut</th>
-                <th>Utilisateur</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $total = 0; @endphp
-            @foreach ($commandes as $commande)
-                @php $total += $commande->total; @endphp
+    @if(isset($commandes) && count($commandes) > 0)
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $commande->numero }}</td>
-                    <td>{{ $commande->client }}</td>
-                    <td>{{ $commande->numero_whatsapp }}</td>
-                    <td>{{ $commande->date_retrait }}</td>
-                    <td>{{ $commande->heure_retrait }}</td>
-                    <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
-                    <td>{{ $commande->statut }}</td>
-                    <td>{{ $commande->user->name ?? '' }}</td>
+                    <th>N° Commande</th>
+                    <th>Nom du Client</th>
+                    <th>Numéro de Téléphone</th>
+                    <th>Date de Retrait</th>
+                    <th>Heure de Retrait</th>
+                    <th>Montant de la Facture</th>
+                    <th>Statut</th>
+                    <th>Utilisateur</th>
                 </tr>
-            @endforeach
-        </tbody>
+            </thead>
+            <tbody>
+                @foreach ($commandes as $commande)
+                    <tr>
+                        <td>{{ $commande->numero }}</td>
+                        <td>{{ $commande->client }}</td>
+                        <td>{{ $commande->numero_whatsapp }}</td>
+                        <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y') }}</td>
+                        <td>{{ $commande->heure_retrait }}</td>
+                        <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                        <td>{{ $commande->statut }}</td>
+                        <td>{{ $commande->user->name ?? 'N/A' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-    </table>
+        <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff;">
+            <strong>Total des commandes : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA</strong>
+        </div>
+        
+        <div style="margin-top: 10px; padding: 10px; background-color: #e7f3ff; border-left: 4px solid #007bff;">
+            <strong>Nombre total de commandes : {{ $commandes->count() }}</strong>
+        </div>
+    @else
+        <div style="margin-top: 20px; padding: 15px; background-color: #f8d7da; border-left: 4px solid #dc3545; color: #721c24;">
+            <strong>Aucune commande trouvée pour la période sélectionnée.</strong>
+        </div>
+    @endif
 
 
 </body>

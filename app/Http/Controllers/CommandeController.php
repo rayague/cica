@@ -359,7 +359,7 @@ class CommandeController extends Controller
     {
         try {
             $commande = Commande::findOrFail($id);
-            
+
             // Validation des données (sans total, statut, heure_retrait, type_lavage et objets)
             $request->validate([
                 'client' => 'required|string',
@@ -400,7 +400,7 @@ class CommandeController extends Controller
                         'old' => $oldValues[$field],
                         'new' => $newValue
                     ];
-                    
+
                     // Créer une description lisible
                     $fieldNames = [
                         'client' => 'Nom du client',
@@ -410,7 +410,7 @@ class CommandeController extends Controller
                         'avance_client' => 'Avance client',
                         'remise_reduction' => 'Remise'
                     ];
-                    
+
                     $descriptions[] = "{$fieldNames[$field]}: {$oldValues[$field]} → {$newValue}";
                 }
             }
@@ -434,12 +434,12 @@ class CommandeController extends Controller
             }
 
             return redirect()->route('factures')->with('success', 'Facture mise à jour avec succès.');
-            
+
         } catch (\Exception $e) {
             // Log l'erreur pour le débogage
             \Log::error('Erreur lors de la mise à jour de la facture: ' . $e->getMessage());
             \Log::error('Stack trace: ' . $e->getTraceAsString());
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Erreur lors de la mise à jour: ' . $e->getMessage());
@@ -450,7 +450,7 @@ class CommandeController extends Controller
     {
         $commande = Commande::with(['notifications.user'])->findOrFail($id);
         $notifications = $commande->notifications()->orderBy('created_at', 'desc')->get();
-        
+
         return view('utilisateurs.factureHistory', compact('commande', 'notifications'));
     }
 
@@ -462,7 +462,7 @@ class CommandeController extends Controller
         }
 
         $commande = Commande::findOrFail($id);
-        
+
         // Créer une notification avant la suppression
         Notification::create([
             'commande_id' => $commande->id,
@@ -481,10 +481,10 @@ class CommandeController extends Controller
         $commande->objets()->detach();
         $commande->payments()->delete();
         $commande->images()->delete();
-        
+
         // Supprimer la commande
         $commande->delete();
-        
+
         return redirect()->route('factures')->with('success', 'Facture supprimée avec succès.');
     }
 
@@ -539,7 +539,8 @@ class CommandeController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
 
-        $commandes = Commande::whereBetween('date_depot', [$validated['start_date'], $validated['end_date']])
+        // Récupérer toutes les commandes dont la date de retrait est comprise entre les dates sélectionnées
+        $commandes = Commande::whereBetween('date_retrait', [$validated['start_date'], $validated['end_date']])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -566,21 +567,15 @@ class CommandeController extends Controller
             'avance_client' => $commande->total // Mettre à jour l'avance client au montant total
         ]);
 
-        // Si il y a un solde restant, l'enregistrer comme paiement
+        // Toujours enregistrer le paiement de validation s'il reste un solde
         if ($soldeRestant > 0) {
-            // Vérifier s'il existe déjà une avance pour cette commande
-            $avanceExistante = \App\Models\CommandePayment::where('commande_id', $commande->id)
-                ->where('payment_method', 'Avance initiale')
-                ->exists();
-            if (!$avanceExistante) {
             CommandePayment::create([
                 'commande_id' => $commande->id,
                 'user_id' => Auth::id(),
                 'amount' => $soldeRestant,
-                    'payment_method' => 'Validation',
-                    'payment_type' => 'Validation',
+                'payment_method' => 'Validation',
+                'payment_type' => 'Validation',
             ]);
-            }
         }
 
         // Rediriger vers la page précédente avec un message de succès
@@ -592,7 +587,8 @@ class CommandeController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date') ?? now()->format('Y-m-d');
 
-        $commandes = Commande::whereBetween('date_depot', [$start_date, $end_date])
+        // Récupérer toutes les commandes dont la date de retrait est comprise entre les dates sélectionnées
+        $commandes = Commande::whereBetween('date_retrait', [$start_date, $end_date])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -629,16 +625,16 @@ class CommandeController extends Controller
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin');
 
+        // Récupérer toutes les commandes avec la date de retrait dans la période sélectionnée
         $query = Commande::with('user')
-            ->whereIn('statut', ['Non retirée', 'non retirée', 'Partiellement payé', 'Payé - Non retiré']);
-
-        if ($date_debut && $date_fin) {
-            $query->whereBetween('date_retrait', [$date_debut, $date_fin]);
-        }
+            ->whereBetween('date_retrait', [$date_debut, $date_fin]);
 
         $commandes = $query->orderBy('created_at', 'desc')->get();
 
-        $pdf = Pdf::loadView('utilisateurs.previewListePending', compact('commandes', 'date_debut', 'date_fin'));
+        // Calculer le montant total
+        $totalMontant = $commandes->sum('total');
+
+        $pdf = Pdf::loadView('utilisateurs.previewListePending', compact('commandes', 'date_debut', 'date_fin', 'totalMontant'));
 
         return $pdf->stream('liste_commandes_pending.pdf');
     }
@@ -648,12 +644,17 @@ class CommandeController extends Controller
         $date_debut = $request->input('date_debut');
         $date_fin = $request->input('date_fin', today()->toDateString());
 
-        // Requête de base pour les commandes de l'utilisateur
-        $query = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where(function($q) {
+        // Filtrer uniquement les commandes validées/retirées avec tri par updated_at
+        $query = Commande::where(function($q) {
                 $q->where('statut', 'Retiré')
-                  ->orWhere('statut', 'retirée');
-            });
+                  ->orWhere('statut', 'Validée')
+                  ->orWhere('statut', 'validé')
+                  ->orWhere('statut', 'retiré')
+                  ->orWhere('statut', 'retirée')
+                  ->orWhere('statut', 'Validé');
+            })
+            ->whereBetween('updated_at', [$date_debut . ' 00:00:00', $date_fin . ' 23:59:59'])
+            ->orderBy('updated_at', 'desc');
 
         // Exécuter la requête
         $commandes = $query->get();
@@ -673,12 +674,21 @@ class CommandeController extends Controller
     public function printListeCommandesRetraits(Request $request)
     {
         $date_debut = $request->input('date_debut');
-        $date_fin = $request->input('date_fin') ?? now()->format('Y-m-d');
+        $date_fin = $request->input('date_fin', today()->toDateString());
 
-        $commandes = Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
-            ->where('statut', 'non retirée')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Filtrer uniquement les commandes validées/retirées avec tri par updated_at
+        $query = Commande::where(function($q) {
+                $q->where('statut', 'Retiré')
+                  ->orWhere('statut', 'Validée')
+                  ->orWhere('statut', 'validé')
+                  ->orWhere('statut', 'retiré')
+                  ->orWhere('statut', 'retirée')
+                  ->orWhere('statut', 'Validé');
+            })
+            ->whereBetween('updated_at', [$date_debut . ' 00:00:00', $date_fin . ' 23:59:59'])
+            ->orderBy('updated_at', 'desc');
+
+        $commandes = $query->get();
 
         // Générer le PDF
         $pdf = Pdf::loadView('utilisateurs.previewListeRetraits', compact('commandes', 'date_debut', 'date_fin'));
@@ -702,11 +712,13 @@ class CommandeController extends Controller
         // Calculer le montant total des commandes dans la période
         $montant_total = $commandes->sum('total');
 
-        // Récupérer les paiements et les notes de l'utilisateur
+        // Récupérer les paiements et les notes de l'utilisateur (triés par ordre décroissant)
         $payments = CommandePayment::whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les paiements dans la période
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $notes = Note::whereBetween('created_at', [$date_debut, $date_fin]) // Filtrer les notes dans la période
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Récupérer tous les mouvements d'argent (paiements et retraits)
@@ -741,8 +753,8 @@ class CommandeController extends Controller
             }
         }
 
-        // Trier les mouvements par date
-        $mouvements = $mouvements->sortBy('date');
+        // Trier les mouvements par date (ordre décroissant)
+        $mouvements = $mouvements->sortByDesc('date');
 
         $montant_total_paiements = $payments->sum('amount'); // Calcul du total des montants
         // Récupérer les objets associés à l'utilisateur
@@ -764,16 +776,12 @@ class CommandeController extends Controller
 
     public function recherche(Request $request)
     {
-        $userId = Auth::id();
-
         // on récupère la chaîne tapée
         // (si vous gardez name="client", remplacez 'search' par 'client' ici)
         $search = $request->input('client');
 
-        // on commence la requête : commandes de l'utilisateur
-        $commandes = Commande::where('user_id', $userId)
-            // si search n'est pas vide, on ajoute le filtre multi-colonnes
-            ->when($search, function ($query, $search) {
+        // on commence la requête : commandes de TOUS les utilisateurs
+        $commandes = Commande::when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('client', 'like', "%{$search}%")
                         ->orWhere('numero_whatsapp', 'like', "%{$search}%")
@@ -795,10 +803,14 @@ class CommandeController extends Controller
     {
         $search = $request->input('client');
 
-        // Requête de base pour les commandes de l'utilisateur avec statut "Retiré" ou "retirée"
+        // Requête de base pour les commandes de TOUS les utilisateurs avec statut "Retiré" ou "retirée"
         $query = Commande::where(function($q) {
                 $q->where('statut', 'Retiré')
-                  ->orWhere('statut', 'retirée');
+                  ->orWhere('statut', 'Validée')
+                  ->orWhere('statut', 'validé')
+                  ->orWhere('statut', 'retiré')
+                  ->orWhere('statut', 'retirée')
+                  ->orWhere('statut', 'Validé');
             });
 
         // Si une recherche est effectuée, ajouter les conditions de recherche
@@ -811,7 +823,7 @@ class CommandeController extends Controller
         }
 
         // Exécuter la requête
-        $commandes = $query->get();
+        $commandes = $query->orderBy('updated_at', 'desc')->get();
 
         // Calculer le total
         $total = $commandes->sum('total');
@@ -897,4 +909,5 @@ class CommandeController extends Controller
 
         return response()->json(['success' => true]);
     }
-}
+
+    }

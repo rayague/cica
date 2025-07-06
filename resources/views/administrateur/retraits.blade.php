@@ -119,7 +119,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -235,9 +235,9 @@
                 <div class="container p-6 mx-auto">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
                         <h1 class="text-3xl font-bold text-gray-800 text-center md:text-left m-0">
-                        Commandes validées pour aujourd'hui
+                        Commandes validées et retirées (Aujourd'hui)
                     </h1>
-                        <a href="{{ route('listeCommandesRetraitsAdmin.print', ['date_debut' => request('date_debut', today()->toDateString()), 'date_fin' => request('date_fin', today()->toDateString())]) }}" target="_blank" class="inline-block px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700 font-semibold shadow text-center">
+                        <a href="{{ route('listeCommandesRetraitsAdmin.print', ['date_debut' => $date_debut, 'date_fin' => $date_fin]) }}" target="_blank" class="inline-block px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700 font-semibold shadow text-center">
                             Imprimer la liste des retraits du jour
                         </a>
                     </div>
@@ -248,13 +248,13 @@
                             <div class="flex items-center space-x-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Date de début</label>
-                                    <input type="date" name="date_debut" value="{{ request('date_debut') }}"
+                                    <input type="date" name="date_debut" value="{{ $date_debut ?? request('date_debut') }}"
                                         class="px-3 py-2 border rounded-lg" required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Date de fin</label>
                                     <input type="date" name="date_fin"
-                                        value="{{ request('date_fin', today()->toDateString()) }}"
+                                        value="{{ $date_fin ?? request('date_fin', today()->toDateString()) }}"
                                         class="px-3 py-2 border rounded-lg">
                                 </div>
                                 <div class="self-end">
@@ -284,7 +284,7 @@
 
                     @if ($commandes->isEmpty())
                         <div class="p-6 text-center text-gray-600 bg-gray-100 rounded-lg shadow">
-                            <p>Aucune commande validée pour aujourd'hui.</p>
+                            <p>Aucune commande validée ou retirée trouvée.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -304,10 +304,16 @@
                                         <span class="font-medium">Total :</span>
                                         {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                     </p>
-                                    <div class="text-center">
+                                    <div class="text-center space-y-2">
                                         <a href="{{ route('commandesAdmin.show', $commande->id) }}"
                                             class="inline-block px-6 py-2 text-white transition duration-200 bg-blue-500 rounded-md hover:bg-blue-600">
                                             Voir les détails
+                                        </a>
+                                        <br>
+                                        <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ', merci pour votre confiance ! Votre commande #' . $commande->numero . ' a été retirée avec succès. À bientôt chez CICA NOBLESSE PRESSING !') }}"
+                                            target="_blank"
+                                            class="inline-block px-6 py-2 text-white transition duration-200 bg-green-500 rounded-md hover:bg-green-600">
+                                            <i class="fab fa-whatsapp mr-2"></i> Remercier
                                         </a>
                                     </div>
                                 </div>

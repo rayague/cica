@@ -48,7 +48,7 @@ class ViewsController extends Controller
         // Récupérer les dernières commandes
         $dernieresCommandes = Commande::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->take(5)
+            ->take(4)
             ->get();
 
         // Retourner la vue avec toutes les variables
@@ -178,7 +178,7 @@ class ViewsController extends Controller
 
     public function enAttente()
     {
-        // Récupérer toutes les commandes qui sont en attente
+        // Récupérer toutes les commandes qui sont en attente de TOUS les utilisateurs
         $commandes = Commande::where(function($query) {
                 $query->where('statut', 'Non retirée')
                       ->orWhere('statut', 'Non retiré')
@@ -194,7 +194,7 @@ class ViewsController extends Controller
 
     public function comptabilite()
     {
-        // 2) Récupérer les commandes
+        // 2) Récupérer les commandes de TOUS les utilisateurs
         $commandes = Commande::orderBy('created_at', 'desc')
             ->get();
 
@@ -298,39 +298,46 @@ class ViewsController extends Controller
 
     public function rappels($commandeId = null)
     {
-        // Récupérer l'ID de l'utilisateur connecté
-        $userId = Auth::id();
-
-        // Date d'aujourd'hui
-        $today = Carbon::today()->toDateString();
-
         if ($commandeId) {
-            // On ne charge la commande que si elle est retirée, appartient à l'utilisateur
-            // ET si sa date_retrait est aujourd'hui
+            // On charge la commande de tous les utilisateurs avec un statut validé/retiré
             $commandes = Commande::where('id', $commandeId)
-                ->where('user_id', $userId)
-                ->where('statut', 'Retiré')
-                ->whereDate('date_retrait', $today)
+                ->where(function($query) {
+                    $query->where('statut', 'Retiré')
+                          ->orWhere('statut', 'Validée')
+                          ->orWhere('statut', 'validé')
+                          ->orWhere('statut', 'retiré')
+                          ->orWhere('statut', 'retirée')
+                          ->orWhere('statut', 'Validé');
+                })
                 ->with('objets')
+                ->orderBy('updated_at', 'desc')
                 ->get();
 
-            // Notes associées à cette commande, créées aujourd'hui
+            // Notes associées à cette commande
             $notes = Note::where('commande_id', $commandeId)
-                ->whereDate('created_at', $today)
                 ->with('user')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('updated_at', 'desc')
                 ->get();
         } else {
-            // Toutes les commandes retirées pour cet utilisateur dont le retrait est aujourd'hui
-            $commandes = Commande::where('user_id', $userId)
-                ->where('statut', 'Retiré')
-                ->whereDate('date_retrait', $today)
+            // Filtrer par date si fournie, sinon afficher les 24 dernières heures
+            $date_debut = request('date_debut', Carbon::now()->subDay()->toDateString());
+            $date_fin = request('date_fin', Carbon::now()->toDateString());
+
+            // Toutes les commandes validées/retirées de TOUS les utilisateurs avec filtre de date
+            $commandes = Commande::where(function($query) {
+                    $query->where('statut', 'Retiré')
+                          ->orWhere('statut', 'Validée')
+                          ->orWhere('statut', 'validé')
+                          ->orWhere('statut', 'retiré')
+                          ->orWhere('statut', 'retirée')
+                          ->orWhere('statut', 'Validé');
+                })
+                ->whereBetween('updated_at', [$date_debut . ' 00:00:00', $date_fin . ' 23:59:59'])
+                ->orderBy('updated_at', 'desc')
                 ->get();
 
-            // Toutes les notes de l'utilisateur créées aujourd'hui
-            $notes = Note::where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->orderBy('created_at', 'desc')
+            // Toutes les notes de tous les utilisateurs
+            $notes = Note::orderBy('updated_at', 'desc')
                 ->get();
         }
 
@@ -351,22 +358,32 @@ class ViewsController extends Controller
         $date_debut = request('date_debut');
         $date_fin = request('date_fin');
         if ($date_debut && $date_fin) {
-            $commandes = \App\Models\Commande::whereBetween('date_retrait', [$date_debut, $date_fin])
+            $commandes = \App\Models\Commande::with('user')
+                ->whereBetween('updated_at', [$date_debut . ' 00:00:00', $date_fin . ' 23:59:59'])
                 ->where(function($q) {
                     $q->where('statut', 'Retiré')
-                      ->orWhere('statut', 'retirée');
+                      ->orWhere('statut', 'Validée')
+                      ->orWhere('statut', 'validé')
+                      ->orWhere('statut', 'retiré')
+                      ->orWhere('statut', 'retirée')
+                      ->orWhere('statut', 'Validé');
                 })
-                ->orderBy('date_retrait')
+                ->orderBy('updated_at', 'desc')
                 ->get();
             $periode = $date_debut . ' au ' . $date_fin;
         } else {
             $today = \Carbon\Carbon::today()->toDateString();
-            $commandes = \App\Models\Commande::whereDate('date_retrait', $today)
+            $commandes = \App\Models\Commande::with('user')
+                ->whereDate('updated_at', $today)
                 ->where(function($q) {
                     $q->where('statut', 'Retiré')
-                      ->orWhere('statut', 'retirée');
+                      ->orWhere('statut', 'Validée')
+                      ->orWhere('statut', 'validé')
+                      ->orWhere('statut', 'retiré')
+                      ->orWhere('statut', 'retirée')
+                      ->orWhere('statut', 'Validé');
                 })
-                ->orderBy('date_retrait')
+                ->orderBy('updated_at', 'desc')
                 ->get();
             $periode = $today;
         }

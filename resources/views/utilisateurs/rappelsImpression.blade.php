@@ -21,6 +21,8 @@
             <tr>
                 <th>N° Commande</th>
                 <th>Client</th>
+                <th>Numéro du client</th>
+                <th>Utilisateur</th>
                 <th>Heure de Retrait</th>
             </tr>
         </thead>
@@ -29,10 +31,12 @@
                 <tr>
                     <td>{{ $commande->numero }}</td>
                     <td>{{ $commande->client }}</td>
+                    <td>{{ $commande->numero_whatsapp }}</td>
+                    <td>{{ $commande->user->name ?? '' }}</td>
                     <td>{{ $commande->heure_retrait }}</td>
                 </tr>
             @empty
-                <tr><td colspan="3" style="text-align:center;">Aucun retrait aujourd'hui</td></tr>
+                <tr><td colspan="5" style="text-align:center;">Aucun retrait aujourd'hui</td></tr>
             @endforelse
         </tbody>
     </table>
@@ -41,4 +45,3 @@
     </script>
 </body>
 </html>
- 

@@ -124,7 +124,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -398,7 +398,11 @@
 
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Total final :</strong></span>
-                            <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
+                            <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA
+                                @if(strtolower($commande->type_lavage) === 'lavage express')
+                                    <span class="ml-2 px-2 py-1 text-xs text-white bg-yellow-500 rounded">EXPRESS</span>
+                                @endif
+                            </span>
                         </div>
                             <div class="flex flex-col md:flex-row justify-between gap-2">
                                 <span><strong>Avances cumulées :</strong></span>

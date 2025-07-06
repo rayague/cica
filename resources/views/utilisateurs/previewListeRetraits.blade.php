@@ -109,7 +109,7 @@
 
     </div>
 
-    <h2>Liste des Commandes non retirées</h2>
+    <h2>Commandes validées/retirées - Tri par date de validation</h2>
     <p><strong>Période :</strong> {{ $date_debut }} au {{ $date_fin }}</p>
 
     <table>
@@ -126,17 +126,15 @@
         <tbody>
             @php $total = 0; @endphp
             @foreach ($commandes as $commande)
-                @if ($commande->statut === 'non retirée')
-                    @php $total += $commande->total; @endphp
-                    <tr>
-                        <td>{{ $commande->numero }}</td>
-                        <td>{{ $commande->client }}</td>
-                        <td>{{ $commande->numero_whatsapp }}</td>
-                        <td>{{ $commande->heure_retrait }}</td>
-                            {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
-                            <td>{{ $commande->statut }}</td> --}}
-                    </tr>
-                @endif
+                @php $total += $commande->total; @endphp
+                <tr>
+                    <td>{{ $commande->numero }}</td>
+                    <td>{{ $commande->client }}</td>
+                    <td>{{ $commande->numero_whatsapp }}</td>
+                    <td>{{ $commande->heure_retrait }}</td>
+                        {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
+                        <td>{{ $commande->statut }}</td> --}}
+                </tr>
             @endforeach
             {{-- <tr class="total">
                 <td colspan="3">Total :</td>

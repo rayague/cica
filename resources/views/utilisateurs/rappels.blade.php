@@ -209,7 +209,7 @@
                 <!-- Begin Page Content -->
                 <div class="container p-6 mx-auto">
                     <h1 class="mb-8 text-3xl font-bold text-center text-gray-800">
-                        Commandes validées pour aujourd'hui
+                        Commandes validées et retirées (24 dernières heures)
                     </h1>
                     <!-- Formulaire de filtre -->
 
@@ -255,7 +255,7 @@
 
                     @if ($commandes->isEmpty())
                         <div class="p-6 text-center text-gray-600 bg-gray-100 rounded-lg shadow">
-                            <p>Aucune commande validée pour aujourd'hui.</p>
+                            <p>Aucune commande validée ou retirée trouvée.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

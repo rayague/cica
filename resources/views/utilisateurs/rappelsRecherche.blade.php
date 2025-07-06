@@ -208,7 +208,7 @@
                 <!-- Begin Page Content -->
                 <div class="container p-6 mx-auto">
                     <h1 class="mb-8 text-3xl font-bold text-center text-gray-800">
-                        Commandes validées pour aujourd'hui
+                        Commandes validées/retirées - Tri par date de validation
                     </h1>
                     <!-- Formulaire de filtre -->
 
@@ -250,11 +250,13 @@
                                 </div>
                             </form>
                         </div>
+
+
                     </div>
 
                     @if ($commandes->isEmpty())
                         <div class="p-6 text-center text-gray-600 bg-gray-100 rounded-lg shadow">
-                            <p>Aucune commande validée pour aujourd'hui.</p>
+                            <p>Aucune commande validée/retirée trouvée pour la période sélectionnée.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -274,10 +276,16 @@
                                         <span class="font-medium">Total :</span>
                                         {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                     </p>
-                                    <div class="text-center">
+                                    <div class="text-center space-y-2">
                                         <a href="{{ route('commandes.show', $commande->id) }}"
                                             class="inline-block px-6 py-2 text-white transition duration-200 bg-blue-500 rounded-md hover:bg-blue-600">
                                             Voir les détails
+                                        </a>
+                                        <br>
+                                        <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ', merci pour votre confiance ! Votre commande #' . $commande->numero . ' a été retirée avec succès. À bientôt chez CICA NOBLESSE PRESSING !') }}"
+                                            target="_blank"
+                                            class="inline-block px-6 py-2 text-white transition duration-200 bg-green-500 rounded-md hover:bg-green-600">
+                                            <i class="fab fa-whatsapp mr-2"></i> Remercier
                                         </a>
                                     </div>
                                 </div>

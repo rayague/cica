@@ -285,7 +285,7 @@
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->commande->numero ?? $note->commande_id }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->user->name ?? 'Utilisateur Inconnu' }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->note }}</td>
-                                            <td class="px-4 py-2 border border-yellow-300">{{ \Carbon\Carbon::parse($note->created_at)->format('d/m/Y H:i') }}</td>
+                                            <td class="px-4 py-2 border border-yellow-300">{{ \Carbon\Carbon::parse($note->created_at)->locale('fr')->isoFormat('dddd D MMMM YYYY à HH:mm') }}</td>
                                             <td class="px-4 py-2 border border-yellow-300">{{ $note->commande->client ?? '' }}</td>
                                         </tr>
                                     @endforeach
@@ -304,10 +304,10 @@
                                 <thead>
                                     <tr class="text-white bg-green-500">
                                         <th class="px-4 py-2 border border-green-400">Numéro de Facture</th>
+                                        <th class="px-4 py-2 border border-green-400">Client</th>
                                         <th class="px-4 py-2 border border-green-400">Utilisateur</th>
                                         <th class="px-4 py-2 border border-green-400">Montant</th>
                                         <th class="px-4 py-2 border border-green-400">Moyen de Paiement</th>
-                                        <th class="px-4 py-2 border border-green-400">Client</th>
                                         <th class="px-4 py-2 border border-green-400">Action</th>
                                         <th class="px-4 py-2 border border-green-400">Date</th>
                                     </tr>
@@ -317,17 +317,17 @@
                                         <tr class="hover:bg-green-50">
                                             <td class="px-4 py-2 border border-green-300">{{ $payment->commande->numero ?? $payment->commande_id }}</td>
                                             <td class="px-4 py-2 border border-green-300">
+                                                {{ $payment->commande->client ?? '' }}</td>
+                                            <td class="px-4 py-2 border border-green-300">
                                                 {{ $payment->user->name ?? 'Utilisateur Inconnu' }}</td>
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ number_format($payment->amount, 2, ',', ' ') }} F</td>
                                             <td class="px-4 py-2 border border-green-300">
                                                 {{ $payment->payment_type ?? 'Non spécifié' }}</td>
                                             <td class="px-4 py-2 border border-green-300">
-                                                {{ $payment->commande->client ?? '' }}</td>
-                                            <td class="px-4 py-2 border border-green-300">
                                                 {{ $payment->payment_method ?? 'Non spécifié' }}</td>
                                             <td class="px-4 py-2 border border-green-300">
-                                                {{ \Carbon\Carbon::parse($payment->created_at)->format('d/m/Y H:i') }}
+                                                {{ \Carbon\Carbon::parse($payment->created_at)->locale('fr')->isoFormat('dddd D MMMM YYYY à HH:mm') }}
                                             </td>
                                         </tr>
                                     @endforeach

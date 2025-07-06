@@ -109,40 +109,30 @@
 
     </div>
 
-    <h2>Liste des Commandes non retirées</h2>
-    <p><strong>Période :</strong> {{ $date_debut }} au {{ $date_fin }}</p>
+    <h2>Liste des Retraits @if(isset($date_debut) && isset($date_fin)) du {{ $date_debut }} au {{ $date_fin }} @endif</h2>
 
     <table>
         <thead>
             <tr>
                 <th>N° Commande</th>
                 <th>Client</th>
-                <th>Numéro de Téléphone</th>
+                <th>Numéro du client</th>
+                <th>Utilisateur</th>
                 <th>Heure de Retrait</th>
-                {{-- <th>Montant</th>
-                <th>Statut</th> --}}
             </tr>
         </thead>
         <tbody>
-            @php $total = 0; @endphp
-            @foreach ($commandes as $commande)
-                @if ($commande->statut === 'non retirée')
-                    @php $total += $commande->total; @endphp
-                    <tr>
-                        <td>{{ $commande->numero }}</td>
-                        <td>{{ $commande->client }}</td>
-                        <td>{{ $commande->numero_whatsapp }}</td>
-                        <td>{{ $commande->heure_retrait }}</td>
-                            {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
-                            <td>{{ $commande->statut }}</td> --}}
-                    </tr>
-                @endif
-            @endforeach
-            {{-- <tr class="total">
-                <td colspan="3">Total :</td>
-                <td>{{ number_format($total, 2, ',', ' ') }} FCFA</td>
-                <td></td>
-            </tr> --}}
+            @forelse ($commandes as $commande)
+                <tr>
+                    <td>{{ $commande->numero }}</td>
+                    <td>{{ $commande->client }}</td>
+                    <td>{{ $commande->numero_whatsapp }}</td>
+                    <td>{{ $commande->user->name ?? '' }}</td>
+                    <td>{{ $commande->heure_retrait }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="5" style="text-align:center;">Aucun retrait pour cette période</td></tr>
+            @endforelse
         </tbody>
     </table>
 

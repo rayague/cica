@@ -82,10 +82,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/impression_liste_commandes_en_attente_administration', [AdminController::class, 'printListeCommandesPending'])->name('listeCommandesPendingAdmin.print');
     Route::get('/impression_liste_commandes_retiree_administration', [AdminController::class, 'printListeCommandesRetraits'])->name('listeCommandesRetraitsAdmin.print');
     Route::get('/impression_liste_commandes_comptabilite_administration', [AdminController::class, 'printListeCommandesComptabilite'])->name('listeCommandesComptabiliteAdmin.print');
+    Route::get('/impression_factures_en_attente_administration', [AdminController::class, 'printEnAttente'])->name('commandesAdmin.printEnAttente');
 
     // Routes de filtrage admin
     Route::get('/commandes_en_attente/filtrer_administration', [AdminController::class, 'filtrerPending'])->name('commandesAdmin.filtrerPending');
-    Route::get('/retrait/commandes/filtrer_administration', [AdminController::class, 'RetraitsFiltrer'])->name('commandesAdmin.filtrerRetrait');
+    Route::get('/retrait/commandes/filtrer_administration', [AdminController::class, 'retraitsFiltrer'])->name('commandesAdmin.filtrerRetrait');
     Route::get('/Comptabilite/commandes/filtrer_administration', [AdminController::class, 'ComptabiliteFiltrer'])->name('commandesAdmin.filtrerComptabilite');
     Route::get('/commandes/retrait_administration', [AdminController::class, 'retraitPending'])->name('commandesAdmin.retraitPending');
 
@@ -110,6 +111,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/factures/{id}/edit', [AdminController::class, 'editFacture'])->name('admin.factures.edit');
     Route::put('/admin/factures/{id}', [AdminController::class, 'updateFacture'])->name('admin.factures.update');
     Route::delete('/admin/factures/{id}/delete-permanent', [AdminController::class, 'deleteFacturePermanently'])->name('admin.factures.delete-permanent');
+
+
 });
 
 
@@ -186,7 +189,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/commandes/retrait', [CommandeController::class, 'retraitPending'])->name('commandes.retraitPending');
 
     // Routes d'impression utilisateurs
-    Route::get('/impression_liste_commandes_retiree', [AdminController::class, 'printListeCommandesRetraits'])->name('listeCommandesRetraits.print');
+    Route::get('/impression_liste_commandes_retiree', [CommandeController::class, 'printListeCommandesRetraits'])->name('listeCommandesRetraits.print');
     Route::get('/impression_liste_commandes_en_attente', [CommandeController::class, 'printListeCommandesPending'])->name('listeCommandesPending.print');
     Route::get('/impression_liste_commandes', [CommandeController::class, 'printListeCommandes'])->name('listeCommandes.print');
 
@@ -208,6 +211,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/commandes/{id}/delete', [CommandeController::class, 'destroy'])->name('commandes.delete');
     Route::post('/commande/{commande}/objet/{objet}/retirer', [CommandeController::class, 'retirerObjet'])->name('commande.retirer');
     Route::post('/commandes/{commande}/retirer-plusieurs', [CommandeController::class, 'retirerPlusieursObjets'])->name('commande.retirerPlusieurs');
+
+
 
     // Routes de modification utilisateurs
     Route::get('/modification_agence', [AgenceController::class, 'modificationAgence'])->name('pageModificationAgence');
