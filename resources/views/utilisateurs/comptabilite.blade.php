@@ -124,6 +124,15 @@
                         <span class="font-weight-bold">RETRAITS</span>
                     </a>
                 </li>
+
+                <!-- Nav Item - Factures -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('factures') }}">
+                        <i class="fas fa-fw fa-file-invoice"></i>
+                        <span class="font-weight-bold">FACTURES</span>
+                    </a>
+                </li>
+
                 <!-- Nav Item - Profil -->
                 {{-- <li class="nav-item ">
                     <a class="nav-link" href="
@@ -404,16 +413,23 @@
 
 
             <!-- Footer -->
-            <footer class="mt-56 bg-white sticky-footer">
+            <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
-                    <div class="my-auto text-center copyright">
-                        Copyrignt © <span class="text-yellow-500"
-                            style="font-family: 'Dancing Script', cursive;">Cica</span> Ray
-                        Ague.
+                    <div class="copyright text-center my-auto">
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="text-dark font-weight-bold">
+                                    Developed by <span class="text-primary">Ray Ague</span>
+                                </span>
+                                <br>
+                                <small class="text-dark">
+                                    Project Manager and Business Development Analyst: <span class="text-primary font-weight-bold">Abdalah KH AGUESSY-VOGNON</span>
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </footer>
-            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->

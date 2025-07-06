@@ -112,6 +112,12 @@ class FactureController extends Controller
         return redirect()->route('commandes.show', $commande->id)->with('note', $note);
     }
 
+    public function index()
+    {
+        // Récupérer toutes les commandes (les factures) triées par date de création décroissante
+        $factures = Commande::orderBy('created_at', 'desc')->get();
 
+        return view('utilisateurs.factures', compact('factures'));
+    }
 
 }

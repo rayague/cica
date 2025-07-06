@@ -357,36 +357,159 @@ class AdminController extends Controller
 
     public function rappelsAdmin($commandeId = null)
     {
-        // Récupérer l'ID de l'utilisateur connecté
-        $userId = Auth::id();
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
+        // Récupérer toutes les commandes de l'administrateur connecté
+        $commandes = Commande::where('user_id', $user->id)
+            ->where(function($query) {
+                $query->where('statut', 'Non retirée')
+                      ->orWhere('statut', 'Non retiré');
+            })
+            ->orderBy('date_retrait', 'asc')
+            ->get();
+
+        // Si un ID de commande est spécifié, récupérer cette commande spécifique
+        $commandeSpecifique = null;
         if ($commandeId) {
-            // Récupérer la commande validée pour l'utilisateur connecté
-            $commandes = Commande::where('id', $commandeId)
-                ->where('statut', 'validée')
-                ->where('user_id', $userId)
-                ->with('objets') // Charger la relation objets
-                ->get();
-
-            // Récupérer les notes associées à cette commande
-            $notes = Note::where('commande_id', $commandeId)
-                ->with('user') // Récupérer l'utilisateur associé à la note
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            // Récupérer toutes les commandes validées pour l'utilisateur connecté
-            $commandes = Commande::where('statut', 'validée')
-                ->where('user_id', $userId)
-                ->get();
-
-            // Récupérer toutes les notes de l'utilisateur connecté
-            $notes = Note::where('user_id', $userId)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $commandeSpecifique = Commande::where('user_id', $user->id)
+                ->where('id', $commandeId)
+                ->first();
         }
 
-        // Retourner la vue avec les données
-        return view('administrateur.retraits', compact('commandes', 'notes'));
+        return view('administrateur.retraits', compact('commandes', 'commandeSpecifique'));
+    }
+
+    public function factures(Request $request)
+    {
+        // Récupérer toutes les factures de tous les utilisateurs
+        $query = Commande::with(['user', 'objets']);
+
+        // Recherche par client, numéro de facture ou numéro WhatsApp
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('client', 'LIKE', "%{$search}%")
+                  ->orWhere('numero', 'LIKE', "%{$search}%")
+                  ->orWhere('numero_whatsapp', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Recherche par date
+        if ($request->filled('date_debut')) {
+            $query->whereDate('created_at', '>=', $request->date_debut);
+        }
+
+        if ($request->filled('date_fin')) {
+            $query->whereDate('created_at', '<=', $request->date_fin);
+        }
+
+        $factures = $query->orderBy('created_at', 'desc')->get();
+
+        return view('administrateur.factures', compact('factures'));
+    }
+
+    public function notifications()
+    {
+        // Récupérer toutes les notifications de toutes les factures
+        $notifications = \App\Models\Notification::with(['commande.user', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('administrateur.notifications', compact('notifications'));
+    }
+
+    public function deleteFacturePermanently($id)
+    {
+        // Vérifier que l'utilisateur est administrateur
+        if (!Auth::user()->is_admin) {
+            return redirect()->back()->with('error', 'Accès non autorisé. Seuls les administrateurs peuvent supprimer définitivement les factures.');
+        }
+
+        $commande = Commande::findOrFail($id);
+
+        // Créer une notification de suppression
+        \App\Models\Notification::create([
+            'commande_id' => $commande->id,
+            'user_id' => Auth::id(),
+            'action' => 'suppression',
+            'changes' => json_encode([
+                'message' => 'Facture supprimée définitivement par l\'administrateur',
+                'facture_numero' => $commande->numero,
+                'facture_client' => $commande->client,
+                'facture_total' => $commande->total
+            ]),
+            'description' => "Facture #{$commande->numero} (Client: {$commande->client}) supprimée définitivement par l'administrateur " . Auth::user()->name
+        ]);
+
+        // Supprimer définitivement la facture
+        $commande->delete();
+
+        return redirect()->route('facturesAdmin')->with('success', 'Facture supprimée définitivement avec succès.');
+    }
+
+    public function editFacture($id)
+    {
+        // Vérifier que l'utilisateur est administrateur
+        if (!Auth::user()->is_admin) {
+            return redirect()->back()->with('error', 'Accès non autorisé. Seuls les administrateurs peuvent modifier les factures.');
+        }
+
+        $commande = Commande::with(['objets'])->findOrFail($id);
+        $objets = Objets::all();
+
+        return view('administrateur.editFacture', compact('commande', 'objets'));
+    }
+
+    public function updateFacture(Request $request, $id)
+    {
+        // Vérifier que l'utilisateur est administrateur
+        if (!Auth::user()->is_admin) {
+            return redirect()->back()->with('error', 'Accès non autorisé. Seuls les administrateurs peuvent modifier les factures.');
+        }
+
+        $commande = Commande::findOrFail($id);
+
+        // Récupérer les données actuelles pour la comparaison
+        $oldData = $commande->toArray();
+
+        // Validation des données (seulement les champs modifiables)
+        $validatedData = $request->validate([
+            'client' => 'required|string|max:255',
+            'numero_whatsapp' => 'required|string|max:255',
+            'date_depot' => 'required|date',
+            'date_retrait' => 'required|date|after_or_equal:date_depot',
+            'statut' => 'required|string|in:Non retirée,Retiré,Partiellement payé,Payé - Non retiré',
+        ]);
+
+        // Mettre à jour la commande (seulement les champs modifiables)
+        $commande->update($validatedData);
+
+        // Identifier les changements (exclure les champs non modifiables)
+        $changes = [];
+        $excludedFields = ['total', 'avance_client', 'remise_reduction', 'heure_retrait', 'type_lavage', 'solde_restant', 'original_total', 'discount_amount'];
+        
+        foreach ($validatedData as $field => $newValue) {
+            if (!in_array($field, $excludedFields) && isset($oldData[$field]) && $oldData[$field] != $newValue) {
+                $changes[$field] = [
+                    'old' => $oldData[$field],
+                    'new' => $newValue
+                ];
+            }
+        }
+
+        // Créer une notification si des changements ont été effectués
+        if (!empty($changes)) {
+            \App\Models\Notification::create([
+                'commande_id' => $commande->id,
+                'user_id' => Auth::id(),
+                'action' => 'modification',
+                'changes' => json_encode($changes),
+                'description' => "Facture #{$commande->numero} modifiée par l'administrateur " . Auth::user()->name
+            ]);
+        }
+
+        return redirect()->route('facturesAdmin')->with('success', 'Facture modifiée avec succès.');
     }
 
 

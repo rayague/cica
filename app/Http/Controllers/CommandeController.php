@@ -13,6 +13,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CommandeImage;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 
 class CommandeController extends Controller
 {
@@ -58,7 +60,7 @@ class CommandeController extends Controller
                 'client' => 'required|string',
                 'numero_whatsapp' => 'required|string',
                 'date_retrait' => 'required|date',
-                'heure_retrait' => 'required|date_format:H:i',
+                'heure_retrait' => ['required', 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
                 'type_lavage' => 'required|string',
                 'objets' => 'required|array',
                 'objets.*.id' => 'required|exists:objets,id',
@@ -327,40 +329,160 @@ class CommandeController extends Controller
 
     public function show($id)
     {
-        // Récupérer la commande avec ses objets associés et ses paiements
-        $commande = Commande::with(['objets', 'payments'])->findOrFail($id);
+        $commande = Commande::with(['objets', 'payments', 'images'])->findOrFail($id);
 
-        // Récupérer la note relative à la commande
-        $notes = Note::where('commande_id', $commande->id)
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Calculer les totaux
+        $originalTotal = $commande->original_total ?? $commande->total;
+        $discountAmount = $commande->discount_amount ?? 0;
+        $remiseReduction = $commande->remise_reduction ?? 0;
 
-        // Calcul du total initial sans réduction
-        $originalTotal = 0;
-        foreach ($commande->objets as $objet) {
-            $originalTotal += $objet->prix_unitaire * $objet->pivot->quantite;
+        return view('utilisateurs.commandesDetails', compact('commande', 'originalTotal', 'discountAmount', 'remiseReduction'));
+    }
+
+    public function edit($id)
+    {
+        $commande = Commande::with(['objets', 'payments', 'images'])->findOrFail($id);
+        $objets = Objets::all();
+
+        // Calculer les totaux
+        $originalTotal = $commande->original_total ?? $commande->total;
+        $discountAmount = $commande->discount_amount ?? 0;
+        $remiseReduction = $commande->remise_reduction ?? 0;
+
+        return view('utilisateurs.editFacture', compact('commande', 'objets', 'originalTotal', 'discountAmount', 'remiseReduction'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $commande = Commande::findOrFail($id);
+            
+            // Validation des données (sans total, statut, heure_retrait, type_lavage et objets)
+            $request->validate([
+                'client' => 'required|string',
+                'numero_whatsapp' => 'required|string',
+                'date_depot' => 'required|date',
+                'date_retrait' => 'required|date',
+                'avance_client' => 'nullable|numeric|min:0',
+                'remise_reduction' => 'nullable|in:0,5,10,15,20,25,30',
+            ]);
+
+            // Récupérer les anciennes valeurs pour comparer
+            $oldValues = [
+                'client' => $commande->client,
+                'numero_whatsapp' => $commande->numero_whatsapp,
+                'date_depot' => $commande->date_depot,
+                'date_retrait' => $commande->date_retrait,
+                'avance_client' => $commande->avance_client,
+                'remise_reduction' => $commande->remise_reduction,
+            ];
+
+            // Nouvelles valeurs (seulement les champs modifiables)
+            $newValues = [
+                'client' => $request->client,
+                'numero_whatsapp' => $request->numero_whatsapp,
+                'date_depot' => $request->date_depot,
+                'date_retrait' => $request->date_retrait,
+                'avance_client' => $request->avance_client ?? 0,
+                'remise_reduction' => $request->remise_reduction ?? 0,
+            ];
+
+            // Détecter les changements
+            $changes = [];
+            $descriptions = [];
+
+            foreach ($newValues as $field => $newValue) {
+                if ($oldValues[$field] != $newValue) {
+                    $changes[$field] = [
+                        'old' => $oldValues[$field],
+                        'new' => $newValue
+                    ];
+                    
+                    // Créer une description lisible
+                    $fieldNames = [
+                        'client' => 'Nom du client',
+                        'numero_whatsapp' => 'Numéro WhatsApp',
+                        'date_depot' => 'Date de dépôt',
+                        'date_retrait' => 'Date de retrait',
+                        'avance_client' => 'Avance client',
+                        'remise_reduction' => 'Remise'
+                    ];
+                    
+                    $descriptions[] = "{$fieldNames[$field]}: {$oldValues[$field]} → {$newValue}";
+                }
+            }
+
+            // Mettre à jour les informations de base de la commande (seulement les champs modifiables)
+            $commande->update($newValues);
+
+            // Recalculer le solde restant
+            $soldeRestant = max(0, $commande->total - ($request->avance_client ?? 0));
+            $commande->update(['solde_restant' => $soldeRestant]);
+
+            // Créer la notification si il y a des changements
+            if (!empty($changes)) {
+                Notification::create([
+                    'commande_id' => $commande->id,
+                    'user_id' => Auth::user()->id,
+                    'action' => 'modification',
+                    'changes' => json_encode($changes),
+                    'description' => "Facture #{$commande->numero} modifiée par " . Auth::user()->name
+                ]);
+            }
+
+            return redirect()->route('factures')->with('success', 'Facture mise à jour avec succès.');
+            
+        } catch (\Exception $e) {
+            // Log l'erreur pour le débogage
+            \Log::error('Erreur lors de la mise à jour de la facture: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Erreur lors de la mise à jour: ' . $e->getMessage());
         }
-        if (strtolower($commande->type_lavage) === 'lavage express') {
-            $originalTotal *= 2;
+    }
+
+    public function history($id)
+    {
+        $commande = Commande::with(['notifications.user'])->findOrFail($id);
+        $notifications = $commande->notifications()->orderBy('created_at', 'desc')->get();
+        
+        return view('utilisateurs.factureHistory', compact('commande', 'notifications'));
+    }
+
+    public function destroy($id)
+    {
+        // Vérifier si l'utilisateur est administrateur
+        if (!Auth::user()->is_admin) {
+            return redirect()->route('factures')->with('error', 'Accès refusé. Seuls les administrateurs peuvent supprimer des factures.');
         }
 
-        // Récupérer le pourcentage de réduction et calculer le montant de la réduction
-        $remiseReduction = (float) $commande->remise_reduction;
-        $discountAmount = 0;
-        if ($remiseReduction > 0) {
-            $discountAmount = $originalTotal * ($remiseReduction / 100);
-        }
-        $finalTotal = $originalTotal - $discountAmount;
+        $commande = Commande::findOrFail($id);
+        
+        // Créer une notification avant la suppression
+        Notification::create([
+            'commande_id' => $commande->id,
+            'user_id' => Auth::user()->id,
+            'action' => 'suppression',
+            'changes' => json_encode([
+                'message' => 'Facture supprimée par l\'utilisateur',
+                'facture_numero' => $commande->numero,
+                'facture_client' => $commande->client,
+                'facture_total' => $commande->total
+            ]),
+            'description' => "Facture #{$commande->numero} supprimée par " . Auth::user()->name
+        ]);
 
-        return view('utilisateurs.commandesDetails', compact(
-            'commande',
-            'notes',
-            'originalTotal',
-            'discountAmount',
-            'remiseReduction',
-            'finalTotal'
-        ));
+        // Supprimer les relations
+        $commande->objets()->detach();
+        $commande->payments()->delete();
+        $commande->images()->delete();
+        
+        // Supprimer la commande
+        $commande->delete();
+        
+        return redirect()->route('factures')->with('success', 'Facture supprimée avec succès.');
     }
 
     public function completerPaiement(Request $request, Commande $commande)

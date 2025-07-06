@@ -171,7 +171,7 @@
     </main>
 
     <footer class="fixed bottom-0 w-full p-2 text-xs font-semibold text-center text-white bg-sky-700 backdrop-blur-md shadow-lg tracking-wide" style="font-family: 'Montserrat', sans-serif;">
-        Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.
+            Developed by Ray Ague, with Project Manager and Business Developer Abdalah KH AGUESSY-VOGNON.
     </footer>
 
     <script>

@@ -103,6 +103,13 @@ Route::middleware('auth')->group(function () {
     // Routes de gestion du message de facture
     Route::post('/admin/facture-message', [AdminController::class, 'storeFactureMessage'])->name('admin.facture-message.store');
     Route::delete('/admin/facture-message', [AdminController::class, 'deleteFactureMessage'])->name('admin.facture-message.delete');
+
+    Route::get('/retraits_administration', [AdminController::class, 'rappelsAdmin'])->name('rappelsAdmin');
+    Route::get('/factures_administration', [AdminController::class, 'factures'])->name('facturesAdmin');
+    Route::get('/notifications_administration', [AdminController::class, 'notifications'])->name('notificationsAdmin');
+    Route::get('/admin/factures/{id}/edit', [AdminController::class, 'editFacture'])->name('admin.factures.edit');
+    Route::put('/admin/factures/{id}', [AdminController::class, 'updateFacture'])->name('admin.factures.update');
+    Route::delete('/admin/factures/{id}/delete-permanent', [AdminController::class, 'deleteFacturePermanently'])->name('admin.factures.delete-permanent');
 });
 
 
@@ -163,6 +170,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/acceuil', [ViewsController::class, 'acceuil'])->name('acceuil');
     Route::get('/en_attente', [ViewsController::class, 'enAttente'])->name('pending');
     Route::get('/comptabilite', [ViewsController::class, 'comptabilite'])->name('comptabilite');
+    Route::get('/factures', [FactureController::class, 'index'])->name('factures');
     Route::get('/retrait/{commande}', [ViewsController::class, 'pageRetrait'])->name('faireRetrait');
     Route::get('/details_retraits/{id}', [ViewsController::class, 'detailsRetrait'])->name('retrait.details');
 
@@ -194,7 +202,10 @@ Route::middleware(['auth'])->group(function () {
     // Routes de gestion des commandes utilisateurs
     Route::get('/liste_des_commandes', [CommandeController::class, 'listeCommandes'])->name('listeCommandes');
     Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('commandes.show');
-    Route::delete('/commandes/{id}/delete', [AdminController::class, 'destroyCommande'])->name('commandesAdmin.destroy');
+    Route::get('/factures/{id}/edit', [CommandeController::class, 'edit'])->name('factures.edit');
+    Route::put('/factures/{id}', [CommandeController::class, 'update'])->name('factures.update');
+    Route::get('/factures/{id}/history', [CommandeController::class, 'history'])->name('factures.history');
+    Route::delete('/commandes/{id}/delete', [CommandeController::class, 'destroy'])->name('commandes.delete');
     Route::post('/commande/{commande}/objet/{objet}/retirer', [CommandeController::class, 'retirerObjet'])->name('commande.retirer');
     Route::post('/commandes/{commande}/retirer-plusieurs', [CommandeController::class, 'retirerPlusieursObjets'])->name('commande.retirerPlusieurs');
 

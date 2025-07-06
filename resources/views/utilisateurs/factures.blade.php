@@ -2,229 +2,336 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture {{ $commande->numero }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0.5cm auto;
-            color: #2d3748;
-            background: #ffffff;
-            font-size: 13px;
-            line-height: 1.4;
-        }
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        .container {
-            max-width: 21cm;
-            min-height: 29.7cm;
-            margin: 0 auto;
-            padding: 30px;
-        }
+    <title>Cica - Factures</title>
+    <link rel="shortcut icon" href="{{ asset('images/Cica.png') }}" type="image/x-icon">
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 3px solid #38a169;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
+    <!-- Custom fonts -->
+    <link href="{{ asset('dashboard-assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-        .brand-section h1 {
-            color: #38a169;
-            font-size: 20px;
-            margin: 0 0 5px 0;
-        }
-
-        .brand-section p {
-            margin: 2px 0;
-            font-size: 0.8em;
-        }
-
-        .invoice-info {
-            text-align: right;
-        }
-
-        .invoice-info h2 {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .detail-block {
-            padding: 10px;
-            background: #f8fafc;
-            border-radius: 4px;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 12px;
-        }
-
-        .items-table th {
-            background: #38a169;
-            color: white;
-            padding: 8px;
-            font-weight: 600;
-        }
-
-        .items-table td {
-            padding: 8px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .total-section {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8fff9;
-            border-radius: 4px;
-        }
-
-        .total-line {
-            display: flex;
-            justify-content: space-between;
-            margin: 6px 0;
-        }
-
-        .agence-info {
-            font-size: 11px;
-            padding: 12px;
-            background: #f0fff4;
-            border-left: 3px solid #38a169;
-            margin-top: 15px;
-        }
-
-        .text-green {
-            color: #38a169;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .badge {
-            padding: 3px 6px;
-            font-size: 11px;
-        }
-    </style>
+    <!-- Custom styles -->
+    <link href="{{ asset('dashboard-assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="brand-section">
-                <h1>CICA NOBLESSE PRESSING</h1>
-                <p>Bureau situé à côté du dépôt de ciment Zogbo (annexe Godomey).</p>
-                <p>0272 BP 81</p>
-                <p>Tél. (+229) 97 89 36 99 / 99 10 70 93 / 96 44 67 50</p>
-                <p>Zogbo - Rép. Bénin</p>
-                <p>RC 13-A-17728 | IFU : 2201300990000</p>
+<body id="page-top" class="bg-gray-100">
+    <!-- Page Wrapper -->
+    <div id="wrapper" class="flex">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="font-bold sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('acceuil') }}">
+                <div class="mx-3 sidebar-brand-text">Cica</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="my-0 sidebar-divider">
+
+            <nav class="text-white bg-gray-800 sidebar">
+                <!-- Nav Item - Tableau de Bord -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('acceuil') }}">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span class="font-weight-bold">TABLEAU DE BORD</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Nav Item - Accueil -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('acceuil') }}">
+                        <i class="fas fa-fw fa-home"></i>
+                        <span class="font-weight-bold">ACCUEIL</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Commandes -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('commandes') }}">
+                        <i class="fas fa-fw fa-shopping-cart"></i>
+                        <span class="font-weight-bold">COMMANDES</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Liste des Commandes -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('listeCommandes') }}">
+                        <i class="fas fa-fw fa-list"></i>
+                        <span class="font-weight-bold">LISTE DES COMMANDES</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - En Attente -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('pending') }}">
+                        <i class="fas fa-fw fa-clock"></i>
+                        <span class="font-weight-bold">EN ATTENTE</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Comptabilité -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('comptabilite') }}">
+                        <i class="fas fa-fw fa-coins"></i>
+                        <span class="font-weight-bold">COMPTABILITE</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Retraits -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('rappels') }}">
+                        <i class="fas fa-fw fa-bell"></i>
+                        <span class="font-weight-bold">RETRAITS</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Factures -->
+                <li class="bg-yellow-500 nav-item">
+                    <a class="nav-link" href="{{ route('factures') }}">
+                        <i class="fas fa-fw fa-file-invoice"></i>
+                        <span class="font-weight-bold">FACTURES</span>
+                    </a>
+                </li>
+
+                <!-- Nav Item - Déconnexion -->
+                <li class="nav-item hover:bg-red-500">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="font-weight-bold">DÉCONNEXION</span>
+                    </a>
+                </li>
+            </nav>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler -->
+            <div class="text-center d-none d-md-inline">
+                <button class="border-0 rounded-circle" id="sidebarToggle"></button>
             </div>
-            <div class="invoice-info">
-                <h2>Facture #{{ $commande->numero }}</h2>
-                <p>{{ \Carbon\Carbon::parse($commande->date_depot)->locale('fr')->isoFormat('LL') }}</p>
-                <p>Agent: {{ $commande->user_id }}</p>
+        </ul>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="flex-1">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="mb-4 bg-white shadow navbar navbar-expand navbar-light topbar static-top">
+                    <!-- Sidebar Toggle -->
+                    <button id="sidebarToggleTop" class="mr-3 btn btn-link d-md-none rounded-circle">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <h3 class="text-xl font-bold text-gray-800">Factures</h3>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="ml-auto navbar-nav">
+                        <!-- User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <h3 class="nav-link dropdown-toggle">
+                                <img class="img-profile rounded-circle" src="{{ asset('images/image4.jpg') }}">
+                            </h3>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid px-4">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Liste des Factures</h1>
+                        <div class="text-sm text-gray-500">
+                            Total: {{ $factures->count() }} factures
             </div>
         </div>
 
-        <div class="details-grid">
-            <div class="detail-block">
-                <strong class="text-green">CLIENT</strong><br>
-                {{ $commande->client }}<br>
-                Numéro WhatsApp : {{ $commande->numero_whatsapp }}
+                    <!-- Liste des factures -->
+                    <div class="bg-white rounded-lg shadow-lg mb-6">
+                        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-bold text-gray-800">
+                                    <i class="fas fa-file-invoice mr-2 text-blue-600"></i>
+                                    Toutes les factures
+                                </h3>
+                                <div class="text-sm text-gray-600">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    {{ $factures->count() }} facture(s) au total
             </div>
-            <div class="detail-block">
-                <strong class="text-green">DATES</strong><br>
-                Dépôt: {{ \Carbon\Carbon::parse($commande->date_depot)->isoFormat('LL') }}<br>
-                Retrait: {{ \Carbon\Carbon::parse($commande->date_retrait)->isoFormat('LL') }}
             </div>
         </div>
-
-
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>Objet</th>
-                    <th>Qté</th>
-                    <th>Description</th>
-                    <th class="text-right">Prix U.</th>
-                    <th class="text-right">Total</th>
+                        <div class="p-6">
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse table-auto">
+                                    <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left border-b border-blue-500 font-semibold">
+                                                <i class="fas fa-hashtag mr-2"></i>Numéro
+                                            </th>
+                                            <th class="px-4 py-3 text-left border-b border-blue-500 font-semibold">
+                                                <i class="fas fa-user mr-2"></i>Client
+                                            </th>
+                                            <th class="px-4 py-3 text-left border-b border-blue-500 font-semibold">
+                                                <i class="fas fa-clock mr-2"></i>Créée le
+                                            </th>
+                                            <th class="px-4 py-3 text-center border-b border-blue-500 font-semibold">
+                                                <i class="fas fa-cogs mr-2"></i>Actions
+                                            </th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach ($commande->objets as $objet)
-                    <tr>
-                        <td>{{ $objet->nom }}</td>
-                        <td>{{ $objet->pivot->quantite }}</td>
-                        <td>{{ $objet->pivot->description }}</td>
-                        <td class="text-right">{{ number_format($objet->prix_unitaire, 2, ',', ' ') }} F</td>
-                        <td class="text-right">
-                            {{ number_format($objet->pivot->quantite * $objet->prix_unitaire, 2, ',', ' ') }} F</td>
+                                    <tbody class="bg-white">
+                                        @forelse ($factures as $facture)
+                                            <tr class="hover:bg-blue-50 transition-all duration-200 border-b border-gray-100">
+                                                <td class="px-4 py-4 font-semibold text-blue-600">
+                                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                                                        {{ $facture->numero }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="font-medium text-gray-900">{{ $facture->client }}</div>
+                                                    @if($facture->numero_whatsapp)
+                                                        <div class="text-sm text-gray-500">
+                                                            <i class="fab fa-whatsapp mr-1 text-green-500"></i>
+                                                            {{ $facture->numero_whatsapp }}
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="text-gray-900">
+                                                        <i class="fas fa-calendar mr-1 text-purple-500"></i>
+                                                        {{ \Carbon\Carbon::parse($facture->created_at)->format('d/m/Y') }}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        {{ \Carbon\Carbon::parse($facture->created_at)->format('H:i') }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="flex items-center justify-center space-x-2">
+                                                        <a href="{{ route('factures.edit', $facture->id) }}"
+                                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                                            title="Modifier la facture">
+                                                            <i class="fas fa-edit mr-1"></i>
+                                                            Modifier
+                                                        </a>
+                                                        @if(Auth::user()->is_admin)
+                                                        <button onclick="deleteFacture({{ $facture->id }})"
+                                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200"
+                                                            title="Supprimer la facture">
+                                                            <i class="fas fa-trash mr-1"></i>
+                                                            Supprimer
+                                                        </button>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-12 text-center">
+                                                    <div class="flex flex-col items-center justify-center">
+                                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                                            <i class="fas fa-file-invoice text-3xl text-gray-400"></i>
+                                                        </div>
+                                                        <h3 class="text-lg font-semibold text-gray-600 mb-2">Aucune facture trouvée</h3>
+                                                        <p class="text-gray-500">Les factures apparaîtront ici une fois créées</p>
+                                                    </div>
+                                                </td>
                     </tr>
-                @endforeach
+                                        @endforelse
             </tbody>
         </table>
-
-        <div class="total-section">
-            <div class="total-line">
-                <span>Total brut:</span>
-                <span>{{ number_format($originalTotal, 2, ',', ' ') }} FCFA</span>
-            </div>
-            @if ($remiseReduction > 0)
-                <div class="total-line">
-                    <span>Réduction ({{ $remiseReduction }}%):</span>
-                    <span>-{{ number_format($discountAmount, 2, ',', ' ') }} FCFA</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @endif
-            <div class="total-line" style="font-weight: 600;">
-                <span>Total net:</span>
-                <span>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</span>
             </div>
-            <div class="total-line">
-                <span>Avance:</span>
-                <span>{{ number_format($commande->avance_client, 2, ',', ' ') }} FCFA</span>
-            </div>
-            <div class="total-line">
-                <span>Solde:</span>
-                <span class="text-green">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</span>
-            </div>
-            <div class="text-right" style="margin-top: 10px;">
-                <span class="badge badge-success">{{ $commande->statut }}</span>
-            </div>
-        </div>
 
-
-        <div class="container">
-            <h2>Conditions Générales de Pressing</h2>
-            <ul>
-                <li><strong>1.</strong> 10 Frs par jour pour frais de magasinage seront perçus à partir du
-                    10<sup>ème</sup> jour après dépôt.</li>
-                <li><strong>2.</strong> Après deux (02) mois, la maison n'est plus responsable des pertes ou avaries
-                    (<strong>60 jours</strong>).</li>
-                <li><strong>3.</strong> En cas de dommages causés aux effets, la responsabilité du pressing est limitée
-                    à :
-                    <ul class="sub-list">
-                        <li>Huit (8) fois le prix du blanchissage pour tout effet non griffé.</li>
-                        <li>Dix (10) fois pour les linges griffés.</li>
-                        <li>Une (1) fois le prix du blanchissage pour les draps.</li>
-                    </ul>
-                </li>
-                <li><strong>4.</strong> Les synthétiques, boucles, boutons, fermetures, broderies de fil sur Bazin ne
-                    sont pas pris en compte.</li>
-                <li><strong>5.</strong> Les effets dépourvus d'étiquetage d'entretien ne sont pas garantis.</li>
-            </ul>
+                        <!-- Footer -->
+                        <footer class="sticky-footer bg-white">
+                            <div class="container my-auto">
+                                <div class="copyright text-center my-auto">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <span class="text-dark font-weight-bold">
+                                                Developed by <span class="text-primary">Ray Ague</span>
+                                            </span>
+                                            <br>
+                                            <small class="text-dark">
+                                                Project Manager and Business Development Analyst: <span class="text-primary font-weight-bold">Abdalah KH AGUESSY-VOGNON</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </footer>
         </div>
     </div>
-</body>
 
+    <!-- Modal de déconnexion -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Prêt à quitter ?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Fermer">
+                        <span aria-hidden="true">×</span>
+                    </button>
+            </div>
+                <div class="modal-body">
+                    Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à quitter votre session.
+            </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Déconnexion</button>
+                    </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('dashboard-assets/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('dashboard-assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('dashboard-assets/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Script pour supprimer les factures -->
+    <script>
+        function deleteFacture(factureId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.')) {
+                // Créer un formulaire temporaire pour la suppression
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/commandes/${factureId}/delete`;
+
+                // Ajouter le token CSRF
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+
+                // Ajouter la méthode DELETE
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
+
+                // Soumettre le formulaire
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
 </html>

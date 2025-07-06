@@ -72,9 +72,9 @@ class Commande extends Model
         return $this->hasMany(CommandeImage::class);
     }
 
-    public function avances()
+    public function notifications()
     {
-        return $this->hasMany(Avance::class);
+        return $this->hasMany(Notification::class);
     }
 
 }
