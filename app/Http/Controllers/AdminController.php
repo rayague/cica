@@ -370,14 +370,14 @@ class AdminController extends Controller
         if ($commandeId) {
             // Récupérer cette commande spécifique de tous les utilisateurs
             $commandes = Commande::where('id', $commandeId)
-                ->where(function($query) {
+            ->where(function($query) {
                     $query->where('statut', 'Retiré')
                           ->orWhere('statut', 'Validée')
                           ->orWhere('statut', 'validé')
                           ->orWhere('statut', 'retiré')
                           ->orWhere('statut', 'retirée')
                           ->orWhere('statut', 'Validé');
-                })
+            })
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
@@ -396,7 +396,7 @@ class AdminController extends Controller
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            $commandeSpecifique = null;
+        $commandeSpecifique = null;
         }
 
         return view('administrateur.retraits', compact('commandes', 'commandeSpecifique', 'date_debut', 'date_fin'));
@@ -510,7 +510,7 @@ class AdminController extends Controller
         // Identifier les changements (exclure les champs non modifiables)
         $changes = [];
         $excludedFields = ['total', 'avance_client', 'remise_reduction', 'heure_retrait', 'type_lavage', 'solde_restant', 'original_total', 'discount_amount'];
-
+        
         foreach ($validatedData as $field => $newValue) {
             if (!in_array($field, $excludedFields) && isset($oldData[$field]) && $oldData[$field] != $newValue) {
                 $changes[$field] = [
@@ -1069,11 +1069,13 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $totalSoldeRestant = $commandes->sum('solde_restant');
         // Retourner la vue avec les commandes filtrées
         return view('administrateur.commandesJournalieres', [
             'commandes' => $commandes,
             'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date']
+            'end_date' => $validated['end_date'],
+            'totalSoldeRestant' => $totalSoldeRestant
         ]);
     }
 
@@ -1092,16 +1094,16 @@ class AdminController extends Controller
             'avance_client' => $commande->total,
         ]);
 
-        // Toujours enregistrer le paiement de validation, même si le solde est à 0
-        /*
-        CommandePayment::create([
-            'commande_id' => $commande->id,
-            'user_id' => Auth::id(),
-            'amount' => $soldeRestant,
-            'payment_method' => 'Validation',
-            'payment_type' => 'Validation',
-        ]);
-        */
+        // Toujours enregistrer le paiement de validation s'il reste un solde
+        if ($soldeRestant > 0) {
+            CommandePayment::create([
+                'commande_id' => $commande->id,
+                'user_id' => Auth::id(),
+                'amount' => $soldeRestant,
+                'payment_method' => 'Validation',
+                'payment_type' => 'Validation',
+            ]);
+        }
 
         // Rediriger vers la page précédente avec un message de succès
         return redirect()->back()->with('success', 'La facture a été validée avec succès.');
@@ -1147,6 +1149,9 @@ class AdminController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
+        
+        // Calculer le total du solde restant
+        $totalSoldeRestant = $commandes->sum('solde_restant');
 
         // Récupérer les paiements et les notes sur la période
         $payments = \App\Models\CommandePayment::whereBetween('created_at', [$start_date, $end_date])->get();
@@ -1155,7 +1160,7 @@ class AdminController extends Controller
         })->get();
 
         // Charger la vue PDF avec les données
-        $pdf = Pdf::loadView('administrateur.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'payments', 'notes'));
+        $pdf = Pdf::loadView('administrateur.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'totalSoldeRestant', 'payments', 'notes'));
 
         // Retourner le PDF pour l'afficher ou le télécharger
         return $pdf->stream('liste_commandes_en_attente.pdf');
@@ -1192,8 +1197,11 @@ class AdminController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
+        
+        // Calculer le total du solde restant
+        $totalSoldeRestant = $commandes->sum('solde_restant');
 
-        $pdf = Pdf::loadView('administrateur.previewListePending', compact('commandes', 'date_debut', 'date_fin', 'totalMontant'));
+        $pdf = Pdf::loadView('administrateur.previewListePending', compact('commandes', 'date_debut', 'date_fin', 'totalMontant', 'totalSoldeRestant'));
 
         return $pdf->stream('liste_commandes_pending.pdf');
     }
@@ -1549,4 +1557,4 @@ class AdminController extends Controller
         return $pdf->stream('liste_factures_en_attente.pdf');
     }
 
-    }
+}

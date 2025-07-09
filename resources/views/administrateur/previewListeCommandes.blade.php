@@ -150,6 +150,7 @@
                     <th>Téléphone</th>
                     <th>Date Retrait</th>
                     <th>Montant</th>
+                    <th>Solde restant</th>
                     <th>Statut</th>
                     <th>Créée par</th>
                 </tr>
@@ -162,6 +163,7 @@
                         <td>{{ $commande->numero_whatsapp }}</td>
                         <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y H:i') }}</td>
                         <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                        <td>{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</td>
                         <td>{{ $commande->statut }}</td>
                         <td>{{ $commande->user->name ?? 'N/A' }}</td>
                     </tr>
@@ -171,6 +173,9 @@
         
         <div style="margin-top: 1rem; padding: 0.5rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
             <strong>Total des factures en attente : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA</strong>
+        </div>
+        <div style="margin-top: 1rem; padding: 0.5rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
+            <strong>Total du solde restant des factures : {{ number_format($totalSoldeRestant, 2, ',', ' ') }} FCFA</strong>
         </div>
     @endif
 

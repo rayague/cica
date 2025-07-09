@@ -57,6 +57,7 @@
                     <th>Date de Retrait</th>
                     <th>Heure de Retrait</th>
                     <th>Montant de la Facture</th>
+                    <th>Solde restant</th>
                     <th>Statut</th>
                 </tr>
             </thead>
@@ -69,6 +70,7 @@
                         <td>{{ \Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y') }}</td>
                         <td>{{ $commande->heure_retrait }}</td>
                         <td>{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                        <td>{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</td>
                         <td>{{ $commande->statut }}</td>
                     </tr>
                 @endforeach

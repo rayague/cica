@@ -281,6 +281,7 @@
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Dépôt</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Retrait</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Total</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Solde restant</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Statut</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Utilisateur</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Voir</th>
@@ -300,6 +301,9 @@
                                         </td>
                                         <td class="px-6 py-3 border-b border-blue-200">
                                             {{ number_format($commande->total, 2, ',', ' ') }} FCFA
+                                        </td>
+                                        <td class="px-6 py-3 border-b border-blue-200">
+                                            {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA
                                         </td>
                                         <td class="px-6 py-3 border-b border-blue-200">
                                             <span class="px-2 items-center justify-center flex py-1 text-white rounded-md {{

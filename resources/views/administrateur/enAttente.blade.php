@@ -335,6 +335,7 @@
                                                     <th
                                                         class="px-4 py-3 text-sm font-semibold text-left text-white uppercase">
                                                         Montant</th>
+                                                    <th class="px-4 py-3 text-sm font-semibold text-left text-white uppercase">Solde restant</th>
                                                     <th
                                                         class="px-4 py-3 text-sm font-semibold text-left text-white uppercase">
                                                         Statut</th>
@@ -358,6 +359,9 @@
                                                         </td>
                                                         <td class="px-4 py-3 text-sm font-semibold text-blue-600">
                                                             {{ number_format($commande->total, 2, ',', ' ') }} FCFA
+                                                        </td>
+                                                        <td class="px-4 py-3 text-sm font-semibold text-red-600">
+                                                            {{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA
                                                         </td>
                                                         <td class="px-4 py-3">
                                                             <span

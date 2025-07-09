@@ -290,6 +290,7 @@
                                     <th class="px-6 py-3 text-left border-b-2 border-blue-400">Date de Retrait</th>
                                     <th class="px-6 py-3 text-left border-b-2 border-blue-400">Heure de Retrait</th>
                                     <th class="px-6 py-3 text-left border-b-2 border-blue-400">Montant de la Facture</th>
+                                    <th class="px-6 py-3 text-left border-b-2 border-blue-400">Solde restant</th>
                                     <th class="px-6 py-3 text-left border-b-2 border-blue-400">Statut</th>
                                     <th class="px-6 py-3 text-left border-b-2 border-blue-400">Utilisateur</th>
                                     <th class="px-6 py-3 text-center border-b-2 border-blue-400">Voir</th>
@@ -307,6 +308,7 @@
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->date_retrait }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->heure_retrait }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200">{{ number_format($commande->total, 2, ',', ' ') }} FCFA</td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</td>
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->statut }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200">{{ $commande->user->name }}</td>
                                         <td class="px-6 py-3 text-center border-b border-blue-200">

@@ -260,6 +260,7 @@
                                     <th class="px-4 py-3 text-left border border-blue-400">Heure de Retrait</th>
                                     <!-- Nouvelle colonne -->
                                     <th class="px-4 py-3 text-left border border-blue-400">Montant de la Facture</th>
+                                    <th class="px-4 py-3 text-left border border-blue-400">Solde restant</th>
                                     <th class="px-4 py-3 text-left border border-blue-400">Statut</th>
                                     <!-- Nouvelle colonne -->
                                     <th class="px-4 py-3 text-left border border-blue-400">Utilisateur</th>
@@ -282,6 +283,7 @@
                                         <td class="px-4 py-3 border border-blue-300">
                                             {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                         </td>
+                                        <td class="px-4 py-3 border border-blue-300">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</td>
                                         <td class="px-4 py-3 border border-blue-300">{{ $commande->statut }}</td>
                                         <!-- Nouvelle colonne -->
                                         <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>

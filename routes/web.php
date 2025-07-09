@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
         // Routes avec paramètres ensuite
         Route::get('{id}_administration', [AdminController::class, 'show'])->name('commandesAdmin.show');
-        Route::post('{commande}/objet/{objet}/retirer_administration', [AdminController::class, 'retirerObjet'])->name('commande.retirer');
+        Route::post('{commande}/objet/{objet}/retirer_administration', [AdminController::class, 'retirerObjet'])->name('commandeAdmin.retirer');
         Route::post('{commande}/retirer-plusieurs_administration', [AdminController::class, 'retirerPlusieursObjets'])->name('commandeAdmin.retirerPlusieurs');
         Route::put('{id}/valider_administration', [AdminController::class, 'valider'])->name('commandesAdmin.valider');
         Route::put('{id}/update-financial_administration', [AdminController::class, 'updateFinancial'])->name('commandeAdmin.updateFinancial');
@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/factures/{commande}/imprimer_administration', [AdminController::class, 'print'])->name('facturesAdmin.print');
 
     // Routes de modification admin
-    Route::get('/modification_agence_administration', [AdminController::class, 'modificationAgence'])->name('pageModificationAgence');
+    Route::get('/modification_agence_administration', [AdminController::class, 'modificationAgence'])->name('pageModificationAgenceAdmin');
     Route::get('/modification_profil_administration', [ProfileController::class, 'edit'])->name('pageModificationProfil');
 
     // Routes d'impression admin
@@ -105,7 +105,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/facture-message', [AdminController::class, 'storeFactureMessage'])->name('admin.facture-message.store');
     Route::delete('/admin/facture-message', [AdminController::class, 'deleteFactureMessage'])->name('admin.facture-message.delete');
 
-    Route::get('/retraits_administration', [AdminController::class, 'rappelsAdmin'])->name('rappelsAdmin');
+    Route::get('/retraits_administration', [AdminController::class, 'rappelsAdmin'])->name('retraitsAdmin');
     Route::get('/factures_administration', [AdminController::class, 'factures'])->name('facturesAdmin');
     Route::get('/notifications_administration', [AdminController::class, 'notifications'])->name('notificationsAdmin');
     Route::get('/admin/factures/{id}/edit', [AdminController::class, 'editFacture'])->name('admin.factures.edit');

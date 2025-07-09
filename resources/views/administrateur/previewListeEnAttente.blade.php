@@ -236,6 +236,13 @@
         </div>
     @endif
 
+    <!-- Total du solde restant -->
+    @if(isset($totalSoldeRestant))
+        <div style="margin-top: 2rem; padding: 1rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
+            <strong>Total du solde restant des factures : {{ number_format($totalSoldeRestant, 2, ',', ' ') }} FCFA</strong>
+        </div>
+    @endif
+
     <!-- Footer -->
     <div class="footer">
         <p><strong>CICA NOBLESSE PRESSING</strong></p>

@@ -548,11 +548,13 @@ class CommandeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $totalSoldeRestant = $commandes->sum('solde_restant');
         // Retourner la vue avec les commandes filtrées
         return view('utilisateurs.commandesJournalieres', [
             'commandes' => $commandes,
             'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date']
+            'end_date' => $validated['end_date'],
+            'totalSoldeRestant' => $totalSoldeRestant
         ]);
     }
 
@@ -597,6 +599,9 @@ class CommandeController extends Controller
             ->get();
 
         $totalMontant = $commandes->sum('total');
+        
+        // Calculer le total du solde restant
+        $totalSoldeRestant = $commandes->sum('solde_restant');
 
         // Récupérer les paiements et les notes sur la période
         $payments = \App\Models\CommandePayment::whereBetween('created_at', [$start_date, $end_date])->get();
@@ -604,7 +609,7 @@ class CommandeController extends Controller
             $q->whereBetween('date_retrait', [$start_date, $end_date]);
         })->get();
 
-        $pdf = Pdf::loadView('utilisateurs.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'payments', 'notes'));
+        $pdf = Pdf::loadView('utilisateurs.previewListeCommandes', compact('commandes', 'start_date', 'end_date', 'totalMontant', 'totalSoldeRestant', 'payments', 'notes'));
 
         return $pdf->stream('liste_commandes.pdf');
     }
@@ -637,8 +642,11 @@ class CommandeController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
+        
+        // Calculer le total du solde restant
+        $totalSoldeRestant = $commandes->sum('solde_restant');
 
-        $pdf = Pdf::loadView('utilisateurs.previewListePending', compact('commandes', 'date_debut', 'date_fin', 'totalMontant'));
+        $pdf = Pdf::loadView('utilisateurs.previewListePending', compact('commandes', 'date_debut', 'date_fin', 'totalMontant', 'totalSoldeRestant'));
 
         return $pdf->stream('liste_commandes_pending.pdf');
     }

@@ -338,6 +338,9 @@
                                                 Montant</th>
                                             <th
                                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase">
+                                                Solde restant</th>
+                                            <th
+                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase">
                                                 Statut</th>
                                             <th
                                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left text-white uppercase">
@@ -367,6 +370,7 @@
                                                     class="px-6 py-4 text-sm font-semibold text-blue-600 whitespace-nowrap">
                                                     {{ number_format($commande->total, 2, ',', ' ') }} FCFA
                                                 </td>
+                                                <td class="px-6 py-4 text-sm font-semibold text-red-600 whitespace-nowrap">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</td>
                                                 <td class="px-6 py-4 text-sm whitespace-nowrap">
                                                     @if($commande->statut === 'Retiré' || $commande->statut === 'retirée')
                                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -442,6 +446,10 @@
                             class="px-4 py-2 m-6 text-white bg-yellow-500 rounded-md hover:bg-yellow-600">
                             🖨️ Imprimer la liste
                         </a>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                        <strong>Total du solde restant des factures : {{ number_format($totalSoldeRestant, 2, ',', ' ') }} FCFA</strong>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
