@@ -131,7 +131,7 @@
                     <td>{{ $commande->numero }}</td>
                     <td>{{ $commande->client }}</td>
                     <td>{{ $commande->numero_whatsapp }}</td>
-                    <td>{{ $commande->heure_retrait }}</td>
+                    <td>{{ \Carbon\Carbon::parse($commande->updated_at)->locale('fr')->isoFormat('LL HH:mm') }}</td>
                         {{-- <td>{{ number_format($command->total, 2, ',', ' ') }} FCFA</td>
                         <td>{{ $commande->statut }}</td> --}}
                 </tr>

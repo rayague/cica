@@ -282,6 +282,7 @@
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Date de Retrait</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Total</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Statut</th>
+                                    <th class="px-6 py-3 border-b-2 border-blue-400 text-left">Utilisateur</th>
                                     <th class="px-6 py-3 border-b-2 border-blue-400 text-center">Voir</th>
                                 </tr>
                             </thead>
@@ -308,6 +309,7 @@
                                                 {{ $commande->statut }}
                                             </span>
                                         </td>
+                                        <td class="px-6 py-3 border-b border-blue-200">{{ $commande->user->name ?? 'N/A' }}</td>
                                         <td class="px-6 py-3 border-b border-blue-200 text-center">
                                             <a href="{{ route('commandes.show', $commande->id) }}"
                                                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 shadow-sm">

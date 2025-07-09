@@ -402,10 +402,11 @@
                                 class="flex items-center px-6 py-3 text-white bg-blue-500 rounded hover:bg-blue-600">
                                 <i class="mr-2 fas fa-print"></i> Imprimer
                             </button>
-                            <button
+                            <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $retrait->commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour Mme/M ' . $retrait->commande->client . ",\nMerci pour votre confiance ! Votre commande numero de facture# " . $retrait->commande->numero . " a été retirée avec succès.\nÉnan tchè nou mi !\nÀ bientôt chez CICA NOBLESSE PRESSING !") }}"
+                                target="_blank"
                                 class="flex items-center px-6 py-3 text-white bg-green-500 rounded hover:bg-green-600">
                                 <i class="mr-2 fab fa-whatsapp"></i> Envoyer par WhatsApp
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -378,7 +378,7 @@
                                                                 );
                                                             @endphp
                                                             @if ($whatsappNumber)
-                                                                <a href="https://api.whatsapp.com/send?phone={{ $whatsappNumber }}&text={{ $message }}" target="_blank" class="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700">
+                                                                <a href="https://api.whatsapp.com/send?phone=229{{ ltrim(preg_replace('/[^0-9]/', '', $whatsappNumber), '0') }}&text={{ $message }}" target="_blank" class="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700">
                                                                     Rappeler
                                                                 </a>
                                                             @else

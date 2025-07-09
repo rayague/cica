@@ -74,14 +74,6 @@
                 @endforeach
             </tbody>
         </table>
-
-        <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff;">
-            <strong>Total des commandes : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA</strong>
-        </div>
-        
-        <div style="margin-top: 10px; padding: 10px; background-color: #e7f3ff; border-left: 4px solid #007bff;">
-            <strong>Nombre total de commandes : {{ $commandes->count() }}</strong>
-        </div>
     @else
         <div style="margin-top: 20px; padding: 15px; background-color: #f8d7da; border-left: 4px solid #dc3545; color: #721c24;">
             <strong>Aucune commande trouvée pour la période sélectionnée.</strong>

@@ -230,14 +230,6 @@
                 @endforeach
             </tbody>
         </table>
-        
-        <div style="margin-top: 1rem; padding: 0.5rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
-            <strong>Total des factures en attente : {{ number_format($totalMontant, 2, ',', ' ') }} FCFA</strong>
-        </div>
-        
-        <div style="margin-top: 1rem; padding: 0.5rem; background-color: #fef3c7; border-left: 4px solid #f59e0b;">
-            <strong>Nombre total de factures : {{ $commandes->count() }}</strong>
-        </div>
     @else
         <div style="margin-top: 2rem; padding: 1rem; background-color: #fef2f2; border-left: 4px solid #ef4444;">
             <strong>Aucune facture en attente trouvée.</strong>

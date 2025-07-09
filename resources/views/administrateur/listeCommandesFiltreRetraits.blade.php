@@ -309,7 +309,7 @@
                                             Voir les détails
                                         </a>
                                         <br>
-                                        <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ', merci pour votre confiance ! Votre commande #' . $commande->numero . ' a été retirée avec succès. À bientôt chez CICA NOBLESSE PRESSING !') }}"
+                                        <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour Mme/M ' . $commande->client . ",\nMerci pour votre confiance ! Votre commande numero de facture# " . $commande->numero . " a été retirée avec succès.\nÉnan tchè nou mi !\nÀ bientôt chez CICA NOBLESSE PRESSING !") }}"
                                             target="_blank"
                                             class="inline-block px-6 py-2 text-white transition duration-200 bg-green-500 rounded-md hover:bg-green-600">
                                             <i class="fab fa-whatsapp mr-2"></i> Remercier

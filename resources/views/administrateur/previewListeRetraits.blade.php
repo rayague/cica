@@ -128,7 +128,7 @@
                     <td>{{ $commande->client }}</td>
                     <td>{{ $commande->numero_whatsapp }}</td>
                     <td>{{ $commande->user->name ?? '' }}</td>
-                    <td>{{ $commande->heure_retrait }}</td>
+                    <td>{{ \Carbon\Carbon::parse($commande->updated_at)->locale('fr')->isoFormat('LL HH:mm') }}</td>
                 </tr>
             @empty
                 <tr><td colspan="5" style="text-align:center;">Aucun retrait pour cette période</td></tr>

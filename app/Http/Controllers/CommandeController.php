@@ -162,7 +162,7 @@ class CommandeController extends Controller
 
                 // Mettre à jour le statut de la commande selon les nouvelles règles
                 if ($soldeRestant == 0) {
-                    $commande->update(['statut' => 'Payé - Non retiré']);
+                    $commande->update(['statut' => 'Non retirée']);
                 } elseif ($avanceClient > 0) {
                     $commande->update(['statut' => 'Partiellement payé']);
                 }
@@ -174,6 +174,7 @@ class CommandeController extends Controller
                     ->where('payment_method', 'Avance initiale')
                     ->exists();
                 if (!$avanceExistante) {
+                    /*
                     CommandePayment::create([
                         'commande_id' => $commande->id,
                         'user_id' => Auth::id(),
@@ -181,6 +182,7 @@ class CommandeController extends Controller
                         'payment_method' => 'Validation',
                         'payment_type' => 'Validation',
                     ]);
+                    */
                 }
             }
 
@@ -268,12 +270,14 @@ class CommandeController extends Controller
         $commande->solde_restant = max(0, $commande->total - $totalAvance);
 
         // Mettre à jour le statut de la commande selon les nouvelles règles
-        if ($commande->solde_restant == 0) {
-            $commande->statut = 'Payé - Non retiré';
-        } elseif ($commande->avance_client > 0) {
+        if ($commande->avance_client > 0) {
             $commande->statut = 'Partiellement payé';
         } else {
-            $commande->statut = 'Non retiré';
+            $commande->statut = 'Non retirée';
+        }
+        // Si le solde est à 0, garder 'Non retirée' tant que la facture n'est pas validée
+        if ($commande->solde_restant == 0) {
+            $commande->statut = 'Non retirée';
         }
 
         // Sauvegarder les modifications

@@ -422,10 +422,8 @@
                     </div>
 
                     <!-- Formulaire de mise à jour des entrées d'argent -->
-                    @if($commande->solde_restant > 0)
                     <div class="p-4 mt-6 md:mt-8 bg-gray-200 rounded">
                         <h3 class="mb-4 text-lg md:text-xl font-semibold">Mettre à jour les entrées d'argent</h3>
-
                         <!-- Affichage du total en temps réel -->
                         <div class="mb-4 p-3 bg-blue-100 rounded-md">
                             <p class="text-sm font-medium text-blue-800">
@@ -435,7 +433,6 @@
                                 Solde restant : <span class="font-bold">{{ number_format($commande->solde_restant, 2, ',', ' ') }} FCFA</span>
                             </p>
                         </div>
-
                         <form action="{{ route('commande.updateFinancial', $commande->id) }}" method="POST"
                             class="flex flex-col md:flex-row items-start md:items-center gap-4">
                             @csrf
@@ -446,38 +443,40 @@
                                 </label>
                                 <input type="number" name="montant_paye" id="montant_paye" step="0.01"
                                     min="0" max="{{ $commande->solde_restant }}"
-                                    class="w-full md:w-32 p-2 border rounded-md" required placeholder="montant"
-                                    oninput="validateMontant(this, {{ $commande->total }}, {{ $commande->solde_restant }})">
+                                    class="w-full md:w-32 p-2 border rounded-md"
+                                    required placeholder="montant"
+                                    oninput="validateMontant(this, {{ $commande->total }}, {{ $commande->solde_restant }})"
+                                    @if($commande->solde_restant == 0) disabled readonly @endif>
                                 <div id="montant_error" class="text-red-600 text-sm mt-1 hidden"></div>
                             </div>
                             <div class="w-full md:w-auto">
-                            <select name="payment_method" id="payment_method"
-                                    class="w-full md:w-48 p-2 bg-white border rounded-md">
-                                <option value="">Choisir</option>
-                                <option value="Avance">Avance</option>
-                                <option value="Retrait">Retrait</option>
-                            </select>
+                                <select name="payment_method" id="payment_method"
+                                    class="w-full md:w-48 p-2 bg-white border rounded-md"
+                                    @if($commande->solde_restant == 0) disabled @endif>
+                                    <option value="">Choisir</option>
+                                    <option value="Avance">Avance</option>
+                                    <option value="Retrait">Retrait</option>
+                                </select>
                             </div>
                             <div class="w-full md:w-auto">
                                 <select name="payment_type" id="payment_type"
-                                    class="w-full md:w-48 p-2 bg-white border rounded-md">
+                                    class="w-full md:w-48 p-2 bg-white border rounded-md"
+                                    @if($commande->solde_restant == 0) disabled @endif>
                                     <option value="">Moyen de paiement</option>
                                     <option value="Espèce">Espèce</option>
                                     <option value="Mobile Money">Mobile Money</option>
                                 </select>
                             </div>
                             <button type="submit" id="submit_btn"
-                                class="w-full md:w-auto px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                                class="w-full md:w-auto px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                                @if($commande->solde_restant == 0) disabled @endif>
                                 Mettre à jour
                             </button>
                         </form>
+                        @if($commande->solde_restant == 0)
+                            <p class="mt-2 text-sm text-gray-500 font-semibold">Le solde de cette commande est déjà à zéro. Aucune mise à jour n'est possible.</p>
+                        @endif
                     </div>
-                    @else
-                    <div class="p-4 mt-6 md:mt-8 bg-gray-200 rounded">
-                        <h3 class="mb-4 text-lg md:text-xl font-semibold text-gray-600">Mettre à jour les entrées d'argent</h3>
-                        <p class="text-gray-600">Le solde de cette commande est déjà à zéro. Aucune mise à jour n'est nécessaire.</p>
-                    </div>
-                    @endif
 
                     <!-- Section des images -->
                     <div class="p-4 md:p-6 mx-2 md:mx-4 mb-6 bg-white rounded-lg shadow-md">
@@ -581,16 +580,22 @@
                             class="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700">
                             <i class="mr-2 fas fa-arrow-left"></i>Retour
                     </a>
-                        @if($commande->statut === 'Non retirée' || $commande->statut === 'Non retiré' || $commande->statut === 'Partiellement payé')
-                    <form action="{{ route('commandesAdmin.valider', $commande->id) }}" method="POST"
-                                onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');"
-                                class="w-full md:w-auto">
-                        @csrf
-                        @method('PUT')
-                                <button type="submit" class="w-full p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
-                            Valider la facture
-                        </button>
-                    </form>
+                        @if($commande->statut === 'Non retirée' || $commande->statut === 'Non retiré' || $commande->statut === 'Partiellement payé' || $commande->solde_restant == 0)
+                            @if($commande->statut !== 'Retiré' && $commande->statut !== 'Validée' && $commande->statut !== 'validé' && $commande->statut !== 'retiré' && $commande->statut !== 'retirée' && $commande->statut !== 'Validé')
+                                <form action="{{ route('commandesAdmin.valider', $commande->id) }}" method="POST"
+                                    onsubmit="return confirm('Voulez-vous vraiment valider cette facture ?');"
+                                    class="w-full md:w-auto">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="w-full p-2 text-white bg-green-500 rounded-md hover:bg-green-600">
+                                        Valider la facture
+                                    </button>
+                                </form>
+                            @else
+                                <div class="w-full md:w-auto p-2 text-white bg-red-500 rounded-md text-center">
+                                    Cette commande est déjà validée et ne peut plus être modifiée
+                                </div>
+                            @endif
                         @else
                             <div class="w-full md:w-auto p-2 text-white bg-red-500 rounded-md text-center">
                                 Cette commande est déjà validée et ne peut plus être modifiée
@@ -955,6 +960,9 @@ Merci d'avoir choisi CICA !`;
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Client :</strong> {{ $commande->client }}
+                    </div>
                     <form action="{{ route('notes.store', ['commande' => $commande->id]) }}" method="POST">
                         @csrf
                         <div class="mb-3">

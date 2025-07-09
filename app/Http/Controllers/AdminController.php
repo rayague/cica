@@ -1092,16 +1092,16 @@ class AdminController extends Controller
             'avance_client' => $commande->total,
         ]);
 
-        // Toujours enregistrer le paiement de validation s'il reste un solde
-        if ($soldeRestant > 0) {
-            CommandePayment::create([
-                'commande_id' => $commande->id,
-                'user_id' => Auth::id(),
-                'amount' => $soldeRestant,
-                'payment_method' => 'Validation',
-                'payment_type' => 'Validation',
-            ]);
-        }
+        // Toujours enregistrer le paiement de validation, même si le solde est à 0
+        /*
+        CommandePayment::create([
+            'commande_id' => $commande->id,
+            'user_id' => Auth::id(),
+            'amount' => $soldeRestant,
+            'payment_method' => 'Validation',
+            'payment_type' => 'Validation',
+        ]);
+        */
 
         // Rediriger vers la page précédente avec un message de succès
         return redirect()->back()->with('success', 'La facture a été validée avec succès.');

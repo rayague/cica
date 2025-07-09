@@ -284,7 +284,7 @@
                                             </a>
                                         </td>
                                         <td class="px-6 py-3 text-center border-b border-blue-200">
-                                            <a href="https://wa.me/{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ",\nVotre commande N°" . $commande->numero . " est déjà prête et vous attend chez CICA NOBLESSE PRESSING. Vous pouvez passer la retirer dès maintenant. Merci et à bientôt !") }}"
+                                            <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour ' . $commande->client . ",\nVotre commande N°" . $commande->numero . " est déjà prête et vous attend chez CICA NOBLESSE PRESSING. Vous pouvez passer la retirer dès maintenant. Merci et à bientôt !") }}"
                                                 target="_blank"
                                                 class="p-2 font-semibold text-white bg-orange-500 rounded hover:bg-orange-700"
                                                 title="Notifier le client sur WhatsApp">

@@ -286,6 +286,11 @@
                                         <!-- Nouvelle colonne -->
                                         <td class="px-4 py-3 border border-blue-300">{{ $commande->user->name }}</td>
                                         <td class="px-4 py-3 text-center border border-blue-300">
+                                            <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour Mme/M ' . $commande->client . ",\nMerci pour votre confiance ! Votre commande numero de facture# " . $commande->numero . " a été retirée avec succès.\nÉnan tchè nou mi !\nÀ bientôt chez CICA NOBLESSE PRESSING !") }}"
+                                                target="_blank"
+                                                class="inline-block px-4 py-2 text-white bg-green-500 rounded hover:bg-green-700">
+                                                <i class="fab fa-whatsapp mr-2"></i> Remercier
+                                            </a>
                                             <a href="{{ route('commandes.show', $commande->id) }}"
                                                 class="p-2 font-semibold text-white bg-green-500 rounded hover:bg-green-700">
                                                 Voir
