@@ -611,8 +611,8 @@
                         rawurlencode(
                             'Bonjour M/Mme ' . ($commande->client ?? '') . ",\nVotre facture pour la commande " . ($commande->numero ?? '') .
                             ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) .
-                            " est bien enregistrée.\n\nLa date de retrait est pour le " . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) .
-                            " !\n\nMerci d'avoir choisi CICA NOBLESSE !"
+                            " est bien enregistrée.\n\nLa date de retrait est pour le " . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . " à " . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H:i')) .
+                            " !\n\nVous pouvez consulter l'ensemble de vos factures, voir les détails et les télécharger directement sur : https://mesfactures.cicanoblessepressing.com/ avec votre numéro de téléphone seulement.\n\nMerci d'avoir choisi CICA NOBLESSE !"
                         )
                     }}"
                     target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">

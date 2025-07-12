@@ -194,10 +194,13 @@
     </table>
     @endif
 
-    <!-- Total du solde restant -->
-    @if(isset($totalSoldeRestant))
+    <!-- Total des avances -->
+    @if(isset($payments))
+        @php
+            $totalAvances = $payments->sum('amount');
+        @endphp
         <div style="margin-top: 2rem; padding: 1rem; background-color: #f8fafc; border-left: 4px solid #1a365d;">
-            <strong>Total du solde restant des factures : {{ number_format($totalSoldeRestant, 2, ',', ' ') }} FCFA</strong>
+            <strong>Total des avances : {{ number_format($totalAvances, 2, ',', ' ') }} FCFA</strong>
         </div>
     @endif
 
