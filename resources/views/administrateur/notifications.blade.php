@@ -126,6 +126,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -183,7 +191,7 @@
                         <div class="px-6 py-4 border-b border-gray-200">
                             <h3 class="text-lg font-semibold text-gray-900">Historique des Modifications de Factures</h3>
                         </div>
-                        
+
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -237,7 +245,7 @@
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                     @if($notification->action == 'modification') bg-blue-100 text-blue-800
                                                     @elseif($notification->action == 'suppression') bg-red-100 text-red-800
                                                     @else bg-gray-100 text-gray-800
@@ -365,4 +373,4 @@
     <script src="{{ asset('dashboard-assets/js/sb-admin-2.min.js') }}"></script>
 </body>
 
-</html> 
+</html>

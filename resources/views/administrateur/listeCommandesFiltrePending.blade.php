@@ -124,7 +124,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -146,7 +146,13 @@
                         <span class="font-weight-bold">UTILISATEURS</span>
                     </a>
                 </li>
-
+                <!-- Nav Item - Clients -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                        <i class="fas fa-fw fa-user-friends"></i>
+                        <span class="font-weight-bold">CLIENTS</span>
+                    </a>
+                </li>
                 <!-- Nav Item - Profil -->
                 {{-- <li class="nav-item ">
                     <a class="nav-link" href="{{ route('profil') }}">

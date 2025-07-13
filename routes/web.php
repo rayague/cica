@@ -111,6 +111,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/factures/{id}/edit', [AdminController::class, 'editFacture'])->name('admin.factures.edit');
     Route::put('/admin/factures/{id}', [AdminController::class, 'updateFacture'])->name('admin.factures.update');
     Route::delete('/admin/factures/{id}/delete-permanent', [AdminController::class, 'deleteFacturePermanently'])->name('admin.factures.delete-permanent');
+    Route::get('/clients_administration', [App\Http\Controllers\AdminController::class, 'clients'])->name('clientsAdmin');
+    Route::post('/clients_administration/password/{numero}', [App\Http\Controllers\AdminController::class, 'setClientPassword'])->name('clientsAdmin.password');
 
 
 });

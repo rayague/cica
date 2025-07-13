@@ -141,6 +141,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Profil -->
                 {{-- <li class="nav-item ">
                     <a class="nav-link" href="{{ route('profil') }}">
@@ -310,7 +318,7 @@
                                             Voir les détails
                                         </a>
                                         <br>
-                                        <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode('Bonjour Mme/M ' . $commande->client . ",\nMerci pour votre confiance ! Votre commande numero de facture# " . $commande->numero . " a été retirée avec succès.\n\nVous pouvez consulter l'ensemble de vos factures, voir les détails et les télécharger directement sur : https://mesfactures.cicanoblessepressing.com/ avec votre numéro de téléphone seulement.\n\nÉnan tchè nou mi !\nÀ bientôt chez CICA NOBLESSE PRESSING !") }}"
+                                        <a href="https://wa.me/229{{ ltrim(preg_replace('/[^0-9]/', '', $commande->numero_whatsapp), '0') }}?text={{ urlencode("Bonjour " . $commande->client . ",\n\nMerci pour votre confiance !\nVotre commande #" . $commande->numero . " a bien été retirée avec succès.\n\n📄 Vous pouvez consulter l’ensemble de vos factures, voir les détails et les télécharger directement via le lien suivant :\n👉 https://mesfactures.cicanoblessepressing.com/\n(Il vous suffit simplement de renseigner votre numéro de téléphone.)\n\nÀ très bientôt chez CICA NOBLESSE PRESSING !") }}"
                                             target="_blank"
                                             class="inline-block px-6 py-2 text-white transition duration-200 bg-green-500 rounded-md hover:bg-green-600">
                                             <i class="fab fa-whatsapp mr-2"></i> Remercier

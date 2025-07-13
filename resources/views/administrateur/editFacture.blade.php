@@ -126,6 +126,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -183,13 +191,13 @@
                                 {{ session('error') }}
                             </div>
                         @endif
-                        
+
                         @if(session('success'))
                             <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
                                 {{ session('success') }}
                             </div>
                         @endif
-                        
+
                         @if($errors->any())
                             <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                                 <ul class="list-disc list-inside">
@@ -199,7 +207,7 @@
                                 </ul>
                             </div>
                         @endif
-                        
+
                         <form action="{{ route('admin.factures.update', $commande->id) }}" method="POST">
                             @csrf
                             @method('PUT')
@@ -223,16 +231,16 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                 <div>
                                     <label for="date_depot" class="block text-sm font-medium text-gray-700 mb-2">Date de dépôt</label>
-                                    <input type="date" id="date_depot" name="date_depot" value="{{ old('date_depot', $commande->date_depot) }}" 
+                                    <input type="date" id="date_depot" name="date_depot" value="{{ old('date_depot', $commande->date_depot) }}"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
-                                
+
                                 <div>
                                     <label for="date_retrait" class="block text-sm font-medium text-gray-700 mb-2">Date de retrait</label>
-                                    <input type="date" id="date_retrait" name="date_retrait" value="{{ old('date_retrait', $commande->date_retrait) }}" 
+                                    <input type="date" id="date_retrait" name="date_retrait" value="{{ old('date_retrait', $commande->date_retrait) }}"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Heure de retrait (non modifiable)</label>
                                     <input type="time" value="{{ $commande->heure_retrait }}" readonly
@@ -247,7 +255,7 @@
                                     <input type="text" value="{{ $commande->type_lavage }}" readonly
                                            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md">
                                 </div>
-                                
+
                                 <div>
                                     <label for="statut" class="block text-sm font-medium text-gray-700 mb-2">Statut (modifiable par admin)</label>
                                     <select id="statut" name="statut"
@@ -267,13 +275,13 @@
                                     <input type="number" step="0.01" value="{{ $commande->avance_client }}" readonly
                                            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md">
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Remise (%) (non modifiable)</label>
                                     <input type="number" value="{{ $commande->remise_reduction }}" readonly
                                            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md">
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Total (non modifiable)</label>
                                     <input type="number" step="0.01" value="{{ $commande->total }}" readonly
@@ -290,7 +298,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 mb-1">Objet</label>
-                                                <input type="text" value="{{ $objet->nom }}" readonly 
+                                                <input type="text" value="{{ $objet->nom }}" readonly
                                                        class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md">
                                             </div>
                                             <div>
@@ -300,7 +308,7 @@
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 mb-1">Prix unitaire</label>
-                                                <input type="number" step="0.01" value="{{ $objet->prix_unitaire }}" readonly 
+                                                <input type="number" step="0.01" value="{{ $objet->prix_unitaire }}" readonly
                                                        class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md">
                                             </div>
                                             <div>
@@ -374,4 +382,4 @@
     </script>
 </body>
 
-</html> 
+</html>

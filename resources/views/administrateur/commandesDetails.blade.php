@@ -141,6 +141,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -609,10 +617,13 @@
                     </a>
                     <a href="https://wa.me/?text={{
                         rawurlencode(
-                            'Bonjour M/Mme ' . ($commande->client ?? '') . ",\nVotre facture pour la commande " . ($commande->numero ?? '') .
-                            ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) .
-                            " est bien enregistrée.\n\nLa date de retrait est pour le " . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . " à " . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H:i')) .
-                            " !\n\nVous pouvez consulter l'ensemble de vos factures, voir les détails et les télécharger directement sur : https://mesfactures.cicanoblessepressing.com/ avec votre numéro de téléphone seulement.\n\nMerci d'avoir choisi CICA NOBLESSE !"
+                            'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
+                            'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
+                            '📅 Date de retrait prévue : ' . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . ' à ' . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H\hi')) . "\n\n" .
+                            '📄 Vous pouvez consulter, télécharger ou suivre l’ensemble de vos factures en ligne via le lien suivant :' . "\n" .
+                            '👉 https://mesfactures.cicanoblessepressing.com/' . "\n" .
+                            '(Accès rapide avec votre numéro de téléphone uniquement.)' . "\n\n" .
+                            'Merci d’avoir choisi CICA NOBLESSE PRESSING !'
                         )
                     }}"
                     target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">

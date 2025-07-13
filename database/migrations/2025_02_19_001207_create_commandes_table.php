@@ -22,6 +22,9 @@ return new class extends Migration {
             $table->time('heure_retrait');
             $table->string('statut')->default('Non retirée');
 
+            // Ajout du mot de passe client
+            $table->string('password_client')->nullable();
+
             // Ajout des colonnes nécessaires pour les calculs financiers
             $table->decimal('avance_client', 10, 2)->default(0);
             $table->decimal('total', 10, 2)->default(0);

@@ -126,6 +126,14 @@
                     </a>
                 </li>
 
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
+
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -232,10 +240,10 @@
                                 <div class="card-body">
                                     <form method="GET" action="{{ route('facturesAdmin') }}">
                                         <div class="input-group">
-                                            <input type="text" 
-                                                   name="search" 
+                                            <input type="text"
+                                                   name="search"
                                                    value="{{ request('search') }}"
-                                                   class="form-control" 
+                                                   class="form-control"
                                                    placeholder="Nom client, numéro facture ou WhatsApp...">
                                             <div class="input-group-append">
                                                 <button type="submit" class="btn btn-primary">
@@ -268,15 +276,15 @@
                                         <div class="row">
                                             <div class="col-md-6 mb-2">
                                                 <label class="form-label">Date de début</label>
-                                                <input type="date" 
-                                                       name="date_debut" 
+                                                <input type="date"
+                                                       name="date_debut"
                                                        value="{{ request('date_debut') }}"
                                                        class="form-control">
                                             </div>
                                             <div class="col-md-6 mb-2">
                                                 <label class="form-label">Date de fin</label>
-                                                <input type="date" 
-                                                       name="date_fin" 
+                                                <input type="date"
+                                                       name="date_fin"
                                                        value="{{ request('date_fin') }}"
                                                        class="form-control">
                                             </div>
@@ -309,7 +317,7 @@
                                 @endif
                             </h6>
                         </div>
-                        
+
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" width="100%" cellspacing="0">
@@ -330,12 +338,12 @@
                                                 <td>{{ $facture->user->name }}</td>
                                                 <td>{{ $facture->created_at->format('d/m/Y H:i') }}</td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.factures.edit', $facture->id) }}" 
+                                                    <a href="{{ route('admin.factures.edit', $facture->id) }}"
                                                        class="btn btn-primary btn-sm mr-1"
                                                        title="Modifier la facture">
                                                         <i class="fas fa-edit"></i> Modifier
                                                     </a>
-                                                    <button onclick="deleteFacturePermanently({{ $facture->id }})" 
+                                                    <button onclick="deleteFacturePermanently({{ $facture->id }})"
                                                             class="btn btn-danger btn-sm"
                                                             title="Supprimer définitivement">
                                                         <i class="fas fa-trash"></i> Supprimer
@@ -469,7 +477,7 @@
         function deleteFacturePermanently(factureId) {
             // Mettre à jour l'action du formulaire dans le modal
             document.getElementById('deleteFactureForm').action = `/admin/factures/${factureId}/delete-permanent`;
-            
+
             // Afficher le modal de confirmation
             $('#deleteFactureModal').modal('show');
         }
@@ -483,4 +491,4 @@
     </script>
 </body>
 
-</html> 
+</html>

@@ -129,7 +129,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -154,6 +154,14 @@
                         <span class="font-weight-bold">PROFIL</span>
                     </a>
                 </li> --}}
+
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
 
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">

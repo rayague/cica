@@ -510,7 +510,7 @@ class AdminController extends Controller
         // Identifier les changements (exclure les champs non modifiables)
         $changes = [];
         $excludedFields = ['total', 'avance_client', 'remise_reduction', 'heure_retrait', 'type_lavage', 'solde_restant', 'original_total', 'discount_amount'];
-        
+
         foreach ($validatedData as $field => $newValue) {
             if (!in_array($field, $excludedFields) && isset($oldData[$field]) && $oldData[$field] != $newValue) {
                 $changes[$field] = [
@@ -899,11 +899,7 @@ class AdminController extends Controller
 
     public function updateFinancial(Request $request, Commande $commande)
     {
-        // Vérifier que l'utilisateur connecté est bien celui qui a créé la commande
-        if (Auth::id() !== $commande->user_id) {
-            return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à mettre à jour cette commande.');
-        }
-
+        // Suppression de la restriction sur l'utilisateur créateur
         // Valider les données du formulaire
         $request->validate([
             'montant_paye' => 'required|numeric|min:0',
@@ -1149,7 +1145,7 @@ class AdminController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
-        
+
         // Calculer le total du solde restant
         $totalSoldeRestant = $commandes->sum('solde_restant');
 
@@ -1197,7 +1193,7 @@ class AdminController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
-        
+
         // Calculer le total du solde restant
         $totalSoldeRestant = $commandes->sum('solde_restant');
 
@@ -1250,7 +1246,7 @@ class AdminController extends Controller
         // Debug: Afficher les dates utilisées
         Log::info("Impression retraits - Date début: {$date_debut}, Date fin: {$date_fin}");
 
-        // Filtrer uniquement les commandes avec statut "retiré" ou "validée" 
+        // Filtrer uniquement les commandes avec statut "retiré" ou "validée"
         // dont l'updated_at correspond à la date spécifiée
         $query = Commande::with('user')->where(function($q) {
                 $q->where('statut', 'Retiré')
@@ -1555,6 +1551,38 @@ class AdminController extends Controller
 
         // Retourner le PDF pour l'afficher
         return $pdf->stream('liste_factures_en_attente.pdf');
+    }
+
+    public function clients(Request $request)
+    {
+        $search = $request->input('search');
+        $clientsQuery = \App\Models\Commande::query()
+            ->select('client', 'numero_whatsapp')
+            ->whereNotNull('client')
+            ->where('client', '!=', '')
+            ->whereNotNull('numero_whatsapp')
+            ->where('numero_whatsapp', '!=', '');
+        if ($search) {
+            $clientsQuery->where(function($q) use ($search) {
+                $q->where('client', 'like', "%$search%")
+                  ->orWhere('numero_whatsapp', 'like', "%$search%") ;
+            });
+        }
+        $clients = $clientsQuery->distinct()->orderBy('client')->get();
+        return view('administrateur.clients', compact('clients', 'search'));
+    }
+
+    public function setClientPassword(Request $request, $numero)
+    {
+        $request->validate([
+            'password' => 'required|string|min:4',
+        ]);
+        $commande = \App\Models\Commande::where('numero', $numero)->firstOrFail();
+        $commande->password_client = bcrypt($request->password);
+        $commande->save();
+        // Stocker le mot de passe en clair temporairement en session
+        session(['plain_password_' . $commande->numero => $request->password]);
+        return redirect()->route('clientsAdmin')->with('success', 'Mot de passe enregistré avec succès.');
     }
 
 }

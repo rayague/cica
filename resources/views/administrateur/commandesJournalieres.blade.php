@@ -123,7 +123,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -139,6 +139,14 @@
                         <span class="font-weight-bold">UTILISATEURS</span>
                     </a>
                 </li>
+
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
 
                 <!-- Nav Item - Profil -->
                 {{-- <li class="nav-item ">
@@ -245,7 +253,7 @@
 
 
                     <h2 class="mb-4 text-2xl font-bold text-blue-700">Liste des Factures en Attente (Journalières)</h2>
-                    
+
                     <p class="mb-4 text-gray-600">Affiche uniquement les factures qui ne sont pas encore retirées ou validées</p>
 
                     <!-- Filtre par date -->

@@ -123,7 +123,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -142,6 +142,13 @@
                                     ">
                         <i class="fas fa-fw fa-users"></i>
                         <span class="font-weight-bold">UTILISATEURS</span>
+                    </a>
+                </li>
+                <!-- Nav Item - Clients -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                        <i class="fas fa-fw fa-user-friends"></i>
+                        <span class="font-weight-bold">CLIENTS</span>
                     </a>
                 </li>
 
@@ -295,7 +302,7 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- Bouton d'impression des factures en attente -->
                     <div class="mb-4 flex justify-end">
                         <a href="{{ route('commandesAdmin.printEnAttente') }}" target="_blank"
@@ -304,7 +311,7 @@
                             🖨️ Imprimer les factures en attente
                         </a>
                     </div>
-                    
+
                     <div class="overflow-x-auto bg-white rounded-lg shadow-md">
                         <table class="w-full border border-blue-400 rounded-lg overflow-hidden">
                             <thead class="text-white bg-blue-600">

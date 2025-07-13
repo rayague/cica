@@ -143,7 +143,7 @@
                                         <span class="font-weight-bold">FACTURES</span>
                                     </a>
                                 </li>
-                
+
                                 <!-- Nav Item - Notifications -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('notificationsAdmin') }}">
@@ -174,6 +174,14 @@
                         <span class="font-weight-bold">PROFIL</span>
                     </a>
                 </li> --}}
+
+                                <!-- Nav Item - Clients -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('clientsAdmin') }}">
+                                        <i class="fas fa-fw fa-user-friends"></i>
+                                        <span class="font-weight-bold">CLIENTS</span>
+                                    </a>
+                                </li>
 
                 <!-- Nav Item - Déconnexion -->
                 <li class="nav-item hover:bg-red-500">
@@ -378,7 +386,12 @@
                                                             @php
                                                                 $whatsappNumber = $commande->numero_whatsapp;
                                                                 $message = rawurlencode(
-                                                                    "Bonjour M/Mme " . ($commande->client ?? '') . ", Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " Facture n° " . ($commande->numero ?? '') . " est déjà prête ! Vous pouvez passer pour le retrait !\n\nMerci d'avoir choisi CICA NOBLESSE PRESSING ! Nous restons disponibles pour toute demande complémentaire !"
+                                                                    "Bonjour M./Mme " . ($commande->client ?? '') . ",\n\n" .
+                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . ($commande->numero ?? '') . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
+                                                                    "📄 Pour consulter ou télécharger cette facture (et toutes les autres), rendez-vous sur :\n" .
+                                                                    "👉 https://mesfactures.cicanoblessepressing.com/\n" .
+                                                                    "(Accès rapide avec votre numéro de téléphone.)\n\n" .
+                                                                    "Merci d’avoir choisi CICA NOBLESSE PRESSING.\nNous restons à votre disposition pour toute demande complémentaire !"
                                                                 );
                                                             @endphp
                                                             @if ($whatsappNumber)

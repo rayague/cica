@@ -356,18 +356,18 @@
                                                         <!-- Nouvelle colonne Rappeler -->
                                                         <td class="px-4 py-3 text-center">
                                                             @php
-                                                                // Récupération du numéro WhatsApp du client (à adapter selon ton modèle)
-                                                                $whatsappNumber = $commande->numero_whatsapp; // ou $commande->client->whatsapp
-
-                                                                // Préparation du message, bien encodé pour l'URL
-$message = urlencode(
-    "Bonjour M/Mme " . ($commande->client ?? '') . ", Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " Facture n° " . ($commande->numero ?? '') . " est déjà prête ! Vous pouvez passer pour le retrait !\n\nMerci d'avoir choisi CICA NOBLESSE PRESSING ! Nous restons disponibles pour toute demande complémentaire !"
+                                                                $whatsappNumber = $commande->numero_whatsapp;
+                                                                $message = rawurlencode(
+                                                                    "Bonjour M./Mme " . ($commande->client ?? '') . ",\n\n" .
+                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . ($commande->numero ?? '') . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
+                                                                    "📄 Pour consulter ou télécharger cette facture (et toutes les autres), rendez-vous sur :\n" .
+                                                                    "👉 https://mesfactures.cicanoblessepressing.com/\n" .
+                                                                    "(Accès rapide avec votre numéro de téléphone.)\n\n" .
+                                                                    "Merci d’avoir choisi CICA NOBLESSE PRESSING.\nNous restons à votre disposition pour toute demande complémentaire !"
                                                                 );
                                                             @endphp
                                                             @if ($whatsappNumber)
-                                                                <a href="https://api.whatsapp.com/send?phone={{ $whatsappNumber }}&text={{ $message }}"
-                                                                    target="_blank"
-                                                                    class="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700">
+                                                                <a href="https://api.whatsapp.com/send?phone=229{{ ltrim(preg_replace('/[^0-9]/', '', $whatsappNumber), '0') }}&text={{ $message }}" target="_blank" class="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700">
                                                                     Rappeler
                                                                 </a>
                                                             @else

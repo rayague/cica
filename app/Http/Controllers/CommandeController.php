@@ -208,13 +208,7 @@ class CommandeController extends Controller
 
     public function updateFinancial(Request $request, Commande $commande)
     {
-        // Vérifier que l'utilisateur connecté est bien celui qui a créé la commande
-        if (Auth::id() !== $commande->user_id) {
-            if ($request->wantsJson()) {
-                return response()->json(['error' => 'Non autorisé'], 403);
-            }
-            return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à mettre à jour cette commande.');
-        }
+        // Suppression de la restriction sur l'utilisateur créateur
 
         // Vérifier si le solde est déjà à zéro
         if ($commande->solde_restant <= 0) {
@@ -599,7 +593,7 @@ class CommandeController extends Controller
             ->get();
 
         $totalMontant = $commandes->sum('total');
-        
+
         // Calculer le total du solde restant
         $totalSoldeRestant = $commandes->sum('solde_restant');
 
@@ -642,7 +636,7 @@ class CommandeController extends Controller
 
         // Calculer le montant total
         $totalMontant = $commandes->sum('total');
-        
+
         // Calculer le total du solde restant
         $totalSoldeRestant = $commandes->sum('solde_restant');
 
