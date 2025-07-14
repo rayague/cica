@@ -1577,11 +1577,15 @@ class AdminController extends Controller
         $request->validate([
             'password' => 'required|string|min:4',
         ]);
-        $commande = \App\Models\Commande::where('numero', $numero)->firstOrFail();
+
+        // Chercher par numero_whatsapp au lieu de numero
+        $commande = \App\Models\Commande::where('numero_whatsapp', $numero)->firstOrFail();
         $commande->password_client = bcrypt($request->password);
         $commande->save();
-        // Stocker le mot de passe en clair temporairement en session
-        session(['plain_password_' . $commande->numero => $request->password]);
+
+        // Stocker le mot de passe en clair temporairement en session avec le bon identifiant
+        session(['plain_password_' . $numero => $request->password]);
+
         return redirect()->route('clientsAdmin')->with('success', 'Mot de passe enregistré avec succès.');
     }
 

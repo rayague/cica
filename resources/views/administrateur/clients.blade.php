@@ -200,12 +200,19 @@
                                                         $commande = \App\Models\Commande::where('client', $client->client)->where('numero_whatsapp', $client->numero_whatsapp)->first();
                                                         $plainPassword = session('plain_password_' . $client->numero_whatsapp);
                                                     @endphp
-                                                    @if($plainPassword)
-                                                        <span style="font-family:monospace">{{ $plainPassword }}</span>
-                                                    @elseif($commande && $commande->password_client)
-                                                        ••••••••
-                                                    @else
-                                                        Non défini
+                                                    <span id="password-value-{{ md5($client->numero_whatsapp) }}">
+                                                        @if($plainPassword)
+                                                            <span style="font-family:monospace">{{ $plainPassword }}</span>
+                                                        @elseif($commande && $commande->password_client)
+                                                            <span class="password-hidden" style="font-family:monospace">••••••••</span>
+                                                        @else
+                                                            Non défini
+                                                        @endif
+                                                    </span>
+                                                    @if($commande && $commande->password_client)
+                                                        <button type="button" class="btn btn-link p-0 ml-2" onclick="togglePassword('{{ md5($client->numero_whatsapp) }}', '{{ $plainPassword ? $plainPassword : '' }}')" @if(!$plainPassword) disabled style="opacity:0.5;cursor:not-allowed;" @endif>
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
                                                     @endif
                                                 </td>
                                                 <td>
@@ -279,6 +286,21 @@
                                         });
                                     });
                                 });
+                            </script>
+                            <script>
+                                function togglePassword(id, plain) {
+                                    const span = document.getElementById('password-value-' + id);
+                                    if (!span) return;
+                                    if (span.dataset.visible === 'true') {
+                                        span.innerHTML = '<span class="password-hidden" style="font-family:monospace">••••••••</span>';
+                                        span.dataset.visible = 'false';
+                                    } else {
+                                        if (plain) {
+                                            span.innerHTML = '<span style="font-family:monospace">' + plain + '</span>';
+                                            span.dataset.visible = 'true';
+                                        }
+                                    }
+                                }
                             </script>
                         </div>
                     </div>
