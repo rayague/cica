@@ -300,6 +300,7 @@
 </head>
 
 <body>
+
     <table class="sheet-table">
         <tr>
             @for ($i = 0; $i < 2; $i++)
@@ -320,11 +321,12 @@
                                     <p>BP 0272 • IFU : 2201300990000</p>
                                     <p>Tél : (+229) 01 97 89 36 99 / 01 96 44 67 50 / 01 99 10 70 93</p>
                                     <p>Whatsapp : (+229) 01 57 08 31 60</p>
+                                    <p>Site web : <a href="https://cicanoblessepressing.com/" style="color:#0084ff; text-decoration:underline; font-weight:bolder;">https://cicanoblessepressing.com/</a></p>
                                 </div>
                             </div>
                             <div class="invoice-info">
                                 <h2>FACTURE <strong>N° :</strong> {{ $commande->numero }}</h2>
-    
+
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>

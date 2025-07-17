@@ -598,7 +598,13 @@
                         <a href="{{ route('factures.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
                             Télécharger la facture PDF
                         </a>
-                        <a href="https://wa.me/?text={{
+                        @php
+                            $numeroWhatsApp = preg_replace('/\D/', '', $commande->numero_whatsapp);
+                            if (strlen($numeroWhatsApp) === 8) {
+                                $numeroWhatsApp = '229' . $numeroWhatsApp;
+                            }
+                        @endphp
+                        <a href="https://wa.me/{{ $numeroWhatsApp }}?text={{
                             rawurlencode(
                                 'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
                                 'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
