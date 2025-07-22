@@ -611,25 +611,31 @@
                         @endif
                 </div>
 
-                <div class="flex gap-2 my-4">
-                    <a href="{{ route('facturesAdmin.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
-                        Télécharger la facture PDF
-                    </a>
-                    <a href="https://wa.me/?text={{
-                        rawurlencode(
-                            'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
-                            'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
-                            '📅 Date de retrait prévue : ' . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . ' à ' . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H\hi')) . "\n\n" .
-                            '📄 Vous pouvez consulter, télécharger ou suivre l’ensemble de vos factures en ligne via le lien suivant :' . "\n" .
-                            '👉 https://mesfactures.cicanoblessepressing.com/' . "\n" .
-                            '(Accès rapide avec votre numéro de téléphone uniquement.)' . "\n\n" .
-                            'Merci d’avoir choisi CICA NOBLESSE PRESSING !'
-                        )
-                    }}"
-                    target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
-                        <i class="fab fa-whatsapp mr-2"></i> Informer/Notifier le dépôt via WhatsApp
-                    </a>
-                </div>
+
+@php
+$numeroWhatsApp = preg_replace('/\D/', '', $commande->numero_whatsapp);
+if (strlen($numeroWhatsApp) === 8) {
+    $numeroWhatsApp = '229' . $numeroWhatsApp;
+}
+$message =
+    'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
+    'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
+    '📅 Date de retrait prévue : ' . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . ' à ' . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H\hi')) . "\n\n" .
+    '📄 Vous pouvez consulter, télécharger ou suivre l’ensemble de vos factures en ligne via le lien suivant :' . "\n" .
+    '👉 https://mesfactures.cicanoblessepressing.com/' . "\n" .
+    '(Accès rapide avec votre numéro de téléphone uniquement.)' . "\n\n" .
+    'Merci d’avoir choisi CICA NOBLESSE PRESSING !';
+@endphp
+
+<div class="flex gap-2 my-4">
+    <a href="{{ route('facturesAdmin.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
+        Télécharger la facture PDF
+    </a>
+    <a href="https://wa.me/{{ $numeroWhatsApp }}?text={{ rawurlencode($message) }}"
+       target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
+        <i class="fab fa-whatsapp mr-2"></i> Informer/Notifier le dépôt via WhatsApp
+    </a>
+</div>
 
             </div>
             <!-- /.container-fluid -->
@@ -941,7 +947,9 @@
             // 1. Correction du format du numéro WhatsApp
             let whatsAppNumber = @json($whatsAppNumber);
             whatsAppNumber = whatsAppNumber.replace(/\D/g, ''); // Garder seulement les chiffres
-            if (whatsAppNumber.length === 8) {
+            if (whatsAppNumber.startsWith('229') && whatsAppNumber.length === 11) {
+                // Déjà au bon format
+            } else if (whatsAppNumber.length === 8) {
                 whatsAppNumber = '229' + whatsAppNumber; // Ajouter l'indicatif du Bénin si absent
             }
 
@@ -949,10 +957,7 @@
             const pdfUrl = `{{ url('/factures/' . $commande->id . '/pdf') }}`;
 
             // 3. Message avec lien vers le PDF
-            const message = `Bonjour {{ $commande->client }},
-Votre facture pour la commande *{{ $commande->numero }}* est prête.
-Vous pouvez la télécharger ici : ${pdfUrl}
-Merci d'avoir choisi CICA !`;
+            const message = `🧺 Bonjour {{ $commande->client }},\nVotre facture pour la commande *{{ $commande->numero }}* est prête.\nVous pouvez la télécharger ici : ${pdfUrl}\nMerci d'avoir choisi CICA ! 🙏`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${encodedMessage}`;

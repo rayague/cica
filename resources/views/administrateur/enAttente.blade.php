@@ -387,10 +387,11 @@
                                                                 $whatsappNumber = $commande->numero_whatsapp;
                                                                 $message = rawurlencode(
                                                                     "Bonjour M./Mme " . ($commande->client ?? '') . ",\n\n" .
-                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . ($commande->numero ?? '') . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
+                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . str_pad($commande->id, 4, '0', STR_PAD_LEFT) . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
                                                                     "📄 Pour consulter ou télécharger cette facture (et toutes les autres), rendez-vous sur :\n" .
                                                                     "👉 https://mesfactures.cicanoblessepressing.com/\n" .
                                                                     "(Accès rapide avec votre numéro de téléphone.)\n\n" .
+                                                                    "⚠️ Important : Passé un délai de 2 mois  après la date prévue de retrait,\nCICA NOBLESSE PRESSING ne pourra être tenu responsable d’éventuels désagréments, pertes ou altérations concernant les vêtements non retirés.\n\n" .
                                                                     "Merci d’avoir choisi CICA NOBLESSE PRESSING.\nNous restons à votre disposition pour toute demande complémentaire !"
                                                                 );
                                                             @endphp

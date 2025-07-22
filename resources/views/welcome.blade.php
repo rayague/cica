@@ -170,15 +170,17 @@
         </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full p-2 text-xs font-semibold text-center text-white bg-sky-700 backdrop-blur-md shadow-lg tracking-wide" style="font-family: 'Montserrat', sans-serif;">
-        <span class="text-white font-weight-bold">
-            Developed by <span class="text-sky-300">Ray Ague</span>
-        </span>
-        <br>
-        <small class="text-white">
-            Project Manager and Business Development Analyst: <span class="text-sky-300 font-weight-bold">Abdalah KH AGUESSY-VOGNON</span>
-        </small>
-    </footer>
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+  <div class="max-w-2xl mx-auto px-4 text-center">
+    <p class="font-bold text-lg mb-1">
+      Developed by <a href="https://www.linkedin.com/in/ray-ague-2066b4247/" target="_blank" rel="noopener" class="text-blue-400 underline hover:text-blue-300">Ray Ague</a>
+    </p>
+    <p class="text-sm">
+      Project Manager and Business Development Analyst:
+      <a href="https://www.linkedin.com/in/abdalah-aguessy-vognon?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener" class="font-semibold" style="color: #F59E0B; text-decoration: underline;">Abdalah KH AGUESSY-VOGNON</a>
+    </p>
+  </div>
+</footer>
 
     <script>
         function showToast() {

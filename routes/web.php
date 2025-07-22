@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/facture/{commande}/notes_administration', [AdminController::class, 'storeNote'])->name('notesAdmin.store');
     Route::get('/factures/{id}/stream_administration', [AdminController::class, 'stream'])->name('facturesAdmin.stream');
     Route::get('/factures/{id}/download_administration', [AdminController::class, 'download'])->name('facturesAdmin.download');
+    // Route::get('/factures/{id}/download', [CommandeController::class, 'download'])->name('factures.download');
 
     // Routes de gestion des utilisateurs admin
     Route::get('/users/create', [AdminController::class, 'create'])->name('admin.users.create');
@@ -122,7 +123,6 @@ Route::middleware('auth')->group(function () {
 
 
 // -------------------------------------------------------------- Fin de la route concernant l'adminitrateur -----------------------------------------//
-
 
 
 

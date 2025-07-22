@@ -55,8 +55,15 @@ class FactureController extends Controller
         $remiseReduction = $commande->remise_reduction ?? 0;
         $discountAmount = ($originalTotal * $remiseReduction) / 100;
 
-        // Générer le PDF en utilisant la vue 'utilisateurs.factures'
-        return Pdf::loadView('utilisateurs.factures', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount'));
+        $notes = \App\Models\Note::where('commande_id', $commande->id)->with('user')->get();
+        $logoPath = public_path('images/Cica.png');
+        $logoBase64 = null;
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        // Utiliser la vue preview pour le PDF individuel
+        return Pdf::loadView('utilisateurs.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes', 'logoBase64'));
     }
 
     public function stream($id)
@@ -67,8 +74,63 @@ class FactureController extends Controller
 
     public function download($id)
     {
-        $pdf = $this->generatePdf($id);
-        return $pdf->download('facture_' . $id . '.pdf');
+        // Récupérer la commande avec ses objets associés
+        $commande = \App\Models\Commande::with('objets')->findOrFail($id);
+        $notes = \App\Models\Note::where('commande_id', $commande->id)->with('user')->get();
+
+        // Calculer le total sans réduction
+        $originalTotal = $commande->objets->sum(function($objet) {
+            return $objet->pivot->quantite * $objet->prix_unitaire;
+        });
+
+        $remiseReduction = $commande->remise_reduction ?? 0;
+        $discountAmount = ($originalTotal * $remiseReduction) / 100;
+
+        $logoPath = public_path('images/Cica.png');
+        $logoBase64 = null;
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        // Utiliser la même vue et options que les admins
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('administrateur.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes', 'logoBase64'));
+
+        // Configurer les options du PDF comme pour les admins
+        $pdf->setPaper('a4', 'landscape');
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isPhpEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->setOption('dpi', 150);
+        $pdf->setOption('defaultFont', 'sans-serif');
+        $pdf->setOption('margin-top', 0);
+        $pdf->setOption('margin-right', 0);
+        $pdf->setOption('margin-bottom', 0);
+        $pdf->setOption('margin-left', 0);
+        $pdf->setOption('page-size', 'A4');
+        $pdf->setOption('orientation', 'landscape');
+        $pdf->setOption('encoding', 'UTF-8');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('enable-javascript', true);
+        $pdf->setOption('javascript-delay', 1000);
+        $pdf->setOption('no-stop-slow-scripts', true);
+        $pdf->setOption('enable-smart-shrinking', true);
+        $pdf->setOption('print-media-type', true);
+        $pdf->setOption('disable-smart-shrinking', false);
+        $pdf->setOption('zoom', 1);
+        $pdf->setOption('page-width', '297mm');
+        $pdf->setOption('page-height', '210mm');
+        $pdf->setOption('footer-right', '');
+        $pdf->setOption('footer-left', '');
+        $pdf->setOption('footer-center', '');
+        $pdf->setOption('header-right', '');
+        $pdf->setOption('header-left', '');
+        $pdf->setOption('header-center', '');
+        $pdf->setOption('footer-spacing', 0);
+        $pdf->setOption('header-spacing', 0);
+        $pdf->setOption('margin-footer', 0);
+        $pdf->setOption('margin-header', 0);
+
+        return $pdf->download('facture_' . $commande->numero . '.pdf');
     }
 
     // La méthode print initiale peut rediriger vers la page de prévisualisation

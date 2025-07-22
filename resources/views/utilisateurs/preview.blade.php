@@ -326,7 +326,7 @@
                             </div>
                             <div class="invoice-info">
                                 <h2>FACTURE <strong>N° :</strong> {{ $commande->numero }}</h2>
-
+    
                                 <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
                             </div>
                         </div>
@@ -353,6 +353,12 @@
                                     @if(strtolower($commande->type_lavage) === 'lavage express')
                                         <span style="color: #dc2626; font-weight: 500;">(Prix x 2)</span>
                                     @endif
+                                </span>
+                            </div>
+                            <div class="detail-block">
+                                <strong>Statut</strong>
+                                <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $commande->statut)) }}">
+                                    {{ $commande->statut }}
                                 </span>
                             </div>
                         </div>

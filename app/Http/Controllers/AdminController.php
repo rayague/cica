@@ -668,11 +668,86 @@ class AdminController extends Controller
         return $pdf->stream('facture_' . $id . '.pdf');
     }
 
-    public function download($id)
-    {
-        $pdf = $this->generatePdf($id);
-        return $pdf->stream('facture_' . $id . '.pdf');
-    }
+    // public function download($id)
+    // {
+    //     // $pdf = $this->generatePdf($id);
+    //     $pdf = $this->generatePdf($id);
+
+    //     return $pdf->stream('facture_' . $id . '.pdf');    }
+
+
+//     public function download($id)
+// {
+//     $commande = Commande::with('objets')->findOrFail($id);
+
+//     // Données supplémentaires calculées
+//     $originalTotal = $commande->objets->sum(function($objet) {
+//         return $objet->pivot->quantite * $objet->prix_unitaire;
+//     });
+
+//     $remiseReduction = $commande->remise ?? 0; // ou une autre logique
+//     $discountAmount = $originalTotal * ($remiseReduction / 100);
+
+//     $factureMessage = \App\Models\FactureMessage::getActiveMessage();
+
+//     // Générer le PDF avec la vue Blade
+//     $pdf = Pdf::loadView('facture.template', compact(
+//         'commande',
+//         'originalTotal',
+//         'remiseReduction',
+//         'discountAmount',
+//         'factureMessage'
+//     ));
+
+//     return $pdf->download('facture_' . $commande->numero . '.pdf');
+// }
+
+public function download($id)
+{
+    $pdf = $this->generatePdf($id);
+
+       // Générer le PDF avec les options spécifiques
+       $pdf = PDF::loadView('administrateur.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes'));
+
+       // Configurer les options du PDF
+       $pdf->setPaper('a4', 'landscape');
+       $pdf->setOption('isHtml5ParserEnabled', true);
+       $pdf->setOption('isPhpEnabled', true);
+       $pdf->setOption('isRemoteEnabled', true);
+       $pdf->setOption('dpi', 150);
+       $pdf->setOption('defaultFont', 'sans-serif');
+       $pdf->setOption('margin-top', 0);
+       $pdf->setOption('margin-right', 0);
+       $pdf->setOption('margin-bottom', 0);
+       $pdf->setOption('margin-left', 0);
+       $pdf->setOption('page-size', 'A4');
+       $pdf->setOption('orientation', 'landscape');
+       $pdf->setOption('encoding', 'UTF-8');
+       $pdf->setOption('enable-local-file-access', true);
+       $pdf->setOption('enable-javascript', true);
+       $pdf->setOption('javascript-delay', 1000);
+       $pdf->setOption('no-stop-slow-scripts', true);
+       $pdf->setOption('enable-smart-shrinking', true);
+       $pdf->setOption('print-media-type', true);
+       $pdf->setOption('disable-smart-shrinking', false);
+       $pdf->setOption('zoom', 1);
+       $pdf->setOption('page-width', '297mm');
+       $pdf->setOption('page-height', '210mm');
+       $pdf->setOption('footer-right', '');
+       $pdf->setOption('footer-left', '');
+       $pdf->setOption('footer-center', '');
+       $pdf->setOption('header-right', '');
+       $pdf->setOption('header-left', '');
+       $pdf->setOption('header-center', '');
+       $pdf->setOption('footer-spacing', 0);
+       $pdf->setOption('header-spacing', 0);
+       $pdf->setOption('margin-footer', 0);
+       $pdf->setOption('margin-header', 0);
+
+    return $pdf->download('facture_' . $id . '.pdf');
+}
+
+
 
     // La méthode print initiale peut rediriger vers la page de prévisualisation
     // public function print($id)

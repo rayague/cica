@@ -594,28 +594,27 @@
                         @endif
                     </div>
 
+                    @php
+                        $numeroWhatsApp = preg_replace('/\D/', '', $commande->numero_whatsapp);
+                        if (strlen($numeroWhatsApp) === 8) {
+                            $numeroWhatsApp = '229' . $numeroWhatsApp;
+                        }
+                        $message =
+                            'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
+                            'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
+                            '📅 Date de retrait prévue : ' . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . ' à ' . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H\hi')) . "\n\n" .
+                            '📄 Vous pouvez consulter, télécharger ou suivre l’ensemble de vos factures en ligne via le lien suivant :' . "\n" .
+                            '👉 https://mesfactures.cicanoblessepressing.com/' . "\n" .
+                            '(Accès rapide avec votre numéro de téléphone uniquement.)' . "\n\n" .
+                            'Merci d’avoir choisi CICA NOBLESSE PRESSING !';
+                    @endphp
+
                     <div class="flex gap-2 my-4">
                         <a href="{{ route('factures.download', $commande->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold" download>
                             Télécharger la facture PDF
                         </a>
-                        @php
-                            $numeroWhatsApp = preg_replace('/\D/', '', $commande->numero_whatsapp);
-                            if (strlen($numeroWhatsApp) === 8) {
-                                $numeroWhatsApp = '229' . $numeroWhatsApp;
-                            }
-                        @endphp
-                        <a href="https://wa.me/{{ $numeroWhatsApp }}?text={{
-                            rawurlencode(
-                                'Bonjour M./Mme ' . ($commande->client ?? '') . ",\n\n" .
-                                'Votre facture pour la commande #' . ($commande->numero ?? '') . ' du ' . (\Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y')) . ' a bien été enregistrée.' . "\n\n" .
-                                '📅 Date de retrait prévue : ' . (\Carbon\Carbon::parse($commande->date_retrait)->format('d/m/Y')) . ' à ' . (\Carbon\Carbon::parse($commande->heure_retrait)->format('H\hi')) . "\n\n" .
-                                '📄 Vous pouvez consulter, télécharger ou suivre l’ensemble de vos factures en ligne via le lien suivant :' . "\n" .
-                                '👉 https://mesfactures.cicanoblessepressing.com/' . "\n" .
-                                '(Accès rapide avec votre numéro de téléphone uniquement.)' . "\n\n" .
-                                'Merci d’avoir choisi CICA NOBLESSE PRESSING !'
-                            )
-                        }}"
-                        target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
+                        <a href="https://wa.me/{{ $numeroWhatsApp }}?text={{ rawurlencode($message) }}"
+                           target="_blank" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold">
                             <i class="fab fa-whatsapp mr-2"></i> Informer/Notifier le dépôt via WhatsApp
                         </a>
                     </div>
