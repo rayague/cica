@@ -352,17 +352,16 @@
 
                                 <div id="objets-container" class="space-y-3">
                                     <!-- Premier objet -->
-                                    <div class="flex items-start gap-3" id="objets-container-0">
-                                        <select name="objets[0][id]"
-                                            class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                            onchange="updateTotalPrice(this)">
-                                            @foreach ($objets as $objet)
-                                                <option value="{{ $objet->id }}"
-                                                    data-price="{{ $objet->prix_unitaire }}">
-                                                    {{ $objet->nom }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                                                                                                                                <div class="flex items-start gap-3" id="objets-container-0">
+                                        <div class="flex-1 relative">
+                                            <input type="text"
+                                                id="search-input-0"
+                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                                placeholder="Rechercher un article..."
+                                                onkeyup="filterSelectOptions(this, 0)">
+                                            <input type="hidden" name="objets[0][id]" id="selected-object-0" value="">
+                                            <div id="search-results-0" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                                        </div>
                                         <input type="hidden" name="objets[0][prix]" value="0">
                                         <!-- Champ manquant -->
 
@@ -524,56 +523,179 @@
 
 
 
-    {{-- <script>
+    <script>
         function updateTotalPrice() {
             let totalPrice = 0;
+            console.log('updateTotalPrice appelée');
 
-            document.querySelectorAll('#objets-container .flex').forEach(row => {
-                const select = row.querySelector('select');
+            document.querySelectorAll('#objets-container .flex').forEach((row, index) => {
+                const hiddenInput = row.querySelector('input[type="hidden"][name*="[id]"]');
                 const quantity = row.querySelector('input[type="number"]');
-                const priceInput = row.querySelector('input[type="hidden"]');
+                const priceInput = row.querySelector('input[type="hidden"][name*="[prix]"]');
 
-                const unitPrice = parseFloat(select.options[select.selectedIndex].dataset.price);
-                const qty = parseInt(quantity.value) || 1;
+                console.log(`Ligne ${index}:`, {
+                    hiddenInputValue: hiddenInput ? hiddenInput.value : 'null',
+                    quantityValue: quantity ? quantity.value : 'null',
+                    priceInputValue: priceInput ? priceInput.value : 'null'
+                });
 
-                const itemTotal = unitPrice * qty;
-                priceInput.value = itemTotal.toFixed(2); // Stocke le prix dans le champ caché
+                if (hiddenInput && hiddenInput.value) {
+                    // Données des objets (sera rempli par PHP)
+                    const objetsData = [
+                        @foreach ($objets as $objet)
+                        {
+                            id: {{ $objet->id }},
+                            nom: "{{ $objet->nom }}",
+                            prix: {{ $objet->prix_unitaire }}
+                        },
+                        @endforeach
+                    ];
 
-                totalPrice += itemTotal;
+                    console.log('objetsData:', objetsData);
+
+                    const selectedObject = objetsData.find(obj => obj.id == hiddenInput.value);
+                    console.log('selectedObject:', selectedObject);
+
+                    if (selectedObject) {
+                        const unitPrice = selectedObject.prix;
+                        const qty = parseInt(quantity.value) || 1;
+
+                        const itemTotal = unitPrice * qty;
+                        priceInput.value = itemTotal.toFixed(2);
+
+                        totalPrice += itemTotal;
+                        console.log(`Article ${index}: prix=${unitPrice}, qty=${qty}, total=${itemTotal}`);
+                    }
+                }
             });
 
+            console.log('Total final:', totalPrice);
             // Met à jour l'affichage
             document.getElementById('total-display').textContent = `Total : ${totalPrice.toFixed(2)} FCFA`;
-            document.querySelector('input[name="avance_client"]').value = totalPrice.toFixed(2);
+            // Supprimé l'auto-remplissage du champ avance_client pour laisser l'utilisateur le remplir manuellement
         }
 
         // Écouteurs d'événements
         document.addEventListener('input', function(e) {
             if (e.target.matches('select, input[type="number"]')) {
+                console.log('Événement input détecté, appel de updateTotalPrice');
                 updateTotalPrice();
             }
         });
 
-        // Fonction pour ajouter des articles (à compléter)
-        let itemCount = 1;
+        // Test de la fonction au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page chargée, test de updateTotalPrice');
+            updateTotalPrice();
+        });
 
-        function addObjectField() {
-            const newItem = document.querySelector('#objets-container-0').cloneNode(true);
-            newItem.id = `objets-container-${itemCount}`;
+        // Fonction pour ajouter des articles
+                function addObjectField() {
+            const container = document.getElementById('objets-container');
+            const index = container.children.length;
+            const template = document.createElement('div');
+            template.className = 'flex items-start gap-3';
+            template.id = `objets-container-${index}`;
 
-            // Met à jour les names
-            newItem.querySelector('select').name = `objets[${itemCount}][id]`;
-            newItem.querySelector('input[type="number"]').name = `objets[${itemCount}][quantite]`;
-            newItem.querySelector('input[type="hidden"]').name = `objets[${itemCount}][prix]`;
-            newItem.querySelector('input[type="text"]').name = `objets[${itemCount}][description]`;
+            template.innerHTML = `
+                <div class="flex-1 relative">
+                    <input type="text"
+                        id="search-input-${index}"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Rechercher un article..."
+                        onkeyup="filterSelectOptions(this, ${index})">
+                    <input type="hidden" name="objets[${index}][id]" id="selected-object-${index}" value="">
+                    <div id="search-results-${index}" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                </div>
+                <input type="hidden" name="objets[${index}][prix]" value="0">
+                <input type="number" name="objets[${index}][quantite]"
+                    class="w-20 px-3 py-2.5 border border-gray-300 rounded-lg text-center"
+                    placeholder="Qté" min="1" required>
+                <input type="text" name="objets[${index}][description]"
+                    class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg"
+                    placeholder="Description détaillée">
+                <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600" onclick="removeObjectField(this)">
+                    Supprimer
+                </button>
+            `;
 
-            document.getElementById('objets-container').appendChild(newItem);
-            itemCount++;
+            container.appendChild(template);
+
+            // Ajouter les événements après l'insertion dans le DOM
+            const searchInput = document.getElementById(`search-input-${index}`);
+            const quantityInput = template.querySelector('input[type="number"]');
+
+            // Événement pour la recherche
+            searchInput.addEventListener('keyup', function() {
+                filterSelectOptions(this, index);
+            });
+
+            // Événement pour le calcul du prix
+            quantityInput.addEventListener('input', function() {
+                updateTotalPrice();
+            });
         }
+
+        function removeObjectField(button) {
+            button.closest('.flex').remove();
+            updateTotalPrice();
+        }
+
+                function filterSelectOptions(input, index) {
+            const searchTerm = input.value.toLowerCase();
+            const resultsContainer = document.getElementById(`search-results-${index}`);
+
+            if (searchTerm.length < 2) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            // Données des objets (sera rempli par PHP)
+            const objetsData = [
+                @foreach ($objets as $objet)
+                {
+                    id: {{ $objet->id }},
+                    nom: "{{ $objet->nom }}",
+                    prix: {{ $objet->prix_unitaire }}
+                },
+                @endforeach
+            ];
+
+            const filteredObjets = objetsData.filter(objet =>
+                objet.nom.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredObjets.length > 0) {
+                resultsContainer.innerHTML = '';
+                filteredObjets.forEach(objet => {
+                    const div = document.createElement('div');
+                    div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0';
+                    div.textContent = objet.nom;
+                    div.onclick = function() {
+                        const hiddenInput = document.getElementById(`selected-object-${index}`);
+                        hiddenInput.value = objet.id;
+                        input.value = objet.nom;
+                        resultsContainer.classList.add('hidden');
+                        updateTotalPrice();
+                    };
+                    resultsContainer.appendChild(div);
+                });
+                resultsContainer.classList.remove('hidden');
+            } else {
+                resultsContainer.classList.add('hidden');
+            }
+        }
+
+        // Écouteurs d'événements pour les quantités
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input[type="number"][name*="[quantite]"]')) {
+                updateTotalPrice();
+            }
+        });
 
         // Initialisation
         updateTotalPrice();
-    </script> --}}
+    </script>
 
     {{-- <script>
         // Récupération du HTML des options (Blade l'a déjà rendu correctement)
@@ -812,33 +934,8 @@
         });
     </script> --}}
 
+
     <script>
-        // Fonction principale de calcul
-        function updateTotalPrice() {
-            let total = 0;
-
-            document.querySelectorAll('#objets-container .flex').forEach(row => {
-                const select = row.querySelector('select');
-                const quantity = row.querySelector('input[type="number"]');
-                const priceInput = row.querySelector('input[type="hidden"][name*="[prix]"]');
-
-                // Correction 1 : Gestion des valeurs non numériques
-                const unitPrice = parseFloat(select.selectedOptions[0].dataset.price) || 0;
-                const qty = parseInt(quantity.value) || 1; // Si valeur vide → 1
-
-                const itemTotal = unitPrice * qty;
-
-                priceInput.value = itemTotal.toFixed(2);
-                total += itemTotal;
-            });
-
-            // Correction 2 : Affichage conditionnel pour éviter NaN
-            document.getElementById('total-display').textContent =
-                `Total : ${!isNaN(total) ? total.toFixed(2) : '0.00'} FCFA`;
-
-            // document.querySelector('input[name="avance_client"]').value = !isNaN(total) ? total.toFixed(2) : '0';
-        }
-
         // Fonction de validation en temps réel de l'avance client
         function validateAvance(input) {
             const avance = parseFloat(input.value) || 0;
@@ -879,33 +976,34 @@
         function addObjectField() {
             const container = document.getElementById('objets-container');
             const index = container.children.length;
-            const template = document.createElement('div');
-            template.className = 'flex gap-4 mb-2';
 
-            // Correction 3 : Clone PROPRE des options avec data-price
-            const originalSelect = document.querySelector('select[name="objets[0][id]"]');
-            const optionsHTML = Array.from(originalSelect.options).map(option =>
-                `<option value="${option.value}" data-price="${option.dataset.price}">
-                    ${option.text}
-                </option>`
-            ).join('');
+            const newItem = document.createElement('div');
+            newItem.className = 'flex items-start gap-3';
+            newItem.id = `objets-container-${index}`;
 
-            template.innerHTML = `
-                <select name="objets[${index}][id]" class="w-full p-2 mt-1 border rounded-md" required>
-                    ${optionsHTML}
-                </select>
-                <input type="number" name="objets[${index}][quantite]"
-                       class="w-20 p-2 mt-1 border rounded-md" value="1" min="1" required>
-                <input type="text" name="objets[${index}][description]"
-                       class="w-full p-2 mt-1 border rounded-md" placeholder="Description" required>
+            newItem.innerHTML = `
+                <div class="flex-1 relative">
+                    <input type="text"
+                        id="search-input-${index}"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Rechercher un article..."
+                        onkeyup="filterSelectOptions(this, ${index})">
+                    <input type="hidden" name="objets[${index}][id]" id="selected-object-${index}" value="">
+                    <div id="search-results-${index}" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                </div>
                 <input type="hidden" name="objets[${index}][prix]" value="0">
-                <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                <input type="number" name="objets[${index}][quantite]"
+                    class="w-20 px-3 py-2.5 border border-gray-300 rounded-lg text-center"
+                    placeholder="Qté" min="1" required>
+                <input type="text" name="objets[${index}][description]"
+                    class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg"
+                    placeholder="Description détaillée">
+                <button type="button" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600" onclick="removeObjectField(this)">
                     Supprimer
                 </button>
             `;
 
-            container.appendChild(template);
-            updateTotalPrice(); // Force le calcul après ajout
+            container.appendChild(newItem);
         }
 
         // Écouteurs d'événements (inchangés mais nécessaires)
@@ -1036,11 +1134,64 @@
     <script src="{{ asset('dashboard-assets/js/sb-admin-2.min.js') }}"></script>
 
     <!-- Page level plugins -->
-    <script src="{{ asset('dashboard-assets/vendor/chart.js/Chart.min.js') }}"></script>
+    <!-- Chart.js et scripts de graphiques supprimés car non nécessaires sur cette page -->
 
-    <!-- Page level custom scripts -->
-    <script src="{{ asset('dashboard-assets/js/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('dashboard-assets/js/demo/chart-pie-demo.js') }}"></script>
+        <!-- Script pour la recherche en temps réel -->
+    <script>
+        function filterSelectOptions(input, index) {
+            const searchTerm = input.value.toLowerCase();
+            const resultsContainer = document.getElementById(`search-results-${index}`);
+
+            if (searchTerm.length < 2) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            // Données des objets (sera rempli par PHP)
+            const objetsData = [
+                @foreach ($objets as $objet)
+                {
+                    id: {{ $objet->id }},
+                    nom: "{{ $objet->nom }}",
+                    prix: {{ $objet->prix_unitaire }}
+                },
+                @endforeach
+            ];
+
+            const filteredObjets = objetsData.filter(objet =>
+                objet.nom.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredObjets.length > 0) {
+                resultsContainer.innerHTML = '';
+                filteredObjets.forEach(objet => {
+                    const div = document.createElement('div');
+                    div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0';
+                    div.textContent = objet.nom;
+                    div.onclick = function() {
+                        const hiddenInput = document.getElementById(`selected-object-${index}`);
+                        hiddenInput.value = objet.id;
+                        input.value = objet.nom;
+                        resultsContainer.classList.add('hidden');
+                        updateTotalPrice();
+                    };
+                    resultsContainer.appendChild(div);
+                });
+                resultsContainer.classList.remove('hidden');
+            } else {
+                resultsContainer.classList.add('hidden');
+            }
+        }
+
+        // Masquer les résultats quand on clique ailleurs
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="search-results-"]').forEach(container => {
+                    container.classList.add('hidden');
+                });
+            }
+        });
+    </script>
 
 </body>
 

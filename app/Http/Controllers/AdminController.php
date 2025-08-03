@@ -704,47 +704,66 @@ class AdminController extends Controller
 
 public function download($id)
 {
-    $pdf = $this->generatePdf($id);
+    // Récupérer la commande avec ses objets associés
+    $commande = \App\Models\Commande::with('objets')->findOrFail($id);
+    $notes = \App\Models\Note::where('commande_id', $commande->id)->with('user')->get();
 
-       // Générer le PDF avec les options spécifiques
-       $pdf = PDF::loadView('administrateur.preview', compact('commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes'));
+    // Calculer le total sans réduction
+    $originalTotal = $commande->objets->sum(function($objet) {
+        return $objet->pivot->quantite * $objet->prix_unitaire;
+    });
 
-       // Configurer les options du PDF
-       $pdf->setPaper('a4', 'landscape');
-       $pdf->setOption('isHtml5ParserEnabled', true);
-       $pdf->setOption('isPhpEnabled', true);
-       $pdf->setOption('isRemoteEnabled', true);
-       $pdf->setOption('dpi', 150);
-       $pdf->setOption('defaultFont', 'sans-serif');
-       $pdf->setOption('margin-top', 0);
-       $pdf->setOption('margin-right', 0);
-       $pdf->setOption('margin-bottom', 0);
-       $pdf->setOption('margin-left', 0);
-       $pdf->setOption('page-size', 'A4');
-       $pdf->setOption('orientation', 'landscape');
-       $pdf->setOption('encoding', 'UTF-8');
-       $pdf->setOption('enable-local-file-access', true);
-       $pdf->setOption('enable-javascript', true);
-       $pdf->setOption('javascript-delay', 1000);
-       $pdf->setOption('no-stop-slow-scripts', true);
-       $pdf->setOption('enable-smart-shrinking', true);
-       $pdf->setOption('print-media-type', true);
-       $pdf->setOption('disable-smart-shrinking', false);
-       $pdf->setOption('zoom', 1);
-       $pdf->setOption('page-width', '297mm');
-       $pdf->setOption('page-height', '210mm');
-       $pdf->setOption('footer-right', '');
-       $pdf->setOption('footer-left', '');
-       $pdf->setOption('footer-center', '');
-       $pdf->setOption('header-right', '');
-       $pdf->setOption('header-left', '');
-       $pdf->setOption('header-center', '');
-       $pdf->setOption('footer-spacing', 0);
-       $pdf->setOption('header-spacing', 0);
-       $pdf->setOption('margin-footer', 0);
-       $pdf->setOption('margin-header', 0);
+    $remiseReduction = $commande->remise_reduction ?? 0;
+    $discountAmount = ($originalTotal * $remiseReduction) / 100;
 
-    return $pdf->download('facture_' . $id . '.pdf');
+    $logoPath = public_path('images/Cica.png');
+    $logoBase64 = null;
+    if (file_exists($logoPath)) {
+        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+    }
+
+    // Utiliser la vue preview_single pour une seule facture par page
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('administrateur.preview_single', compact(
+        'commande', 'originalTotal', 'remiseReduction', 'discountAmount', 'notes', 'logoBase64'
+    ));
+
+    // Options avancées pour le PDF
+    $pdf->setPaper('a4', 'landscape');
+    $pdf->setOption('isHtml5ParserEnabled', true);
+    $pdf->setOption('isPhpEnabled', true);
+    $pdf->setOption('isRemoteEnabled', true);
+    $pdf->setOption('dpi', 150);
+    $pdf->setOption('defaultFont', 'sans-serif');
+    $pdf->setOption('margin-top', 0);
+    $pdf->setOption('margin-right', 0);
+    $pdf->setOption('margin-bottom', 0);
+    $pdf->setOption('margin-left', 0);
+    $pdf->setOption('page-size', 'A4');
+    $pdf->setOption('orientation', 'landscape');
+    $pdf->setOption('encoding', 'UTF-8');
+    $pdf->setOption('enable-local-file-access', true);
+    $pdf->setOption('enable-javascript', true);
+    $pdf->setOption('javascript-delay', 1000);
+    $pdf->setOption('no-stop-slow-scripts', true);
+    $pdf->setOption('enable-smart-shrinking', true);
+    $pdf->setOption('print-media-type', true);
+    $pdf->setOption('disable-smart-shrinking', false);
+    $pdf->setOption('zoom', 1);
+    $pdf->setOption('page-width', '297mm');
+    $pdf->setOption('page-height', '210mm');
+    $pdf->setOption('footer-right', '');
+    $pdf->setOption('footer-left', '');
+    $pdf->setOption('footer-center', '');
+    $pdf->setOption('header-right', '');
+    $pdf->setOption('header-left', '');
+    $pdf->setOption('header-center', '');
+    $pdf->setOption('footer-spacing', 0);
+    $pdf->setOption('header-spacing', 0);
+    $pdf->setOption('margin-footer', 0);
+    $pdf->setOption('margin-header', 0);
+
+    // Retourner le PDF en téléchargement
+    return $pdf->download('facture_' . $commande->numero . '.pdf');
 }
 
 

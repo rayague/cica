@@ -110,11 +110,11 @@
         }
 
         .invoice-info p strong {
-            font-size: 13px;
+            font-size: 10px;
         }
 
         .invoice-info p {
-            font-size: 13px;
+            font-size: 8px;
         }
 
         .details-grid {
@@ -325,8 +325,8 @@
                             </div>
                             <div class="invoice-info">
                                 <h2>FACTURE <strong>N° :</strong> {{ $commande->numero }}</h2>
-    
-                                <p><strong>Agent :</strong> {{ $commande->user->name ?? $commande->user_id }}</p>
+
+                                <p><strong>Agent :</strong> <span style="font-size:4px;">{{ $commande->user->name ?? $commande->user_id }}</span></p>
                             </div>
                         </div>
 

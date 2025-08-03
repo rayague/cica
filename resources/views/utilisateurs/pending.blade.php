@@ -359,7 +359,7 @@
                                                                 $whatsappNumber = $commande->numero_whatsapp;
                                                                 $message = rawurlencode(
                                                                     "Bonjour M./Mme " . ($commande->client ?? '') . ",\n\n" .
-                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . str_pad($commande->id, 4, '0', STR_PAD_LEFT) . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
+                                                                    "Votre commande du " . \Carbon\Carbon::parse($commande->date_depot)->format('d/m/Y') . " (facture n° " . str_pad(\App\Models\Commande::where('id', '<=', $commande->id)->count(), 4, '0', STR_PAD_LEFT) . ") est déjà prête !\nVous pouvez passer pour le retrait à tout moment.\n\n" .
                                                                     "📄 Pour consulter ou télécharger cette facture (et toutes les autres), rendez-vous sur :\n" .
                                                                     "👉 https://mesfactures.cicanoblessepressing.com/\n" .
                                                                     "(Accès rapide avec votre numéro de téléphone.)\n\n" .
